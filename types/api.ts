@@ -14,7 +14,9 @@ export interface RequestHeaders {
 }
 
 export interface RequestOptions<DataT = any> extends AsyncDataOptions<DataT> {
-  key: string;
+  key?: string;
+  method?: string;
+  body?: any;
   headers?: {}
   onResponse?: (response: any) => void
   onResponseError?: (error: any) => void

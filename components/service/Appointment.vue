@@ -76,6 +76,9 @@
 import {COMPONENTS} from "~/data/constants";
 import {CalendarDate} from "@internationalized/date";
 
+import {useMenu} from "~/stores/menu";
+
+const menuModule = useMenu();
 const  { setDialogComponent} :any = useApp();
 
 const submitAddToGuest = function() {
@@ -84,6 +87,7 @@ const submitAddToGuest = function() {
 
 
 const selectedService = ref({});
+selectedService.value = menuModule.service.data;
 const reserveOption = ref('');
 
 // --------------calender start ------//

@@ -13,11 +13,11 @@
       </div>
       <div class="flex justify-between">
         <span>Services cost</span>
-        <span class="font-bold">0.00 SAR</span>
+        <span class="font-bold">{{ serviceCost.toFixed(2) }} SAR</span>
       </div>
       <div class="flex justify-between">
         <span>Discount</span>
-        <span class="font-bold">0.00 SAR</span>
+        <span class="font-bold">{{ discount.toFixed(2) }} SAR</span>
       </div>
     </div>
 
@@ -46,8 +46,8 @@
         <UCheckbox v-model="accepted" />
         <span>Accept terms and conditions</span>
       </div>
-      <UButton class="cart-btn flex align-center gap-[24px] w-full text-white py-3 rounded-full font-[600] text-[16px] justify-center bg-[#A0576F] hover:bg-[#913E5D] mt-[35px]  disabled:bg-[#A0576F]">
-        {{ (subtotal + vat).toFixed(2) }} SAR - Checkout
+      <UButton class="cart-btn flex align-center gap-[24px] w-full text-white py-3 rounded-full font-[600] text-[16px] justify-center bg-[#A0576F] hover:bg-[#913E5D] mt-[35px] disabled:bg-[#A0576F]" :disabled="!accepted || servicesCount === 0">
+        {{ total.toFixed(2) }} SAR - Checkout
       </UButton>
 
     </div>
@@ -55,12 +55,23 @@
 </template>
 
 <script setup lang="ts">
+import { ref, computed } from 'vue'
+
 const props = defineProps<{
   servicesCount: number
   subtotal: number
+  vat?: number
+  discount?: number
+  serviceCost?: number
+  total?: number
 }>()
 
-const vat = computed(() => props.subtotal * 0.15)
+// Use provided values or compute defaults
+const vat = computed(() => props.vat !== undefined ? props.vat : props.subtotal * 0.15)
+const discount = computed(() => props.discount || 0)
+const serviceCost = computed(() => props.serviceCost || 0)
+const total = computed(() => props.total !== undefined ? props.total : props.subtotal + vat.value - discount.value + serviceCost.value)
+
 const accepted = ref(false)
 </script>
 

@@ -3,10 +3,13 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 px-6 py-10 bg-[#A0576F1A]">
       <!-- Cart List -->
       <div class="lg:col-span-2 space-y-6 h-[450px] overflow-y-auto">
-        
+
           <div class="flex justify-between">
             <h2 class="text-[#EBE4DF] text-[20px] font-medium leading-normal">Cart</h2>
-            <button class="text-[#EBE4DF] text-[14px] font-[350] leading-normal">
+            <button
+              @click="emptyCart"
+              :disabled="cartModule.isEmptying || cartProducts.length === 0"
+              class="text-[#EBE4DF] text-[14px] font-[350] leading-normal">
               <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30" fill="none">
                 <g clip-path="url(#clip0_2106_5409)">
                   <path
@@ -24,7 +27,7 @@
               </svg>
             </button>
           </div>
-        <div v-if="cartItems.length > 0">
+        <div v-if="!cartModule.isLoading && cartProducts.length > 0">
           <div class="flex justify-between px-[29px] border-b border-b-[#AD7084] pb-[14px] mb-[14px]">
             <p class="flex-1 text-[#EBE4DF] text-[14px] font-[350] leading-normal">Package</p>
             <div class="flex flex-1 justify-end">
@@ -34,64 +37,90 @@
             </div>
           </div>
           <div class="">
-            <CartItem v-for="(item, index) in cartItems" :key="index" :item="item" @toggle="toggleItem(index)" />
+            <CartItem
+              v-for="(item, index) in cartProducts"
+              :key="item.id || index"
+              :item="formatCartItem(item)"
+              @toggle="toggleItem(index)"
+              @remove="removeCartItem(item)"
+            />
           </div>
         </div>
 
+        <div v-else-if="cartModule.isLoading" class="flex items-center justify-center h-full">
+          <p class="text-[#EBE4DF] text-[16px]">Loading cart...</p>
+        </div>
+
         <div v-else class="flex items-center justify-center h-full">
-          <!-- <img src="assets/img/empty-card.svg" /> -->
           <img src="/public/assets/img/empty-card.svg" />
         </div>
       </div>
       <!-- Payment Summary -->
-      <PaymentSummary :services-count="cartItems.length"
-        :subtotal="cartItems.reduce((acc, item) => acc + item.price, 0)" />
+      <PaymentSummary
+        :services-count="cartProducts.length"
+        :subtotal="cartModule.getSubtotal"
+        :vat="cartModule.getVat"
+        :discount="cartModule.getDiscount"
+        :service-cost="cartModule.getServiceCost"
+        :total="cartModule.getTotal"
+      />
     </div>
   </Container>
 </template>
 
 <script setup lang="ts">
+import { ref, onMounted, computed } from 'vue'
 import Container from '@/components/base/Container.vue'
 import CartItem from '@/components/base/CartItem.vue'
 import PaymentSummary from '@/components/base/PaymentSummary.vue'
+import { useCart } from '~/stores/cart'
 
-const cartItems = ref([
-  {
-    image: 'assets/img/service-1.png',
-    name: 'Hair Extensions',
-    duration: '4 Hours',
-    price: 2500,
-    professional: '[Professional Name]',
-    services: '20 Extensions',
-    visitors: ['Zahra Ahmed', 'Yassmin Ahmed'],
-    phones: ['+966 56 583 2222', '+966 56 323 1987'],
-    expanded: true
-  },
-  {
-    image: 'assets/img/service-2.png',
-    name: 'Deep Facial Cleanse',
-    duration: '4 Hours',
-    price: 2500,
-    professional: '[Professional Name]',
-    services: '20 Extensions',
-    visitors: ['Zahra Ahmed', 'Yassmin Ahmed'],
-    phones: ['+966 56 583 2222', '+966 56 323 1987'],
-    expanded: false
-  },
-  {
-    image: 'assets/img/service-3.png',
-    name: 'Hair Extensions',
-    duration: '4 Hours',
-    price: 2500,
-    professional: '[Professional Name]',
-    services: '20 Extensions',
-    visitors: ['Zahra Ahmed', 'Yassmin Ahmed'],
-    phones: ['+966 56 583 2222', '+966 56 323 1987'],
-    expanded: false
+// Initialize cart store
+const cartModule = useCart()
+const expandedItems = ref<{[key: string]: boolean}>({})
+
+// Fetch cart data on component mount
+onMounted(() => {
+  cartModule.fetchCart()
+})
+
+// Get products from cart store
+const cartProducts = computed(() => {
+  return cartModule.getProducts as any[]
+})
+
+// Format cart item for display
+const formatCartItem = (item: any) => {
+  return {
+    id: item.id,
+    cart_product_id: item.cart_product_id,
+    image: item.image || '/public/assets/img/service-1.png',
+    name: item.name || 'Service',
+    duration: item.start_time && item.end_time ? `${item.start_time} - ${item.end_time}` : '1 Hour',
+    price: item.price_with_tax || item.unit_price_with_tax || 0,
+    professional: item.branch?.name || '',
+    date: item.date || '',
+    expanded: expandedItems.value[item.id] || false
   }
-])
+}
 
+// Toggle expanded state of cart item
 const toggleItem = (index: number) => {
-  cartItems.value[index].expanded = !cartItems.value[index].expanded
+  const item = cartProducts.value[index]
+  if (item && item.id) {
+    expandedItems.value[item.id] = !expandedItems.value[item.id]
+  }
+}
+
+// Remove item from cart
+const removeCartItem = (item: any) => {
+  if (item && item.cart_product_id) {
+    cartModule.removeProduct(item.cart_product_id)
+  }
+}
+
+// Empty the cart
+const emptyCart = () => {
+  cartModule.emptyCart()
 }
 </script>

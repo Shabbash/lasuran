@@ -44,7 +44,9 @@
                 <NuxtLink to="/cart" class="relative cursor-pointer">
                     <img src="/public/assets/img/calendar.svg" alt="flag" class="w-[27px] h-[27px] rounded-sm" />
                     <span
-                        class="absolute bg-[#DA3C3C] w-[17px] h-[17px] flex items-center justify-center rounded-full text-[11px] font-normal -top-1 -end-1">1</span>
+                        class="absolute bg-[#DA3C3C] w-[17px] h-[17px] flex items-center justify-center rounded-full text-[11px] font-normal -top-1 -end-1">
+                        {{ cartModule.getProductsCount }}
+                    </span>
                 </NuxtLink>
 
                 <!-- Notifications Icon -->
@@ -66,6 +68,9 @@
 <script setup lang="ts">
 import Container from '~/components/base/Container.vue'
 import UserMenu from '~/components/base/UserMenu.vue'
+import { useCart } from '~/stores/cart'
+
+const cartModule = useCart()
 
 </script>
 

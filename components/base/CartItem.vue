@@ -34,7 +34,7 @@
                 stroke-width="1.29654" stroke-miterlimit="10" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
           </button>
-          <button>
+          <button @click="$emit('remove')">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="22" viewBox="0 0 24 22" fill="none">
               <rect x="1.86719" y="0.17041" width="19.8803" height="19.0077" rx="4.32182" fill="#C44E4E" />
               <path
@@ -54,7 +54,10 @@
       leave-to-class="opacity-0 -translate-y-2">
       <div v-if="item.expanded" class="mt-[6px] mb-[28px] px-[93px] space-y-[25px]">
         <div class="text-[#EBE4DF] text-[14px] font-[350] leading-normal" v-if="item.professional">
-          <span class="text-[#C6C6C7]">Professional:</span> {{ item.professional }}
+          <span class="text-[#C6C6C7]">Branch:</span> {{ item.professional }}
+        </div>
+        <div class="text-[#EBE4DF] text-[14px] font-[350] leading-normal" v-if="item.date">
+          <span class="text-[#C6C6C7]">Date:</span> {{ item.date }}
         </div>
         <!-- <div class="" v-if="item.services">
           <span class="font-semibold">Services:</span> {{ item.services }} — <span class="text-gray-500">00.00
@@ -77,17 +80,20 @@
 <script setup lang="ts">
 defineProps<{
   item: {
+    id: number | string
+    cart_product_id?: number | string
     image: string
     name: string
     duration: string
     price: number
     expanded?: boolean
     professional?: string
+    date?: string
     services?: string
     visitors?: string[]
     phones?: string[]
   }
 }>()
 
-defineEmits(['toggle'])
+defineEmits(['toggle', 'remove'])
 </script>
