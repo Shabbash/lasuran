@@ -47,8 +47,8 @@
           </div>
         </div>
 
-        <div v-else-if="cartModule.isLoading" class="flex items-center justify-center h-full">
-          <p class="text-[#EBE4DF] text-[16px]">Loading cart...</p>
+        <div v-else-if="cartModule.isLoading" class="space-y-4">
+          <CartItemSkeleton v-for="i in 3" :key="i" />
         </div>
 
         <div v-else class="flex items-center justify-center h-full">
@@ -56,14 +56,19 @@
         </div>
       </div>
       <!-- Payment Summary -->
-      <PaymentSummary
-        :services-count="cartProducts.length"
-        :subtotal="cartModule.getSubtotal"
-        :vat="cartModule.getVat"
-        :discount="cartModule.getDiscount"
-        :service-cost="cartModule.getServiceCost"
-        :total="cartModule.getTotal"
-      />
+      <template v-if="!cartModule.isLoading">
+        <PaymentSummary
+          :services-count="cartProducts.length"
+          :subtotal="cartModule.getSubtotal"
+          :vat="cartModule.getVat"
+          :discount="cartModule.getDiscount"
+          :service-cost="cartModule.getServiceCost"
+          :total="cartModule.getTotal"
+        />
+      </template>
+      <template v-else>
+        <PaymentSummarySkeleton />
+      </template>
     </div>
   </Container>
 </template>
@@ -72,7 +77,9 @@
 import { ref, onMounted, computed } from 'vue'
 import Container from '@/components/base/Container.vue'
 import CartItem from '@/components/base/CartItem.vue'
+import CartItemSkeleton from '@/components/base/CartItemSkeleton.vue'
 import PaymentSummary from '@/components/base/PaymentSummary.vue'
+import PaymentSummarySkeleton from '@/components/base/PaymentSummarySkeleton.vue'
 import { useCart } from '~/stores/cart'
 
 // Initialize cart store

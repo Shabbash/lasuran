@@ -22,8 +22,8 @@
         </template>
       </BaseCard>
     </div>
-    <div v-else>
-       loading...
+    <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-[30px]">
+      <ServiceCardSkeleton v-for="i in 8" :key="i" />
     </div>
 
     <Dialog v-model:open="modalOpen">
@@ -88,6 +88,7 @@ import Container from '@/components/base/Container.vue'
 import BaseCard from '@/components/base/Card.vue'
 import Dialog from '@/components/base/Dialog.vue'
 import CustomRadio from '@/components/base/CustomRadio.vue'
+import ServiceCardSkeleton from '@/components/base/ServiceCardSkeleton.vue'
 import type { TabsItem, RadioGroupItem, RadioGroupValue } from '@nuxt/ui'
 import { CalendarDate } from '@internationalized/date'
 import {COMPONENTS} from "~/data/constants";
@@ -225,7 +226,7 @@ const selectedTime = ref('21:30')
 
 
 const filters = ref({
-  
+
 });
 // --------------calender end -----//
 
@@ -235,7 +236,7 @@ const filters = ref({
 
 
 
-/* 
+/*
 .main-category>.bg-primary,
 .sub-category>.bg-primary {
   background-color: transparent !important;

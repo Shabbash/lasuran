@@ -53,13 +53,14 @@
 
   </div>
   <div v-else>
-    loading ...
+    <ServiceDetailSkeleton />
   </div>
 </template>
 
 <script setup lang="ts">
 
 import CustomRadio from "~/components/base/CustomRadio.vue";
+import ServiceDetailSkeleton from "~/components/base/ServiceDetailSkeleton.vue";
 import {COMPONENTS} from "~/data/constants";
 const { setDialogComponent } = useApp();
 const menuModule = useMenu();

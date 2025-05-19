@@ -1,8 +1,11 @@
 <template>
   <div class="space-y-[20px]">
     <div>
-      <SelectableSlider v-model="menuModule.category_id" :items="menuModule?.getCategories"
-        @update:modelValue="onChange('category_id', $event)" class="main-category" />
+      <SelectableSlider
+        v-model="menuModule.category_id"
+        :items="categories"
+        @update:modelValue="onChange('category_id', $event)"
+        class="main-category" />
 
       <!--      :model-value="menuModule?.category_id"-->
 
@@ -21,11 +24,19 @@
     </div>
 
     <div class="flex justify-between items-center">
-      <USelectMenu v-model="filters.branch" :items="menuModule.getBranches" valueKey="id" labelKey="name"
+      <USelectMenu
+        v-model="filters.branch"
+        :items="branches"
+        valueKey="id"
+        labelKey="name"
+        placeholder="Select Branch"
         class="min-w-[300px] rounded-[100px] border border-[#EBE4DF] bg-[#EBE4DF] shadow-[1px_3px_8px_0px_#00000012] backdrop-blur-[25px] h-[56px] text-[#A0576F] text-[16px] font-[350] leading-normal ps-[28px]" />
 
-      <SelectableSlider v-model="menuModule.sub_category_id" :items="menuModule?.getSubCategories"
-        @update:modelValue="onChange('sub_category_id', $event)" class="sub-category" />
+      <SelectableSlider
+        v-model="menuModule.sub_category_id"
+        :items="subCategories"
+        @update:modelValue="onChange('sub_category_id', $event)"
+        class="sub-category" />
       <!--      <UTabs v-model="filters.sub_category_id" :items="categories"-->
       <!--      :ui="{-->
       <!--        root: 'inline-flex gap-0',-->
@@ -38,53 +49,83 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import type { TabsItem } from '@nuxt/ui'
+import { ref, onMounted, computed } from 'vue'
 import SelectableSlider from "~/components/base/SelectableSlider.vue";
+import { useMenu } from '~/stores/menu';
 
 const menuModule = useMenu();
-// const props = defineProps<{
-//   modelValue: {
-//     gender: string
-//     branch: { label: string; value: string }
-//     category: string
-//   }
-// }>()
-// const filters: { gender: any, branch: any, category: any } = defineModel();
 
-// const filters = computed({
-//   set(newValue) {
-//     menuModule.setMenuParams(newValue)
-//   },
-//   get() {
-//     return menuModule.getMenuParams ?? {}
-//   }
-// });
-const filters = ref({});
+// Create computed properties for the menu data
+const categories = computed(() => {
+  return menuModule.getCategories || [];
+});
 
-const onChange = function (key: string, value: any) {
-  // if (!menuModule) return;
-  // menuModule[key] = value;
+const subCategories = computed(() => {
+  return menuModule.getSubCategories || [];
+});
+
+const branches = computed(() => {
+  return menuModule.getBranches || [];
+});
+
+// Initialize filters
+const filters = ref({
+  branch: null
+});
+
+const onChange = function (key: string, _: any) {
+  // The newValue is already bound to the v-model, so we don't need to set it manually
   if (key == 'category_id') menuModule.setDefaultSubCategory();
   menuModule.fetchServices();
 }
 
+// Initialize default selections when component is mounted
+onMounted(async () => {
+  // Initialize menu data if needed
+  if (!menuModule.menus.data || menuModule.menus.data.length === 0) {
+    await menuModule.initMenu();
+  } else {
+    // If category_id is not set, set default category
+    if (!menuModule.category_id) {
+      menuModule.setDefaultCategory();
+    }
+
+    // If sub_category_id is not set, set default subcategory
+    if (!menuModule.sub_category_id) {
+      menuModule.setDefaultSubCategory();
+    }
+
+    // Set default branch if available
+    const branchesData = branches.value;
+    if (branchesData && branchesData.length > 0 && !filters.value.branch) {
+      filters.value.branch = branchesData[0].id;
+    }
+
+    // Fetch services with the selected filters
+    menuModule.fetchServices();
+  }
+});
+
 
 const emit = defineEmits(['update:modelValue'])
 
-const branches = [
+// These static data are no longer used since we're using data from the API
+// Keeping them commented for reference
+/*
+const staticBranches = [
   { name: 'Lasuran, Riyadh Branch 1', id: 1 },
   { name: 'Lasuran, Jeddah Branch', id: 2 },
   { name: 'Lasuran, Dammam Branch', id: 3 }
 ]
 
-const categories: TabsItem[] = [
+const staticCategories: TabsItem[] = [
   { label: 'Hair Styling', value: 'Hair Styling' },
   { label: 'Eyebrows & Eyelashes', value: 'Eyebrows & Eyelashes' },
   { label: 'Massage', value: 'Massage' },
   { label: 'Makeup', value: 'Makeup' },
   { label: 'Nails', value: 'Nails' }
 ]
+*/
 
 // const gender = ref(props.modelValue.gender || 'female')
 // const branch = ref(props.modelValue.branch || branches[0])
