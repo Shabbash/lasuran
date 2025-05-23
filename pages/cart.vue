@@ -43,6 +43,8 @@
               :item="formatCartItem(item)"
               @toggle="toggleItem(index)"
               @remove="removeCartItem(item)"
+              @edit="editCartItem(item)"
+
             />
           </div>
         </div>
@@ -81,10 +83,13 @@ import CartItemSkeleton from '@/components/base/CartItemSkeleton.vue'
 import PaymentSummary from '@/components/base/PaymentSummary.vue'
 import PaymentSummarySkeleton from '@/components/base/PaymentSummarySkeleton.vue'
 import { useCart } from '~/stores/cart'
+import { COMPONENTS } from '~/data/constants'
 
 // Initialize cart store
 const cartModule = useCart()
 const expandedItems = ref<{[key: string]: boolean}>({})
+const { setDialogComponent, setDialogShow } = useApp()
+const menuModule = useMenu()
 
 // Fetch cart data on component mount
 onMounted(() => {
@@ -98,8 +103,14 @@ const cartProducts = computed(() => {
 
 // Format cart item for display
 const formatCartItem = (item: any) => {
-  return {
+  // Preserve all original data but format for display
+  const formattedItem = {
+    // Preserve all original properties
+    ...item,
+
+    // Format display properties
     id: item.id,
+    product_id: item.product_id || item.id,
     cart_product_id: item.cart_product_id,
     image: item.image || '/public/assets/img/service-1.png',
     name: item.name || 'Service',
@@ -107,8 +118,15 @@ const formatCartItem = (item: any) => {
     price: item.price_with_tax || item.unit_price_with_tax || 0,
     professional: item.branch?.name || '',
     date: item.date || '',
-    expanded: expandedItems.value[item.id] || false
-  }
+    expanded: expandedItems.value[item.id] || false,
+
+    // Preserve these properties for editing
+    branch_id: item.branch_id,
+    selectedExtension: item.selectedExtension,
+    selectedTime: item.selectedTime || (item.start_time || ''),
+  };
+
+  return formattedItem;
 }
 
 // Toggle expanded state of cart item
@@ -125,6 +143,96 @@ const removeCartItem = (item: any) => {
     cartModule.removeProduct(item.cart_product_id)
   }
 }
+const editCartItem = (item: any) => {
+  console.log('Editing cart item:', item);
+
+  // Find the original cart item from the cart products
+  const originalItem = cartProducts.value.find(product => product.cart_product_id === item.cart_product_id);
+
+  if (!originalItem) {
+    console.error('Original cart item not found:', item.cart_product_id);
+    return;
+  }
+
+  console.log('Original cart item found:', originalItem);
+
+  // Extract time from duration if available
+  let selectedTime = '';
+  if (item.duration && item.duration.includes('-')) {
+    const times = item.duration.split('-');
+    if (times.length > 0) {
+      selectedTime = times[0].trim();
+    }
+  }
+
+  // Get the product data from the original item
+  // If the original item has a products array, use the first product
+  const productData = originalItem.products && originalItem.products.length > 0
+    ? originalItem.products[0]
+    : originalItem;
+
+  // Create a properly formatted service object for editing
+  const serviceData = {
+    // Include essential data for the service
+    id: productData.id || originalItem.product_master_id || originalItem.id || item.id,
+    product_id: productData.id || originalItem.product_master_id || originalItem.id,
+    cart_product_id: item.cart_product_id, // Critical for updating
+    name: item.name || productData.name,
+    image: item.image || productData.image,
+    price: item.price || productData.price,
+    duration: item.duration,
+    description: productData.description,
+
+    // Include any additional data from the original item
+    branch_id: originalItem.branch?.id || originalItem.branch_id,
+
+    // Include editing-specific data
+    selectedExtension: originalItem.selectedExtension || '',
+    selectedTime: selectedTime || item.start_time || '',
+    date: item.date || '',
+
+    // Include any additional data that might be needed for the update
+    start_at: item.start_at || null,
+    end_at: item.end_at || null,
+
+    // Add a custom property to track that this is an edit operation
+    // This won't be sent to the API but will be used by our code
+    _isEditing: true
+  };
+
+  // Store the edit flag in a way that won't interfere with the API
+  // We'll use this in our code but it won't be sent to the server
+  Object.defineProperty(serviceData, 'is_editing', {
+    value: true,
+    enumerable: false, // Make it non-enumerable so it doesn't show up in JSON
+    configurable: true,
+    writable: true
+  });
+
+  // Also store the cart_product_id as a non-enumerable property to ensure it's preserved
+  // This is a backup in case the API response doesn't include it
+  Object.defineProperty(serviceData, '_original_cart_product_id', {
+    value: item.cart_product_id,
+    enumerable: false,
+    configurable: true,
+    writable: true
+  });
+
+  // Log the service data we're about to set
+  console.log('Setting service data for editing:', serviceData);
+
+  // Make sure the _isEditing flag is set as an enumerable property
+  // This ensures it will be preserved when the object is copied
+  serviceData._isEditing = true;
+
+  // Set the service in the menu store
+  // Our updated setService method will handle preserving the editing state
+  menuModule.setService(serviceData);
+
+  setDialogComponent(COMPONENTS.SERVICE_SHOW);
+  setDialogShow(true);
+};
+
 
 // Empty the cart
 const emptyCart = () => {

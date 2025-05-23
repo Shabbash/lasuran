@@ -40,7 +40,7 @@
       </div> -->
 
       <BaseButton @click="addToCart" :loading="cartModule.isAddLoading" class="bg-[#A0576F] text-[#EBE4DF] rounded-[100px] w-full py-[16px] justify-center text-[20px] font-normal leading-[100%] tracking-[0] border border-[#A0576F] hover:bg-[#913E5D] transition cursor-pointer mt-[30px]  disabled:bg-[#A0576F]">
-        <span>{{ selectedExtension === '' ? '' : selectedService.price + ' SAR - ' }}Continue</span>
+        <span>{{ selectedExtension === '' ? '' : selectedService.price + ' SAR - ' }}{{ isEditing ? 'Update' : 'Continue' }}</span>
       </BaseButton>
 <!--      <button-->
 <!--          @click="addToCart"-->
@@ -59,15 +59,53 @@
 
 <script setup lang="ts">
 
+import { CalendarDate } from "@internationalized/date";
 import CustomRadio from "~/components/base/CustomRadio.vue";
 import ServiceDetailSkeleton from "~/components/base/ServiceDetailSkeleton.vue";
 import {COMPONENTS} from "~/data/constants";
+
+// Define service type
+interface Service {
+  id: number | string;
+  name: string;
+  image?: string;
+  inner_image?: string;
+  price?: string | number | null;
+  duration?: string;
+  description?: string;
+  products?: Service[];
+  is_editing?: boolean;
+  cart_product_id?: number | string;
+  selectedExtension?: string;
+  selectedTime?: string;
+  date?: string;
+  branch_id?: number | string;
+  product_id?: number | string;
+  [key: string]: any; // Allow other properties
+}
 const { setDialogComponent } = useApp();
 const menuModule = useMenu();
 const cartModule = useCart();
-const selectedService = computed(() => menuModule.service.data);
+const selectedService = computed<Service>(() => menuModule.service.data as Service);
 const isLoading = computed(() => menuModule.service.loading);
-const defaultService = computed(() => selectedService.value?.products?.[0] ?? selectedService.value);
+
+// Check for editing flag in multiple possible locations
+const isEditing = computed(() => {
+  // First check our stored original state
+  if (originalIsEditing.value) return true;
+
+  // Check if the cart_product_id is set
+  if (originalCartProductId.value) return true;
+
+  // Use our helper function to check the service
+  return isServiceInEditMode(selectedService.value);
+});
+
+const selectedExtension = ref('')
+const selectedTime = ref('21:30')
+const value = ref(new CalendarDate(2022, 2, 3))
+
+const defaultService = computed<Service>(() => selectedService.value?.products?.[0] ?? selectedService.value);
 // const selectedService = {
 //   id: 1,
 //   title: 'Hair Extensions',
@@ -84,24 +122,128 @@ const defaultService = computed(() => selectedService.value?.products?.[0] ?? se
 //   ]
 // }
 
-const selectedExtension = ref(null);
 
-const addGuest = () => {
-  setDialogComponent(COMPONENTS.SERVICE_GUEST)
-}
+// Function removed as it was unused
 
-const addToCart = function() {
-  cartModule.addOrUpdateServiceInCart(defaultService.value).then(() => {
+const addToCart = function () {
+  // Create the payload with all necessary data
+  const payload = {
+    ...defaultService.value,
+    selectedExtension: selectedExtension.value,
+    selectedTime: selectedTime.value,
+    date: value.value.toString(),
+  };
+
+  // Use our helper function and computed properties to check if this is an edit operation
+  const isEditingOperation = isEditing.value;
+
+  // Get the cart_product_id from the service or our stored value
+  const cartProductId = selectedService.value?.cart_product_id || originalCartProductId.value;
+
+  // Check if this is an edit operation
+  if (isEditingOperation && cartProductId) {
+    // This is an edit operation - ensure we pass the cart_product_id
+    payload.cart_product_id = cartProductId;
+    console.log('Editing existing cart item with ID:', payload.cart_product_id);
+
+    // Make sure we're using the correct product ID from the original item
+    if (selectedService.value?.product_id) {
+      payload.id = selectedService.value.product_id;
+    } else if (defaultService.value?.id) {
+      payload.id = defaultService.value.id;
+    }
+
+    // Include any other necessary fields from the original cart item
+    if (selectedService.value?.branch_id) {
+      payload.branch_id = selectedService.value.branch_id;
+    }
+
+    // Log the complete payload for debugging
+    console.log('Edit cart payload:', payload);
+  } else {
+    console.log('Adding new item to cart');
+    console.log('Add cart payload:', payload);
+    // For new items, don't include cart_product_id
+  }
+
+  // Use the same method for both add and update operations
+  // The API will detect if it's an update based on the presence of cart_product_id
+  cartModule.addOrUpdateServiceInCart(payload).then(() => {
     setDialogComponent(COMPONENTS.SERVICE_APPOINTMENT);
-  })
-}
+  });
+};
 
-const continueToAppointment = function () {
-  setDialogComponent(COMPONENTS.SERVICE_APPOINTMENT);
-}
-onMounted(() =>  {
-  // @todo Fetching service data
-});
+// Function removed as it was unused
+// Store the original cart_product_id and editing state
+const originalCartProductId = ref<string | number | null>(null);
+const originalIsEditing = ref(false);
+
+// Function to check if a service is in edit mode
+const isServiceInEditMode = (service: any) => {
+  if (!service) return false;
+
+  return (
+    service._isEditing === true ||
+    service.is_editing === true ||
+    Object.getOwnPropertyDescriptor(service, 'is_editing')?.value === true
+  );
+};
+
+onMounted(() => {
+  const serviceData = menuModule.service.data as Service
+  console.log('Service data on mount:', serviceData);
+
+  // Set extension value
+  selectedExtension.value = serviceData.selectedExtension || ''
+
+  // Set time value
+  selectedTime.value = serviceData.selectedTime || '21:30'
+
+  // Set date value if available
+  if (serviceData.date) {
+    try {
+      const [year, month, day] = serviceData.date.split('-').map(Number)
+      value.value = new CalendarDate(year, month, day)
+    } catch (error) {
+      console.error('Error parsing date:', error);
+      // Use default date if parsing fails
+      value.value = new CalendarDate(2022, 2, 3)
+    }
+  }
+
+  // Check if this is an edit operation
+  const isEditingOperation = isServiceInEditMode(serviceData);
+
+  // Get the cart_product_id
+  const cartProductId = serviceData.cart_product_id || null;
+
+  // Store the original cart_product_id and editing state
+  originalCartProductId.value = cartProductId;
+  originalIsEditing.value = isEditingOperation;
+
+  console.log('Cart product ID:', cartProductId);
+  console.log('Is editing operation:', isEditingOperation);
+
+  // If this is an edit operation but the editing state is not properly set,
+  // update the service data to include the editing state
+  if (cartProductId && !isEditingOperation) {
+    console.log('Cart product ID found but editing state not set, fixing...');
+
+    // Create an updated service data object with the editing state
+    const updatedServiceData = {
+      ...serviceData,
+      _isEditing: true
+    };
+
+    // Update the service data in the store
+    menuModule.setService(updatedServiceData);
+  }
+
+  // If this is an edit operation, log it
+  if (isEditingOperation || cartProductId) {
+    console.log('Editing cart item:', cartProductId);
+  }
+})
 </script>
 
 <style scoped>

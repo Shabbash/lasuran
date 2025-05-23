@@ -163,9 +163,51 @@ export const useMenu = defineStore("menu", {
           this.$state.sub_category_id = (this.getSubCategories ?? [])?.[0]?.id;
       },
       setService(service :any) {
+          console.log('Setting service in menu store:', service);
+
+          // Store the editing state and cart_product_id
+          const isEditing = service._isEditing === true;
+          const cartProductId = service.cart_product_id;
+
+          // Store the service item
           this.$state.service.loading = true;
           this.$state.service.item = service;
-          this.fetchService();
+
+          // If this is an edit operation, store the service data directly
+          if (isEditing && cartProductId) {
+              console.log('Edit operation detected, preserving service data');
+              this.$state.service.data = service;
+              this.$state.service.loading = false;
+
+              // Fetch the service details in the background
+              this.fetchServiceForEdit(service);
+          } else {
+              // For regular operations, fetch the service as usual
+              this.fetchService();
+          }
+      },
+
+      // Fetch service details for edit operations without overwriting the editing state
+      fetchServiceForEdit(service :any) {
+          const params :{} = this.getMenuParams;
+
+          return useApi(`products/${service.id}`, {},
+              {
+                  onSuccess: (data : any) => {
+                      // Merge the API data with our editing state
+                      this.$state.service.data = {
+                          ...data.data,
+                          cart_product_id: service.cart_product_id,
+                          _isEditing: true,
+                          selectedExtension: service.selectedExtension || '',
+                          selectedTime: service.selectedTime || '',
+                          date: service.date || ''
+                      };
+                  },
+                  onError: (err : any) => {
+                      console.error('Error fetching service for edit:', err);
+                  }
+              });
       }
     },
     persist: true,

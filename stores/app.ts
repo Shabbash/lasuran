@@ -35,8 +35,9 @@ export const useApp = defineStore("app", {
             return state.dialog.show;
         },
         getDialogComponent(state:AppState) {
-            console.log("components[component] ",components[state.dialog.component] )
-           return  components[state.dialog.component] ?? state.dialog.component;
+            const componentKey = state.dialog.component;
+            console.log("components[component] ", componentKey in components ? components[componentKey] : null);
+            return (componentKey in components) ? components[componentKey] : state.dialog.component;
         }
     },
     actions: {

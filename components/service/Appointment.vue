@@ -36,7 +36,7 @@
 
                 <div class="mb-[12px]">
                   <h3 class="text-[17px] font-normal leading-normal text-[#A0576F] mb-[12px]">Select Date</h3>
-                  <UCalendar v-model="value" />
+                  <UCalendar :model-value="value" @update:model-value="value = $event" />
                 </div>
 
                 <div class="">
@@ -78,6 +78,24 @@ import {CalendarDate} from "@internationalized/date";
 
 import {useMenu} from "~/stores/menu";
 
+// Define service type
+interface Service {
+  id: number | string;
+  name: string;
+  image?: string;
+  inner_image?: string;
+  price?: string | number | null;
+  duration?: string;
+  description?: string;
+  products?: Service[];
+  is_editing?: boolean;
+  cart_product_id?: number | string;
+  selectedExtension?: string;
+  selectedTime?: string;
+  date?: string;
+  [key: string]: any; // Allow other properties
+}
+
 const menuModule = useMenu();
 const  { setDialogComponent} :any = useApp();
 
@@ -86,8 +104,8 @@ const submitAddToGuest = function() {
 }
 
 
-const selectedService = ref({});
-selectedService.value = menuModule.service.data;
+const selectedService = ref<Service>({} as Service);
+selectedService.value = menuModule.service.data as Service;
 const reserveOption = ref('');
 
 // --------------calender start ------//

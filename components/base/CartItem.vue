@@ -23,7 +23,8 @@
         <p class="flex-1 text-[#EBE4DF] text-[14px] font-normal leading-normal">{{ item.duration }}</p>
         <p class="flex-1 text-[#EBE4DF] text-[14px] font-normal leading-normal">{{ item.price }} SAR</p>
         <div class="flex-1">
-          <button>
+          <button
+          @click="$emit('edit', item)">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="22" viewBox="0 0 24 22" fill="none">
               <rect x="2.25253" y="0.17041" width="19.8803" height="19.0077" rx="4.32182" fill="#6B8B9B" />
               <path
@@ -95,5 +96,5 @@ defineProps<{
   }
 }>()
 
-defineEmits(['toggle', 'remove'])
+defineEmits(['toggle', 'remove', 'edit'])
 </script>

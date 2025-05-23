@@ -114,16 +114,91 @@ export const useCart = defineStore("cart", {
       addOrUpdateServiceInCart(service: any, branchId = null) {
           const menuModule = useMenu();
           this.$state.isAddLoading = true;
-          return useApi(`cart`, {
-                 method: "POST",
-                 body: {
-                     product_id: service.id,
-                     quantity: 1,
-                     branch_id: branchId ?? menuModule.branch_id
-                 }
-              },
+
+          // Determine if this is an update operation
+          const isUpdate = service.cart_product_id && service.cart_product_id !== undefined;
+
+          if (isUpdate) {
+              console.log('Updating existing cart item:', service.cart_product_id);
+
+              // For updates, use the same endpoint as adding but include cart_product_id
+              // The API will detect this is an update operation based on the cart_product_id
+              const updateRequestBody: any = {
+                  product_id: service.id,
+                  quantity: 1,
+                  branch_id: branchId ?? service.branch_id ?? menuModule.branch_id,
+                  cart_product_id: service.cart_product_id // Include this for the API to identify as update
+              };
+
+              // Include any additional data needed for the update
+              if (service.selectedExtension) {
+                  updateRequestBody.selectedExtension = service.selectedExtension;
+              }
+              if (service.selectedTime) {
+                  updateRequestBody.selectedTime = service.selectedTime;
+              }
+              if (service.date) {
+                  updateRequestBody.date = service.date;
+              }
+
+              console.log('Cart update API request body:', updateRequestBody);
+
+              // Use POST method with the cart endpoint for both add and update
+              return useApi(`cart`, {
+                     method: "POST",
+                     body: updateRequestBody
+                  },
               {
                   onSuccess: (data: any) => {
+                      console.log('Cart API response:', data);
+
+                      // Update cart with new data
+                      if (data.data) {
+                          this.$state.products = data.data.products || this.$state.products;
+                          this.$state.subtotal = data.data.subtotal || this.$state.subtotal;
+                          this.$state.vat = data.data.vat || this.$state.vat;
+                          this.$state.total = data.data.total || this.$state.total;
+                      }
+                      this.$state.isAddLoading = false;
+                      // Refresh cart data
+                      this.fetchCart();
+                  },
+                  onError: (err: any) => {
+                      this.$state.isAddLoading = false;
+                      console.error("Error updating cart:", err);
+                  }
+              });
+          } else {
+              console.log('Adding new item to cart');
+
+              // For adding new items, use the standard cart endpoint with POST
+              const addRequestBody: any = {
+                  product_id: service.id,
+                  quantity: 1,
+                  branch_id: branchId ?? service.branch_id ?? menuModule.branch_id
+              };
+
+              // Include any additional data for the new item
+              if (service.selectedExtension) {
+                  addRequestBody.selectedExtension = service.selectedExtension;
+              }
+              if (service.selectedTime) {
+                  addRequestBody.selectedTime = service.selectedTime;
+              }
+              if (service.date) {
+                  addRequestBody.date = service.date;
+              }
+
+              console.log('Cart add API request body:', addRequestBody);
+
+              return useApi(`cart`, {
+                     method: "POST",
+                     body: addRequestBody
+                  },
+              {
+                  onSuccess: (data: any) => {
+                      console.log('Cart API response:', data);
+
                       // Update cart with new data
                       if (data.data) {
                           this.$state.products = data.data.products || this.$state.products;
@@ -140,8 +215,10 @@ export const useCart = defineStore("cart", {
                       console.error("Error adding to cart:", err);
                   }
               });
+          }
       },
       removeProduct(cartProductId: number | string) {
+          console.log('Removing cart item:', cartProductId);
           this.$state.isRemoving = true;
           return useApi(`cart/${cartProductId}`, {
               method: "DELETE"

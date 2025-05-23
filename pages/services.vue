@@ -1,8 +1,8 @@
 <template>
   <Container>
     <ServiceFilters v-model="filters" />
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-[30px]" v-if="!menuModule?.isServicesLoading">
-      <BaseCard v-for="service in menuModule.getServices" :key="service.id">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-[30px]" v-if="!menuModule?.services.loading">
+      <BaseCard v-for="service in menuModule.services.data as Service[]" :key="service.id">
         <template #default>
           <div @click="openModal(service)"
             class="pt-[14px] pb-[20px] px-[11px] rounded-[16px] overflow-hidden bg-[#EBE4DF] cursor-pointer hover:shadow-lg transition">
@@ -92,6 +92,18 @@ import ServiceCardSkeleton from '@/components/base/ServiceCardSkeleton.vue'
 import type { TabsItem, RadioGroupItem, RadioGroupValue } from '@nuxt/ui'
 import { CalendarDate } from '@internationalized/date'
 import {COMPONENTS} from "~/data/constants";
+
+// Define service type
+interface Service {
+  id: number | string;
+  name: string;
+  image: string;
+  price?: string | number | null;
+  duration?: string;
+  description?: string;
+  extensionOptions?: Array<{label: string, value: string}>;
+  [key: string]: any; // Allow other properties
+}
 
 const menuModule = useMenu();
 // getProducts
