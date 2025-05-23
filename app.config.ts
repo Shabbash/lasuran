@@ -103,6 +103,27 @@ export default defineAppConfig({
         },
 
       ],
+    },
+    progress: {
+
+      slots: {
+        root: '',
+        base: '!h-[4px] bg-white/50',
+        indicator: '!h-[4px]',
+        status: 'flex justify-end text-dimmed transition-[width] duration-200',
+        steps: 'grid items-end',
+        step: 'truncate text-end row-start-1 col-start-1 transition-opacity'
+      },
+
+      variants: {
+
+        color: {
+          primary: {
+            indicator: 'bg-[#AA847B]',
+          },
+        },
+      }
+
     }
   }
 })

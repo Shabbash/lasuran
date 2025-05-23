@@ -8,6 +8,4 @@
   import Container from '@/components/base/Container.vue'
 </script>
 
-<style>
 
-</style>

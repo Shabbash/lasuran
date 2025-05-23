@@ -1,10 +1,10 @@
 <template>
   <UModal v-model:open="show" :ui="{
         overlay: 'bg-black/47',
-        header: 'border-none justify-between p-0 !p-0 inline-block w-auto absolute end-[28px] top-[24px] min-h-auto z-[2]',
-        body: 'border-none w-full p-0 !p-0',
+        header: 'border-none justify-between p-0 !p-0 inline-block w-auto absolute end-[28px] top-[24px] min-h-auto z-[2] ',
+        body: 'border-none w-full p-0 !p-0 bg-decore-modal overflow-y-auto',
         footer: 'justify-end max-w-[473px] w-full mx-auto p-0',
-        content: 'bg-[#EBE4DF] rounded-[30px] max-w-[638px] w-full overflow-hidden'
+        content: `bg-[#EBE4DF] rounded-[30px] ${modalMaxWidth} w-full overflow-hidden`
     }">
     <!-- Close -->
     <template #close>
@@ -34,6 +34,15 @@
 
 <script setup lang="ts">
 const show = defineModel('show');
+
+defineProps({
+  modalMaxWidth: {
+    type: String,
+    default: 'max-w-[638px]'
+  }
+});
+
+
 </script>
 
 <style>
