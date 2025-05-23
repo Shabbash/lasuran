@@ -54,7 +54,22 @@
 }
 
 
+.location::before{
+  content: url('/public/assets/img/location.svg');
+  width: 16px;
+  height: 16px;
+}
+.location-modal::before{
+  content: url('/public/assets/img/location-modal.svg');
+  width: 16px;
+  height: 16px;
+}
 
+.opening-times::before{
+  content: url('/public/assets/img/opening-times.svg');
+  width: 16px;
+  height: 16px;
+}
 
 ::-webkit-scrollbar {
   /* height: 6px; */
