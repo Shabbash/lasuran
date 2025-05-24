@@ -29,6 +29,7 @@ export const useMenu = defineStore("menu", {
            service: {
                data: {},
                item: {},
+               times: [],
                loading: true,
            },
         }
@@ -54,6 +55,9 @@ export const useMenu = defineStore("menu", {
         },
         getServices(state)  {
             return state.services.data ?? [];
+        },
+        getService(state)  {
+            return state.service;
         },
         getMenuParams(state){
             return {
@@ -208,7 +212,24 @@ export const useMenu = defineStore("menu", {
                       console.error('Error fetching service for edit:', err);
                   }
               });
-      }
+        },
+        fetchServiceAvailableTimes(){
+          this.$state.service.loading = true;
+            return useApi(`product-masters/${this.$state.service.data.id}/available-times`, {},
+                {
+                    onSuccess: (data : any) => {
+                    console.log('fetchServiceAvailableTimes', data);
+                    this.$state.service.loading = false;
+                    this.$state.service.times = data.data;
+                    },
+                    onError: (err : any) => {
+                        console.error('Error fetching service for edit:', err);
+                        this.$state.service.loading = false;
+                    }
+                });
+            // api/v1/product-masters/176/available-times
+        }
     },
+
     persist: true,
 });

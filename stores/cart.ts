@@ -246,7 +246,24 @@ export const useCart = defineStore("cart", {
                   console.error("Error removing product:", err);
               }
           });
+      },
+      updateServiceAvailableSlot(payload: any) {
+          this.$state.isAddLoading = true;
+          return useApi(`cart-products/${this.$state.products?.[0]?.cart_product_id}/update-time-slot`, {
+                  method: "POST",
+                  body: payload
+              },
+              {
+                  onSuccess: (data: any) => {
+                      this.$state.isAddLoading = false;
+
+                  },
+                  onError: (err: any) => {
+                      this.$state.isAddLoading = false;
+                  }
+              });
       }
+
     },
     persist: {
         storage: localStorage,
