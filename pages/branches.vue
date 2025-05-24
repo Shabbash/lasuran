@@ -34,7 +34,7 @@
     </div>
 
     <!-- المودال -->
-    <Dialog v-model:open="modalOpen" :modalMaxWidth="'max-w-[490px]'">
+    <Dialog v-model:open="modalOpen" :modalMaxWidth="'max-w-[539px]'">
       <template #body>
         <div v-if="selectedBranch"
           class="bg-decore-modal mx-auto rounded-[30px] overflow-hidden shadow-lg bg-[#EBE4DF] text-[#5F2C3E]">
@@ -58,28 +58,27 @@
               dolore magna aliqua. Ut enim ad ate velit esse cillum dolore eu fugiat nulla pariatur.
             </p>
 
-            <div class="p-[20px] rounded-[20px] bg-[#A0576F] mx-[40px]">
-              <h3 class="opening-times text-white text-[16px] font-medium">Opening Times:</h3>
-              <div class="space-y-3 ">
-                <div v-for="([day, time], index) in Object.entries(openingTimes)" :key="index"
-                  class="flex justify-between">
-                  <h4 class="font-medium text-[#5F2C3E]">{{ day }}</h4>
-                  <div class="text-[#5F2C3E]">
-                    <span>{{ time.from }}</span>
-                    <span class="mx-2">-</span>
-                    <span>{{ time.to }}</span>
+            <div class="mx-[40px] mt-[30px]">
+              <div class="p-[20px] rounded-[20px] bg-[#A0576F]">
+                <h3 class="opening-times text-white text-[16px] font-medium flex items-center gap-[10px] mb-[15px]">
+                  Opening Times:</h3>
+                <div class="space-y-3 ">
+                  <div v-for="([day, time], index) in Object.entries(openingTimes)" :key="index"
+                    class="flex justify-between">
+                    <h4 class="text-white text-[16px] font-[350]">{{ day }}</h4>
+                    <div class="text-[#81F6D0] text-[16px] font-[350]">
+                      <span>{{ time.from }}</span>
+                      <span class="mx-2">-</span>
+                      <span>{{ time.to }}</span>
+                    </div>
                   </div>
                 </div>
+
               </div>
 
+              <BaseButton label="Get Directions"
+                class="location-btn bg-[#A0576F] text-white rounded-[100px] w-full h-[50px] py-0 justify-center text-[16px] font-normal leading-[100%] tracking-[0] border border-[#A0576F] hover:bg-[#913E5D] transition cursor-pointer mt-[30px]" />
             </div>
-
-            <button @click="modalOpen = false"
-              class="bg-[#A0576F] text-white rounded-full w-full py-3 font-[600] text-[16px] mt-[20px]">
-              إغلاق
-            </button>
-
-            
           </div>
         </div>
       </template>

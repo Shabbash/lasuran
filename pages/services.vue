@@ -22,6 +22,7 @@
         </template>
       </BaseCard>
     </div>
+    
     <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-[30px]">
       <ServiceCardSkeleton v-for="i in 8" :key="i" />
     </div>
@@ -33,7 +34,8 @@
           <!-- service details start -->
 
 
-         <img class="w-full h-[200px] object-cover rounded-[30px]" :src="selectedService.image" :alt="selectedService.title" />
+          <img class="w-full h-[200px] object-cover rounded-[30px]" :src="selectedService.image"
+            :alt="selectedService.title" />
 
           <div class="mx-[20px] mt-[20px] mb-[40px] relative">
             <div class="flex justify-between items-center mb-2">
@@ -59,7 +61,8 @@
 
               <div>
                 <p class="font-medium text-[17px] text-[#A0576F] mb-[25px]">Guests</p>
-                <div class="text-center text-[14px] font-normal leading-normal text-[#6B8B9B] h-[42px] px-[20px] rounded-[100px] bg-[#BBCACF] flex items-center justify-between gap-[14px] min-w-[170px] mb-[18px]">
+                <div
+                  class="text-center text-[14px] font-normal leading-normal text-[#6B8B9B] h-[42px] px-[20px] rounded-[100px] bg-[#BBCACF] flex items-center justify-between gap-[14px] min-w-[170px] mb-[18px]">
                   <span>Yassmin Ahmed</span>
                   <span class="close-tag"></span>
                 </div>
@@ -70,8 +73,7 @@
               </div>
             </div>
 
-            <button
-              :disabled="selectedExtension === ''"
+            <button :disabled="selectedExtension === ''"
               class="cart-btn flex align-center gap-[24px] w-full text-white py-3 rounded-full font-[600] text-[16px] justify-center mt-[35px]"
               :class="selectedExtension === '' ? 'bg-[#a0576f69]' : 'bg-[#A0576F]'">
               <span>{{ selectedExtension === '' ? '' : selectedService.price + ' SAR - ' }}Continue</span>
@@ -83,6 +85,7 @@
     </Dialog>
   </Container>
 </template>
+
 <script setup lang="ts">
 import Container from '@/components/base/Container.vue'
 import BaseCard from '@/components/base/Card.vue'
@@ -91,7 +94,7 @@ import CustomRadio from '@/components/base/CustomRadio.vue'
 import ServiceCardSkeleton from '@/components/base/ServiceCardSkeleton.vue'
 import type { TabsItem, RadioGroupItem, RadioGroupValue } from '@nuxt/ui'
 import { CalendarDate } from '@internationalized/date'
-import {COMPONENTS} from "~/data/constants";
+import { COMPONENTS } from "~/data/constants";
 
 // Define service type
 interface Service {
@@ -101,7 +104,7 @@ interface Service {
   price?: string | number | null;
   duration?: string;
   description?: string;
-  extensionOptions?: Array<{label: string, value: string}>;
+  extensionOptions?: Array<{ label: string, value: string }>;
   [key: string]: any; // Allow other properties
 }
 
@@ -200,7 +203,7 @@ const selectedExtension = ref<RadioGroupValue>('')
 
 const modalOpen = ref(false)
 
-const { setDialogShow , setDialogComponent } = useApp();
+const { setDialogShow, setDialogComponent } = useApp();
 
 
 function openModal(service: any) {
@@ -245,9 +248,6 @@ const filters = ref({
 </script>
 
 <style scoped>
-
-
-
 /*
 .main-category>.bg-primary,
 .sub-category>.bg-primary {

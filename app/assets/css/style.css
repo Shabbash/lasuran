@@ -71,6 +71,12 @@
   height: 16px;
 }
 
+.location-btn::before{
+  content: url('/assets/img/location-btn.svg');
+  width: 26px;
+  height: 26px;
+}
+
 ::-webkit-scrollbar {
   /* height: 6px; */
   width: 4px;
