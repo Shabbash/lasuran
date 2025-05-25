@@ -17,8 +17,8 @@
                                         <img class="h-[118px] w-full object-cover" :src="item.image_url" />
                                     </div>
                                     <div class="px-[10px] pt-[10px] pb-[18px]">
-                                        <h2 class="">{{ item.title }}</h2>
-                                        <h3 class="">{{ item.sub_title }}</h3>
+                                        <h2 class="text-[#A0566E] text-[14px] font-[350] leading-normal">{{ item.title }}</h2>
+                                        <h3 class="text-[#A0566E] text-[12px] font-normal leading-normal tracking-[-0.241px]">{{ item.sub_title }}</h3>
                                     </div>
                                 </div>
 

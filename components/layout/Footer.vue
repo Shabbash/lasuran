@@ -31,7 +31,7 @@
                     </li>
                     <li>
                         <a href="#">
-                            <img src="/public/assets/img/instagram.svg" alt="">
+                            <img src="/public/assets/img/Instagram.svg" alt="">
                         </a>
                     </li>
                     <li>

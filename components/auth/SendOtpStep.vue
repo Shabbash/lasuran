@@ -14,8 +14,14 @@
         <span class="text-[#A0576F] font-medium">+966</span>
       </div>
       <div class="mx-[18px] border-l border-[#BBCACF]"></div>
-      <input type="text" placeholder="50 XXXX XXXX" v-model="form.mobile_number"
+      <!-- <input type="text" placeholder="50 XXXX XXXX" v-model="form.mobile_number"
+        class="flex-1 outline-none bg-transparent text-[#5B605C] placeholder:text-[#D3C9C5] text-[16px]" /> -->
+
+      <input type="text" inputmode="numeric" pattern="[0-9]*" maxlength="11" v-model="form.mobile_number"
+        @input="formatMobileNumber" placeholder="50 XXXX XXXX"
         class="flex-1 outline-none bg-transparent text-[#5B605C] placeholder:text-[#D3C9C5] text-[16px]" />
+
+
     </div>
 
     <div class="flex items-center gap-[10px] mt-[20px]">
@@ -68,14 +74,35 @@ const continueAsGuest = function () {
 const toast = useToast();
 const onContinueClick = function () {
   if (!form.value.mobile_number) {
-    toast.add({ title:"Please Enter Valid Mobile Number!", color: 'error' });
+    toast.add({ title: "Please Enter Valid Mobile Number!", color: 'error' });
     return;
   }
 
+
   if (!form.value.accept_terms) {
-    toast.add({ title:"You must accept the Terms and Conditions before you can proceed.", color: 'error' });
+    toast.add({ title: "You must accept the Terms and Conditions before you can proceed.", color: 'error' });
     return;
   }
   authModule.sendOtp(form.value);
 }
+
+
+
+const formatMobileNumber = (e: Event) => {
+  let raw = (e.target as HTMLInputElement).value;
+
+  raw = raw.replace(/\D/g, '').slice(0, 9);
+
+  let formatted = '';
+  if (raw.length <= 2) {
+    formatted = raw;
+  } else if (raw.length <= 6) {
+    formatted = `${raw.slice(0, 2)} ${raw.slice(2)}`;
+  } else {
+    formatted = `${raw.slice(0, 2)} ${raw.slice(2, 6)} ${raw.slice(6)}`;
+  }
+
+  form.value.mobile_number = formatted;
+};
+
 </script>

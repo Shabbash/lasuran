@@ -24,11 +24,20 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-y-[20px] text-[#A0576F] text-sm my-[40px]">
+        <!-- <div class="grid grid-cols-2 gap-y-[20px] text-[#A0576F] text-sm my-[40px]">
           <div v-for="(item, index) in menuItems" :key="index" class="flex items-center gap-2 cursor-pointer">
             <img :src="item.image_url" />
-            <span class="text-[#A0576F] font-[350] text-[15.63px] leading-[100%] tracking-[0]">{{ item.label }}</span>
+            <span class="text-[#A0576F] font-[350] text-[15px] leading-[100%] tracking-[0]">{{ item.label }}</span>
           </div>
+        </div> -->
+        <div class="grid grid-cols-2 gap-y-[20px] text-[#A0576F] text-sm my-[40px]">
+
+          <NuxtLink v-for="(item, index) in menuItems" :key="index" :to="item.route"
+            class="flex items-center gap-2 cursor-pointer hover:opacity-70 transition">
+            <img :src="item.image_url" class="w-[20px] h-[20px]" />
+            <span class="text-[#A0576F] font-[350] text-[15px]">{{ item.label }}</span>
+          </NuxtLink>
+
         </div>
       </div>
 
@@ -57,16 +66,17 @@ const logout = function () {
 }
 
 const menuItems = [
-  { label: "My Profile", image_url: "/assets/img/menu-icons/Layer.svg" },
-  { label: "Branches", image_url: "/assets/img/menu-icons/Group.svg" },
-  { label: "My Bookings", image_url: "/assets/img/menu-icons/Frame-5.svg" },
-  { label: "Customer Service", image_url: "/assets/img/menu-icons/Group-1.svg" },
-  { label: "My Wallet", image_url: "/assets/img/menu-icons/Frame-1.svg" },
-  { label: "Invite Friends", image_url: "/assets/img/menu-icons/Frame-3.svg" },
-  { label: "My Gift Cards", image_url: "/assets/img/menu-icons/svgexport-17.svg" },
-  { label: "العربية", image_url: "/assets/img/menu-icons/Frame-4.svg" },
-  { label: "My Tickets", image_url: "/assets/img/menu-icons/Frame-2.svg" },
-  { label: "Terms & Conditions", image_url: "/assets/img/menu-icons/vector.svg" },
-  { label: "Privacy Policy", image_url: "/assets/img/menu-icons/Layer_1.svg" }
+  { label: "My Profile", image_url: "/assets/img/menu-icons/Layer.svg", route: "/dashboard" },
+  { label: "Branches", image_url: "/assets/img/menu-icons/Group.svg", route: "/branches" },
+  { label: "My Bookings", image_url: "/assets/img/menu-icons/Frame-5.svg", route: "/dashboard" },
+  { label: "Customer Service", image_url: "/assets/img/menu-icons/Group-1.svg", route: "/support" },
+  { label: "My Wallet", image_url: "/assets/img/menu-icons/Frame-1.svg", route: "/dashboard" },
+  { label: "Invite Friends", image_url: "/assets/img/menu-icons/Frame-3.svg", route: "/invite" },
+  { label: "My Gift Cards", image_url: "/assets/img/menu-icons/svgexport-17.svg", route: "/gift-cards" },
+  { label: "العربية", image_url: "/assets/img/menu-icons/Frame-4.svg", route: "/" }, //
+  { label: "My Tickets", image_url: "/assets/img/menu-icons/Frame-2.svg", route: "/dashboard" },
+  { label: "Terms & Conditions", image_url: "/assets/img/menu-icons/vector.svg", route: "/terms" },
+  { label: "Privacy Policy", image_url: "/assets/img/menu-icons/Layer_1.svg", route: "/privacy" }
 ]
+
 </script>
