@@ -1,6 +1,6 @@
 <template>
   <Container>
-    <Banner :opacity="false" />
+    <Banner :opacity="false" :bannerContent="bannerContent" />
 
     <!-- اختيار المدينة -->
     <USelectMenu v-model="filters.city" :items="cityOptions" placeholder="Select City"
@@ -16,7 +16,7 @@
               <img :src="branch.image" alt="Branch Image" class="w-full h-full object-cover" />
             </div>
             <div class="px-[6px]">
-              <h3 class="text-[#A0576F] text-[14.521px] font-medium leading-normal mb-[10px]">
+              <h3 class="text-[#A0576F] text-[14px] font-medium leading-normal mb-[10px]">
                 {{ branch.name }}
               </h3>
               <p class="location flex text-[#5B605C] text-[12px] font-[350] gap-[4px]">
@@ -156,4 +156,13 @@ function openBranchDialog(branch: typeof allBranches['Jeddah'][0]) {
   selectedBranch.value = branch
   modalOpen.value = true
 }
+
+
+const bannerContent = {
+  image: "/assets/img/branches-banner.svg",
+  subtitle: "Explore Our",
+  title: "Branches"
+}
+
+
 </script>

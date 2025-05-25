@@ -15,20 +15,13 @@
     </div>
 </template>
 
-
-
-
 <script lang="ts" setup>
-const props = defineProps({
-    opacity: {
-        type: Boolean,
-        default: false,
-    },
-})
-
-const bannerContent = {
-    image: "/assets/img/branches-banner.svg",
-    subtitle: "Explore Our",
-    title: "Branches"
-}
+const props = defineProps<{
+    opacity?: boolean,
+    bannerContent: {
+        image: string,
+        subtitle: string,
+        title: string
+    }
+}>()
 </script>

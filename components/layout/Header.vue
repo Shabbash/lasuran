@@ -25,7 +25,7 @@
                         Branches</NuxtLink>
                 </li>
                 <li>
-                    <NuxtLink to="/contact"
+                    <NuxtLink to="/contact-us"
                         class="font-medium py-[11px] px-[35px] text-[17px] leading-[1.03] tracking-normal text-[#EBE4DF] capitalize">
                         Contact Us</NuxtLink>
                 </li>
