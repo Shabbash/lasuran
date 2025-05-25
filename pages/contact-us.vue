@@ -26,19 +26,19 @@
 
           <USelectMenu v-model="contactForm.feedback" :items="feedbackOptions" valueKey="id" labelKey="name"
             placeholder="Select Feedback"
-            class="w-full rounded-[23px] border border-[#A0576F] bg-transparent h-[59px] text-[#90928F] text-[16px] font-[400] leading-normal ps-[28px]"
+            class="w-full rounded-[23px] border border-[#A0576F] bg-transparent h-[59px] text-[#90928F] text-[16px] font-[400] leading-normal ps-[28px] mb-[20px]"
             :ui="{
               placeholder: 'text-[#90928F] text-[16px] font-[400] leading-normal'
             }" />
 
           <UInput v-model="value"
-            class="w-full rounded-[23px] border border-[#A0576F] bg-transparent h-[59px] text-[#90928F] text-[16px] font-[400] leading-normal ps-[28px]"
+            class="w-full rounded-[23px] border border-[#A0576F] bg-transparent h-[59px] text-[#90928F] text-[16px] font-[400] leading-normal ps-[28px] mb-[20px]"
             :ui="{
               base: ['w-full h-full p-0 bg-transparent border-0 outline-none shadow-none text-[#90928F] text-[16px] font-normal leading-normal ring-0 ring-transparent focus-visible:ring-none']
             }" />
 
           <UTextarea v-model="value"
-            class="w-full rounded-[23px] border border-[#A0576F] bg-transparent h-[170px] text-[#90928F] text-[16px] font-[400] leading-normal ps-[28px]"
+            class="w-full rounded-[23px] border border-[#A0576F] bg-transparent h-[170px] text-[#90928F] text-[16px] font-[400] leading-normal ps-[28px] mb-[20px]"
             :ui="{
               base: ['resize-none w-full h-full p-0 bg-transparent border-0 outline-none shadow-none text-[#90928F] text-[16px] font-normal leading-normal ring-0 ring-transparent focus-visible:ring-none']
             }" />

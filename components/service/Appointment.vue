@@ -41,25 +41,26 @@
       <div class="">
         <h3 class="text-[17px] font-normal leading-normal text-[#A0576F] mb-[12px]">Availabe Time</h3>
          <SelectableSlider  v-model="form.time" :items="selectedDateObject?.slots ?? []" value-key="from" label-key="from" />
-<!--                  <URadioGroup v-model="selectedTime" orientation="horizontal" indicator="hidden" variant="card"-->
-<!--                    :items="times" class="flex gap-4 flex-wrap" :ui="{-->
-<!--                      root: 'relative block time-group',-->
-<!--                      fieldset: 'flex justify-between',-->
-<!--                      legend: 'mb-1 block font-medium text-default',-->
-<!--                      item: 'flex items-start bg-[#E6CDC7A3] rounded-[52px] border-0 flex justify-center items-center px-[19px] py-[14px] text-center text-[15px] font-normal leading-normal has-data-[state=checked]:bg-[#A0576F] has-data-[state=checked]:text-[#EBE4DF]',-->
-<!--                      container: 'flex items-center',-->
-<!--                      base: 'rounded-full ring ring-inset ring-accented overflow-hidden focus-visible:outline-2 focus-visible:outline-offset-2',-->
-<!--                      indicator: 'flex items-center justify-center size-full after:bg-default after:rounded-full',-->
-<!--                      wrapper: 'w-full',-->
-<!--                      label: 'block font-medium text-[#A0576F]',-->
-<!--                      description: 'text-muted',-->
-<!--                    }" />-->
+         
+                 <!-- <URadioGroup v-model="selectedTime" orientation="horizontal" indicator="hidden" variant="card"
+                   :items="times" class="flex gap-4 flex-wrap" :ui="{
+                     root: 'relative block time-group',
+                     fieldset: 'flex justify-between',
+                     legend: 'mb-1 block font-medium text-default',
+                     item: 'flex items-start bg-[#E6CDC7A3] rounded-[52px] border-0 flex justify-center items-center px-[19px] py-[14px] text-center text-[15px] font-normal leading-normal has-data-[state=checked]:bg-[#A0576F] has-data-[state=checked]:text-[#EBE4DF]',
+                     container: 'flex items-center',
+                     base: 'rounded-full ring ring-inset ring-accented overflow-hidden focus-visible:outline-2 focus-visible:outline-offset-2',
+                     indicator: 'flex items-center justify-center size-full after:bg-default after:rounded-full',
+                     wrapper: 'w-full',
+                     label: 'block font-medium text-[#A0576F]',
+                     description: 'text-muted',
+                   }" />  -->
 
 
       </div>
 
       <BaseButton @click="addToCart" :loading="cartModule.isAddLoading" :disabled="selectedExtension === ''"
-              class="cart-btn flex align-center gap-[24px] w-full text-white py-3 rounded-full font-[600] text-[16px] justify-center mt-[35px]"
+              class="cart-btn flex align-center gap-[24px] w-full text-white py-3 rounded-full font-[600] text-[16px] justify-center mt-[35px] disabled:bg-[#A0576F] hover:bg-[#913E5D]"
               :class="selectedExtension === '' ? 'bg-[#a0576f69]' : 'bg-[#A0576F]'">
         <span>{{ selectedExtension === '' ? '' : selectedService.price + ' SAR - ' }}Continue</span>
       </BaseButton>

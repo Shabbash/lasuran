@@ -5,7 +5,7 @@
   }">
     <slot :item="item">
       <UBadge @click="selectItem(item)"
-        :class="{ 'font-bold rounded-full': true, 'active': (getItem(item, 'value') == selectedValue) }">
+        :class="{ 'font-medium rounded-full bg-[#E6CDC7A3] text-[#A0576F] px-[19px] py-[14px] cursor-pointer': true, 'active text-[#EBE4DF] bg-[#A0576F]': (getItem(item, 'value') == selectedValue) }">
         {{ getItem(item) }}
       </UBadge>
     </slot>
