@@ -78,13 +78,19 @@ const onContinueClick = function () {
     return;
   }
 
-
   if (!form.value.accept_terms) {
     toast.add({ title: "You must accept the Terms and Conditions before you can proceed.", color: 'error' });
     return;
   }
-  authModule.sendOtp(form.value);
-}
+
+  const cleanedForm = {
+    ...form.value,
+    mobile_number: form.value.mobile_number.replace(/\s/g, '')
+  };
+
+  authModule.sendOtp(cleanedForm);
+};
+
 
 
 
