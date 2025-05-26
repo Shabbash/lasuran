@@ -46,9 +46,9 @@
         <UCheckbox v-model="accepted" />
         <span>Accept terms and conditions</span>
       </div>
-      <UButton class="cart-btn flex align-center gap-[24px] w-full text-white py-3 rounded-full font-[600] text-[16px] justify-center bg-[#A0576F] hover:bg-[#913E5D] mt-[35px] disabled:bg-[#A0576F]" :disabled="!accepted || servicesCount === 0">
+      <BaseButton :loading="cartModule.isOrderLoading" @click="proceedToCheckout" class="cart-btn flex align-center gap-[24px] w-full text-white py-3 rounded-full font-[600] text-[16px] justify-center bg-[#A0576F] hover:bg-[#913E5D] mt-[35px] disabled:bg-[#A0576F]" :disabled="!accepted || servicesCount === 0">
         {{ total.toFixed(2) }} SAR - Checkout
-      </UButton>
+      </BaseButton>
 
     </div>
   </div>
@@ -56,6 +56,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import {COMPONENTS} from "~/data/constants";
 
 const props = defineProps<{
   servicesCount: number
@@ -71,6 +72,20 @@ const vat = computed(() => props.vat !== undefined ? props.vat : props.subtotal 
 const discount = computed(() => props.discount || 0)
 const serviceCost = computed(() => props.serviceCost || 0)
 const total = computed(() => props.total !== undefined ? props.total : props.subtotal + vat.value - discount.value + serviceCost.value)
+
+const cartModule = useCart();
+const appModule = useApp();
+const proceedToCheckout = function () {
+  if (cartModule.getPaymentMethods.length > 0 ){
+    appModule.setDialogComponent(COMPONENTS.PAYMENT_SELECTION);
+    appModule.setDialogShow(true);
+  } else  {
+    cartModule.setPaymentMethod(cartModule.getPaymentMethods?.[0]?.id);
+    cartModule.createOrder({} , (data: any) => {
+      appModule.setDialogComponent(COMPONENTS.PAYMENT_CREATE_CARD)
+    })
+  }
+}
 
 const accepted = ref(false)
 </script>

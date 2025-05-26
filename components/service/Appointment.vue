@@ -200,18 +200,21 @@ const times = [
 
 const selectedTime = ref('21:30')
 
-
+const toast = useToast();
 const addToCart = function(){
   if ( reserveOption.value)
     setDialogComponent(COMPONENTS.SERVICE_GUEST);
   else {
     let time = getCurrentTime();
+    if (!time) return toast.add({title: "select date and time!",color:'error'})
     let body =  {
       start_at: time?.from_date_time,
       end_at: time?.to_date_time,
     }
     console.log('selectedDateObject.value.slots ',selectedDateObject.value.slots ,body)
-    cartModule.updateServiceAvailableSlot(body)
+    cartModule.updateServiceAvailableSlot(body).then((availableSlots) => {
+      setDialogComponent(COMPONENTS.SERVICE_SUCCESS);
+    })
     // setDialogComponent(COMPONENTS.SERVICE_SUCCESS);
 
   }

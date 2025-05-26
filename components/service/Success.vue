@@ -12,7 +12,7 @@
      <h2 class="text-[#A0576F] text-center text-[20px] font-bold leading-normal mt-[38px]">Reservation Added to Cart</h2>
 
      <button @click="onHomeClick" class="bg-[#A0576F] flex align-center gap-[24px] w-full text-[#EBE4DF] py-3 rounded-full font-[400] text-[20px] justify-center mt-[90px]">
-       <span>Home</span>
+       <span>Cart</span>
      </button>
    </div>
     <!-- success end -->
@@ -27,7 +27,7 @@ const { setDialogShow , setDialogComponent} = useApp();
 const onHomeClick = function () {
   setDialogShow(false);
   navigateTo({
-    path: "/",
+    path: "/cart",
   })
   // setDialogComponent(COMPONENTS.SERVICE_SHOW)
 }

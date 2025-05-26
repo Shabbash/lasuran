@@ -23,6 +23,10 @@ export const COMPONENTS = {
     SERVICE_GUEST: "ServiceGuest",
     SERVICE_APPOINTMENT: "ServiceAppointment",
     SERVICE_SUCCESS: "ServiceSuccess",
+    PAYMENT_SELECTION: "PaymentSelection",
+    PAYMENT_CARDS: "PaymentCards",
+    PAYMENT_CREATE_CARD: "PaymentCreateCard",
+    PAYMENT_LOADING: "PaymentLoading",
 }
 
 export default { 

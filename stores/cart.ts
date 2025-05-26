@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { useMenu } from "./menu";
 import { useApi } from "../composables/useApi";
+import {COMPONENTS} from "~/data/constants";
 
 export const useCart = defineStore("cart", {
     state: () => {
@@ -20,7 +21,18 @@ export const useCart = defineStore("cart", {
             vat: 0,
             discount: 0,
             service_cost: 0,
-            total: 0
+            total: 0,
+            payment_method_id: null,
+            order: {
+              loading: true,
+              data: {}
+            },
+            payment: {},
+            confirmation_message: {},
+            saved_cards: [],
+            attempt: 20,
+            paymentWindow: null,
+            paymentInterval: null,
         }
     },
     getters: {
@@ -47,9 +59,21 @@ export const useCart = defineStore("cart", {
         },
         getTotal(state) {
             return state.total;
+        },
+        getPaymentMethods(state) {
+            return state.payment_methods ?? [];
+        },
+        getSavedCards(state) {
+            return state.saved_cards ?? [];
+        },
+        isOrderLoading(state) {
+            return state.order.loading;
         }
     },
     actions: {
+      setPaymentMethod(paymentMethod: any) {
+          this.$state.payment_method_id = paymentMethod;
+      },
       fetchCart() {
           this.$state.isLoading = true;
           return useApi(`cart`, {
@@ -262,9 +286,89 @@ export const useCart = defineStore("cart", {
                       this.$state.isAddLoading = false;
                   }
               });
-      }
+      },
+      createOrder(payload: any , onSuccess: Function = () => {}) {
+          this.$state.order.loading = true;
+          return useApi(`orders`, {
+                  method: "POST",
+                  body: {
+                      payment_method_id : this.$state.payment_method_id,
+                      is_scheduled: 0
+                  }
+              },
+              {
+                  onSuccess: (data: any) => {
+                      this.$state.order.loading = false;
+                      this.$state.order.data = data.data.order;
+                      this.$state.payment = data.data.payment;
+                      this.$state.confirmation_message = data.data.confirmation_message;
+                      this.$state.saved_cards = data.data.saved_cards ?? [];
+                      onSuccess(data);
+                      this.openPaymentPopup();
+                  },
+                  onError: (err: any) => {
+                      this.$state.order.loading = false;
+                  }
+              });
+      },
 
+      openPaymentPopup(payload: any) {
+          let url = this.$state.payment?.create_token_url?.url;
+          if (!url) return;
+          const appModule = useApp();
+          appModule.setDialogComponent(COMPONENTS.PAYMENT_LOADING);
+          appModule.setDialogShow(true);
+
+
+          this.$state.paymentWindow = window.open(
+              url,
+              'PaymentPopup',
+              'width=600,height=700'
+          );
+
+        this.$state.paymentInterval = setInterval(this.checkPaymentStatus,3000);
+          window.addEventListener('message', function(event) {
+              console.log('EVENT', event)
+
+              // paymentWindow.close();
+          }, false);
+      },
+        async checkPaymentStatus() {
+            const appModule = useApp();
+            try {
+                const { data } = await useApi(`payments/check-payment-status`, {
+                    method: "POST",
+                    body: {
+                        merchant_reference: this.$state.order.data?.order_number,
+                    }
+                },
+                    {
+                    onSuccess: (data: any) => {
+                        const payload = data.data;
+                        console.log('onSuccess', payload);
+                        if (payload?.success === "pending" && this.$state.attempt > 0) {
+                            this.$state.attempt--;
+                            // setTimeout(() => this.checkPaymentStatus(), 2000);
+                        } else if (payload?.success === true) {
+                            this.fetchCart();
+                            const toast = useToast();
+                            toast.add({ title: this.$state.confirmation_message?.message_1, color: 'success' });
+                            appModule.setDialogComponent(COMPONENTS.AUTH_WIZARD);
+                            appModule.setDialogShow(false);
+
+                            clearInterval(this.$state.paymentInterval);
+                            if (this.$state.paymentWindow) this.$state.paymentWindow.close();
+                        }
+                    }
+                });
+
+
+            } catch (err) {
+                console.error("Error checking payment status:", err);
+            }
+        }
     },
+
     persist: {
         storage: localStorage,
     },
