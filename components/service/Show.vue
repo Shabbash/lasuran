@@ -61,7 +61,7 @@
 
 import { CalendarDate } from "@internationalized/date";
 import CustomRadio from "~/components/base/CustomRadio.vue";
-import ServiceDetailSkeleton from "~/components/base/ServiceDetailSkeleton.vue";
+import ServiceDetailSkeleton from "~/components/service/ServiceDetailSkeleton.vue";
 import {COMPONENTS} from "~/data/constants";
 
 // Define service type

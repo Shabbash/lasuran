@@ -91,10 +91,12 @@ import Container from '@/components/base/Container.vue'
 import BaseCard from '@/components/base/Card.vue'
 import Dialog from '@/components/base/Dialog.vue'
 import CustomRadio from '@/components/base/CustomRadio.vue'
-import ServiceCardSkeleton from '@/components/base/ServiceCardSkeleton.vue'
+import ServiceCardSkeleton from '~/components/service/ServiceCardSkeleton.vue'
 import type { TabsItem, RadioGroupItem, RadioGroupValue } from '@nuxt/ui'
 import { CalendarDate } from '@internationalized/date'
 import { COMPONENTS } from "~/data/constants";
+
+
 
 // Define service type
 interface Service {
