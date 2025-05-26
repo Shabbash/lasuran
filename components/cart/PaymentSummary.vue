@@ -76,7 +76,7 @@ const total = computed(() => props.total !== undefined ? props.total : props.sub
 const cartModule = useCart();
 const appModule = useApp();
 const proceedToCheckout = function () {
-  if (cartModule.getPaymentMethods.length > 0 ){
+  if (cartModule.getPaymentMethods.length > 1 ){
     appModule.setDialogComponent(COMPONENTS.PAYMENT_SELECTION);
     appModule.setDialogShow(true);
   } else  {
