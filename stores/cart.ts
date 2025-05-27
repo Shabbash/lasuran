@@ -1,7 +1,6 @@
 import { defineStore } from "pinia";
 import { useMenu } from "./menu";
 import { useApi } from "../composables/useApi";
-import {COMPONENTS} from "~/data/constants";
 
 export const useCart = defineStore("cart", {
     state: () => {
@@ -27,12 +26,12 @@ export const useCart = defineStore("cart", {
               loading: true,
               data: {}
             },
-            payment: {},
-            confirmation_message: {},
+            payment: {} as any,
+            confirmation_message: {} as any,
             saved_cards: [],
-            attempt: 20,
-            paymentWindow: null,
-            paymentInterval: null,
+            paymentAttempts: 20,
+            paymentWindow: null as any,
+            paymentInterval: null as any,
         }
     },
     getters: {
@@ -295,7 +294,7 @@ export const useCart = defineStore("cart", {
                   }
               });
       },
-      createOrder(payload: any , onSuccess: Function = () => {}) {
+      createOrder(payload: any = {}, onSuccess: Function = () => {}, onError: Function = () => {}) {
           this.$state.order.loading = true;
           return useApi(`orders`, {
                   method: "POST",
@@ -316,30 +315,40 @@ export const useCart = defineStore("cart", {
                   },
                   onError: (err: any) => {
                       this.$state.order.loading = false;
+                      console.error('Order creation failed:', err);
+                      onError(err);
                   }
               });
       },
 
-      openPaymentPopup(payload: any) {
-          let url = this.$state.payment?.create_token_url?.url;
-          if (!url) return;
-          const appModule = useApp();
-          appModule.setDialogComponent(COMPONENTS.PAYMENT_LOADING);
-          appModule.setDialogShow(true);
+      openPaymentPopup(payload: any = {}) {
+          const url = this.$state.payment?.create_token_url?.url;
+          if (!url) {
+              console.error('Payment URL not available');
+              return;
+          }
 
+          // Reset payment attempts
+          this.$state.paymentAttempts = 20;
 
+          // Open payment window
           this.$state.paymentWindow = window.open(
               url,
               'PaymentPopup',
-              'width=600,height=700'
+              'width=600,height=700,scrollbars=yes,resizable=yes'
           );
 
-        this.$state.paymentInterval = setInterval(this.checkPaymentStatus,3000);
-          window.addEventListener('message', function(event) {
-              console.log('EVENT', event)
+          if (!this.$state.paymentWindow) {
+              console.error('Failed to open payment window. Please check popup blocker settings.');
+              return;
+          }
 
-              // paymentWindow.close();
-          }, false);
+          // Start checking payment status every 3 seconds
+          this.$state.paymentInterval = setInterval(this.checkPaymentStatus,3000);
+
+
+
+          console.log('Payment window opened successfully, status checking started');
       },
         async checkPaymentStatus() {
             const appModule = useApp();
@@ -354,22 +363,36 @@ export const useCart = defineStore("cart", {
                     onSuccess: (data: any) => {
                         const payload = data.data;
                         console.log('onSuccess', payload);
-                        if (payload?.success === "pending" && this.$state.attempt > 0) {
-                            this.$state.attempt--;
-                            // setTimeout(() => this.checkPaymentStatus(), 2000);
+                        if (payload?.success === "pending" && this.$state.paymentAttempts > 0) {
+                            this.$state.paymentAttempts--;
+                            // Continue checking - interval will call this method again
                         } else if (payload?.success === true) {
                             this.fetchCart();
                             const toast = useToast();
                             toast.add({ title: this.$state.confirmation_message?.message_1, color: 'success' });
-                            appModule.setDialogComponent(COMPONENTS.AUTH_WIZARD);
+
+                            // Close all modals and dialogs
                             appModule.setDialogShow(false);
 
-                            clearInterval(this.$state.paymentInterval);
-                            if (this.$state.paymentWindow) this.$state.paymentWindow.close();
+                            // Stop payment checking and close window
+                            if (this.$state.paymentInterval) {
+                                clearInterval(this.$state.paymentInterval);
+                                this.$state.paymentInterval = null;
+                            }
+                            if (this.$state.paymentWindow) {
+                                this.$state.paymentWindow.close();
+                                this.$state.paymentWindow = null;
+                            }
+                        } else {
+                            // Payment failed or unknown status
+                            console.log('Payment failed or unknown status:', payload);
+                            if (this.$state.paymentInterval) {
+                                clearInterval(this.$state.paymentInterval);
+                                this.$state.paymentInterval = null;
+                            }
                         }
                     }
                 });
-
 
             } catch (err) {
                 console.error("Error checking payment status:", err);
