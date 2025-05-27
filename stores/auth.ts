@@ -152,6 +152,8 @@ export const useAuth = defineStore("auth", {
 
             // Clear token from localStorage and cookies
             this.clearToken();
+
+        navigateTo('/');
         },
         setStepComponent(step: any) {
             this.$state.step = step;
