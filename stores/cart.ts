@@ -74,6 +74,14 @@ export const useCart = defineStore("cart", {
       setPaymentMethod(paymentMethod: any) {
           this.$state.payment_method_id = paymentMethod;
       },
+      // Reset loading states manually (useful for debugging or error recovery)
+      resetLoadingStates() {
+          this.$state.isAddLoading = false;
+          this.$state.isLoading = false;
+          this.$state.isRemoving = false;
+          this.$state.isEmptying = false;
+          this.$state.order.loading = false;
+      },
       fetchCart() {
           this.$state.isLoading = true;
           return useApi(`cart`, {
@@ -371,5 +379,7 @@ export const useCart = defineStore("cart", {
 
     persist: {
         storage: localStorage,
+        // Exclude loading states from persistence to prevent stuck loading spinners
+        paths: ['products', 'loyalty_points', 'payment_methods', 'working_times', 'title', 'sub_title', 'message', 'subtotal', 'vat', 'discount', 'service_cost', 'total', 'payment_method_id', 'order.data', 'payment', 'confirmation_message', 'saved_cards']
     },
 });

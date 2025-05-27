@@ -152,7 +152,22 @@ export const useMenu = defineStore("menu", {
           return  useApi(`products/${service.id}`, {},
               {
                   onSuccess: (data : any) => {
-                      this.$state.service.data = data.data;
+                      // Clean the API response to ensure no stale editing flags
+                      const cleanedData = {
+                          ...data.data,
+                          _isEditing: undefined,
+                          is_editing: undefined,
+                          cart_product_id: undefined
+                      };
+
+                      // Remove undefined properties
+                      Object.keys(cleanedData).forEach(key => {
+                          if (cleanedData[key] === undefined) {
+                              delete cleanedData[key];
+                          }
+                      });
+
+                      this.$state.service.data = cleanedData;
                       this.$state.service.loading = false;
                   },
                   onError: (err : any) => {
@@ -166,12 +181,25 @@ export const useMenu = defineStore("menu", {
       setDefaultSubCategory() {
           this.$state.sub_category_id = (this.getSubCategories ?? [])?.[0]?.id;
       },
-      setService(service :any) {
-          console.log('Setting service in menu store:', service);
+      // Clear service state to prevent stale editing data
+      clearServiceState() {
+          this.$state.service = {
+              data: {},
+              item: {},
+              times: [],
+              loading: true,
+          };
+      },
 
+      setService(service :any) {
           // Store the editing state and cart_product_id
           const isEditing = service._isEditing === true;
           const cartProductId = service.cart_product_id;
+
+          // Clear any previous service state first to prevent stale data
+          if (!isEditing || !cartProductId) {
+              this.clearServiceState();
+          }
 
           // Store the service item
           this.$state.service.loading = true;
@@ -179,7 +207,6 @@ export const useMenu = defineStore("menu", {
 
           // If this is an edit operation, store the service data directly
           if (isEditing && cartProductId) {
-              console.log('Edit operation detected, preserving service data');
               this.$state.service.data = service;
               this.$state.service.loading = false;
 

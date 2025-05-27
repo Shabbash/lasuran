@@ -99,6 +99,11 @@
 </template>
 
 <script setup lang="ts">
+// Apply auth middleware to protect this page
+definePageMeta({
+  middleware: 'auth'
+});
+
 import { ref, onMounted, computed } from 'vue'
 import Container from '@/components/base/Container.vue'
 import CartItem from '~/components/cart/CartItem.vue'

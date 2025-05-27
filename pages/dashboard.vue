@@ -5,7 +5,12 @@
   </Container>
 </template>
 <script setup lang="ts">
-  import Container from '@/components/base/Container.vue'
+// Apply auth middleware to protect this page
+definePageMeta({
+  middleware: 'auth'
+});
+
+import Container from '@/components/base/Container.vue'
 </script>
 
 

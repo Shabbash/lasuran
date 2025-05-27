@@ -40,8 +40,10 @@
                     <span>العربية</span>
                 </div>
 
+        
+<!-- hide cart if not authenticated -->
                 <!-- Calendar Icon -->
-                <NuxtLink to="/cart" class="relative cursor-pointer">
+                <NuxtLink to="/cart" class="relative cursor-pointer" v-if="authModule.isAuthenticated">
                     <img src="/public/assets/img/calendar.svg" alt="flag" class="w-[27px] h-[27px] rounded-sm" />
                     <span
                         class="absolute bg-[#DA3C3C] w-[17px] h-[17px] flex items-center justify-center rounded-full text-[11px] font-normal -top-1 -end-1">
@@ -50,7 +52,7 @@
                 </NuxtLink>
 
                 <!-- Notifications Icon -->
-                <div class="relative cursor-pointer">
+                <div class="relative cursor-pointer"  v-if="authModule.isAuthenticated">
                     <img src="/public/assets/img/Huge-icon.svg" alt="flag" class="w-[27px] h-[27px] rounded-sm" />
                     <span
                         class="absolute bg-[#DA3C3C] w-[17px] h-[17px] flex items-center justify-center rounded-full text-[11px] font-normal -top-1 -end-1">3</span>
@@ -69,6 +71,7 @@
 import Container from '~/components/base/Container.vue'
 import UserMenu from '~/components/base/UserMenu.vue'
 import { useCart } from '~/stores/cart'
+const authModule = useAuth();
 
 const cartModule = useCart()
 

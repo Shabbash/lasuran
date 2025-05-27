@@ -83,7 +83,6 @@ interface Service {
   product_id?: number | string;
   [key: string]: any; // Allow other properties
 }
-const { setDialogComponent } = useApp();
 const menuModule = useMenu();
 const cartModule = useCart();
 const selectedService = computed<Service>(() => menuModule.service.data as Service);
@@ -91,15 +90,21 @@ const isLoading = computed(() => menuModule.service.loading);
 
 // Check for editing flag in multiple possible locations
 const isEditing = computed(() => {
-  // First check our stored original state
-  if (originalIsEditing.value) return true;
+  // First check our stored original state (most reliable)
+  if (originalIsEditing.value) {
+    return true;
+  }
 
-  // Check if the cart_product_id is set
-  if (originalCartProductId.value) return true;
+  // Check if we have both editing state AND cart_product_id
+  if (originalCartProductId.value && isServiceInEditMode(selectedService.value)) {
+    return true;
+  }
 
-  // Use our helper function to check the service
+  // Use our helper function to check the service for explicit editing flags
   return isServiceInEditMode(selectedService.value);
 });
+
+
 
 const selectedExtension = ref('')
 const selectedTime = ref('21:30')
@@ -126,52 +131,70 @@ const defaultService = computed<Service>(() => selectedService.value?.products?.
 // Function removed as it was unused
 
 const addToCart = function () {
-  // Create the payload with all necessary data
-  const payload = {
-    ...defaultService.value,
-    selectedExtension: selectedExtension.value,
-    selectedTime: selectedTime.value,
-    date: value.value.toString(),
-  };
+  const { requireAuth } = useAuthCheck();
+  const { setDialogComponent } = useApp();
 
-  // Use our helper function and computed properties to check if this is an edit operation
-  const isEditingOperation = isEditing.value;
+  // Check authentication and proceed only if authenticated
+  requireAuth(() => {
+    // User is authenticated, proceed with cart operation
+    console.log('User authenticated, proceeding with cart operation');
 
-  // Get the cart_product_id from the service or our stored value
-  const cartProductId = selectedService.value?.cart_product_id || originalCartProductId.value;
+    // Create the payload with all necessary data
+    const payload = {
+      ...defaultService.value,
+      selectedExtension: selectedExtension.value,
+      selectedTime: selectedTime.value,
+      date: value.value.toString(),
+    };
 
-  // Check if this is an edit operation
-  if (isEditingOperation && cartProductId) {
-    // This is an edit operation - ensure we pass the cart_product_id
-    payload.cart_product_id = cartProductId;
-    console.log('Editing existing cart item with ID:', payload.cart_product_id);
+    // Use our helper function and computed properties to check if this is an edit operation
+    const isEditingOperation = isEditing.value;
 
-    // Make sure we're using the correct product ID from the original item
-    if (selectedService.value?.product_id) {
-      payload.id = selectedService.value.product_id;
-    } else if (defaultService.value?.id) {
-      payload.id = defaultService.value.id;
+    // Get the cart_product_id from the service or our stored value
+    const cartProductId = selectedService.value?.cart_product_id || originalCartProductId.value;
+
+    // Check if this is an edit operation
+    if (isEditingOperation && cartProductId) {
+      // This is an edit operation - ensure we pass the cart_product_id
+      payload.cart_product_id = cartProductId;
+      console.log('Editing existing cart item with ID:', payload.cart_product_id);
+
+      // Make sure we're using the correct product ID from the original item
+      if (selectedService.value?.product_id) {
+        payload.id = selectedService.value.product_id;
+      } else if (defaultService.value?.id) {
+        payload.id = defaultService.value.id;
+      }
+
+      // Include any other necessary fields from the original cart item
+      if (selectedService.value?.branch_id) {
+        payload.branch_id = selectedService.value.branch_id;
+      }
+
+      // Log the complete payload for debugging
+      console.log('Edit cart payload:', payload);
+    } else {
+      console.log('Adding new item to cart');
+      console.log('Add cart payload:', payload);
+      // For new items, don't include cart_product_id
     }
 
-    // Include any other necessary fields from the original cart item
-    if (selectedService.value?.branch_id) {
-      payload.branch_id = selectedService.value.branch_id;
-    }
-
-    // Log the complete payload for debugging
-    console.log('Edit cart payload:', payload);
-  } else {
-    console.log('Adding new item to cart');
-    console.log('Add cart payload:', payload);
-    // For new items, don't include cart_product_id
-  }
-
-  // Use the same method for both add and update operations
-  // The API will detect if it's an update based on the presence of cart_product_id
-  cartModule.addOrUpdateServiceInCart(payload).then(() => {
-    setDialogComponent(COMPONENTS.SERVICE_APPOINTMENT);
+    // Use the same method for both add and update operations
+    // The API will detect if it's an update based on the presence of cart_product_id
+    cartModule.addOrUpdateServiceInCart(payload).then(() => {
+      setDialogComponent(COMPONENTS.SERVICE_APPOINTMENT);
+    }).catch((error) => {
+      console.error('Error adding/updating cart:', error);
+      // Loading state will be reset by the cart module's onError handler
+    });
+  }, () => {
+    // This callback runs when user is NOT authenticated
+    console.log('Authentication required - login modal shown');
+    // Don't proceed with cart operation - this prevents the loading state issue
   });
 };
+
+
 
 // Function removed as it was unused
 // Store the original cart_product_id and editing state
@@ -189,9 +212,28 @@ const isServiceInEditMode = (service: any) => {
   );
 };
 
+
+
+// Watch for dialog close to clear service state
+const appModule = useApp();
+watch(() => appModule.dialog.show, (isShown, wasShown) => {
+  // When dialog is closed (was shown, now not shown)
+  if (wasShown && !isShown) {
+    // Clear the service state after a short delay to ensure the dialog is fully closed
+    setTimeout(() => {
+      menuModule.clearServiceState();
+
+      // Also reset cart loading states to prevent stuck loading spinners
+      if (cartModule.isAddLoading) {
+        console.log('Resetting cart loading state on dialog close');
+        cartModule.resetLoadingStates();
+      }
+    }, 100);
+  }
+});
+
 onMounted(() => {
   const serviceData = menuModule.service.data as Service
-  console.log('Service data on mount:', serviceData);
 
   // Set extension value
   selectedExtension.value = serviceData.selectedExtension || ''
@@ -211,37 +253,37 @@ onMounted(() => {
     }
   }
 
-  // Check if this is an edit operation
+  // Check if this is an edit operation - be very strict
   const isEditingOperation = isServiceInEditMode(serviceData);
 
-  // Get the cart_product_id
-  const cartProductId = serviceData.cart_product_id || null;
+  // For a service to be considered "editing", it must have BOTH:
+  // 1. Explicit editing flags (_isEditing or is_editing set to true)
+  // 2. A valid cart_product_id
+  const hasValidCartProductId = serviceData.cart_product_id != null && serviceData.cart_product_id !== undefined;
+  const isValidEditOperation = isEditingOperation && hasValidCartProductId;
 
-  // Store the original cart_product_id and editing state
-  originalCartProductId.value = cartProductId;
-  originalIsEditing.value = isEditingOperation;
-
-  console.log('Cart product ID:', cartProductId);
-  console.log('Is editing operation:', isEditingOperation);
-
-  // If this is an edit operation but the editing state is not properly set,
-  // update the service data to include the editing state
-  if (cartProductId && !isEditingOperation) {
-    console.log('Cart product ID found but editing state not set, fixing...');
-
-    // Create an updated service data object with the editing state
-    const updatedServiceData = {
-      ...serviceData,
-      _isEditing: true
-    };
-
-    // Update the service data in the store
-    menuModule.setService(updatedServiceData);
+  // Only set editing state if we have BOTH editing flags AND cart_product_id
+  if (isValidEditOperation) {
+    originalCartProductId.value = serviceData.cart_product_id || null;
+    originalIsEditing.value = true;
+  } else {
+    // This is a new service - clear any stale state
+    originalCartProductId.value = null;
+    originalIsEditing.value = false;
   }
 
-  // If this is an edit operation, log it
-  if (isEditingOperation || cartProductId) {
-    console.log('Editing cart item:', cartProductId);
+  // Reset any stuck loading states on mount (safety measure)
+  if (cartModule.isAddLoading) {
+    console.log('Resetting stuck loading state on mount');
+    cartModule.resetLoadingStates();
+  }
+
+  // Expose reset function to global scope for debugging
+  if (process.client) {
+    (window as any).resetCartLoading = () => {
+      cartModule.resetLoadingStates();
+      console.log('Cart loading states reset manually');
+    };
   }
 })
 </script>
