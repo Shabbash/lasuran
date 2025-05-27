@@ -44,12 +44,20 @@ const menuItems = [
   { id: 'wallet', label: 'My Wallet', icon: 'i-heroicons-wallet' },
 ];
 
-const activeItem = ref('profile');
+import { useRoute } from 'vue-router';
+import { watch } from 'vue';
+
+const route = useRoute();
+const activeItem = ref(route.query.tab || 'profile');
+
+watch(() => route.query.tab, (tab) => {
+  activeItem.value = tab || 'profile';
+}, { immediate: true });
 
 const emit = defineEmits(['menu-click']);
 
 function handleMenuClick(menuId) {
-  activeItem.value = menuId;
+  // activeItem.value = menuId;
   emit('menu-click', menuId);
 }
 

@@ -2,7 +2,7 @@
   <div class="p-[24px] pb-[40px] rounded-[16px] border border-[#E7E7E7] bg-[#EBE4DF]">
     <h2 class="text-[#A0576F] mb-[16px] text-[20px] font-medium leading-normal">Payment Details</h2>
 
-    <div class="space-y-[16px] text-[#5B605C]text-[14px] font-medium">
+    <div class="space-y-[16px] text-[#5B605C] text-[14px] font-medium">
       <div class="flex justify-between">
         <span>Subtotal ({{ servicesCount }} Services)</span>
         <span class="font-bold">{{ subtotal.toFixed(2) }} SAR</span>
@@ -27,7 +27,7 @@
         <UInput placeholder="Enter Promo Code"
           class="flex-1 bg-transparent text-[15px] font-normal leading-normal capitalize ps-[24px] h-[44px] summary-input" />
         <UButton
-          class="h-full bg-transparent text-[#A0576F] text-[15px] font-normal leading-normal underline p-0 pe-[24px] h-[44px] hover:bg-transparent"
+          class="bg-transparent text-[#A0576F] text-[15px] font-normal leading-normal underline p-0 pe-[24px] h-[44px] hover:bg-transparent"
           color="primary" variant="soft">Apply</UButton>
       </div>
       <div class="flex gap-[15px]">
@@ -35,7 +35,7 @@
           <UInput placeholder="Gift Card SN"
             class="flex-1 bg-transparent text-[15px] font-normal leading-normal capitalize ps-[24px] h-[44px] summary-input" />
           <UButton
-            class="h-full bg-transparent text-[#A0576F] text-[15px] font-normal leading-normal underline p-0 pe-[24px] h-[44px] hover:bg-transparent"
+            class="bg-transparent text-[#A0576F] text-[15px] font-normal leading-normal underline p-0 pe-[24px] h-[44px] hover:bg-transparent"
             color="primary" variant="soft">Apply</UButton>
         </div>
         <a href="#"
@@ -46,9 +46,11 @@
         <UCheckbox v-model="accepted" />
         <span>Accept terms and conditions</span>
       </div>
-      <BaseButton :loading="cartModule.isOrderLoading" @click="proceedToCheckout" class="cart-btn flex align-center gap-[24px] w-full text-white py-3 rounded-full font-[600] text-[16px] justify-center bg-[#A0576F] hover:bg-[#913E5D] mt-[35px] disabled:bg-[#A0576F]" :disabled="!accepted || servicesCount === 0">
+      <UButton @click="emit('checkout')"
+        class="cart-btn flex align-center gap-[24px] w-full text-white py-3 rounded-full font-[600] text-[16px] justify-center bg-[#A0576F] hover:bg-[#913E5D] mt-[35px] disabled:bg-[#A0576F]"
+        :disabled="!accepted || servicesCount === 0">
         {{ total.toFixed(2) }} SAR - Checkout
-      </BaseButton>
+      </UButton>
 
     </div>
   </div>
@@ -56,7 +58,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import {COMPONENTS} from "~/data/constants";
+const emit = defineEmits(['checkout'])
 
 const props = defineProps<{
   servicesCount: number
@@ -72,20 +74,6 @@ const vat = computed(() => props.vat !== undefined ? props.vat : props.subtotal 
 const discount = computed(() => props.discount || 0)
 const serviceCost = computed(() => props.serviceCost || 0)
 const total = computed(() => props.total !== undefined ? props.total : props.subtotal + vat.value - discount.value + serviceCost.value)
-
-const cartModule = useCart();
-const appModule = useApp();
-const proceedToCheckout = function () {
-  if (cartModule.getPaymentMethods.length > 1 ){
-    appModule.setDialogComponent(COMPONENTS.PAYMENT_SELECTION);
-    appModule.setDialogShow(true);
-  } else  {
-    cartModule.setPaymentMethod(cartModule.getPaymentMethods?.[0]?.id);
-    cartModule.createOrder({} , (data: any) => {
-      appModule.setDialogComponent(COMPONENTS.PAYMENT_CREATE_CARD)
-    })
-  }
-}
 
 const accepted = ref(false)
 </script>

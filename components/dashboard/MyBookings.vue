@@ -1,4 +1,3 @@
-// components/dashboard/MyBookings.vue
 <template>
   <div>
     <div class="flex justify-between items-center pb-7 mb-7 border-b border-[#AD7084]">
@@ -107,7 +106,7 @@
     </div>
 
     <!-- Dialog component for booking details -->
-    <Dialog v-model:open="modalOpen"  :modalMaxWidth="'max-w-[467px]'">
+    <Dialog v-model:open="modalOpen" :modalMaxWidth="'max-w-[467px]'">
       <template #body>
         <div v-if="selectedBooking"
           class="bg-decore-modal mx-auto rounded-[30px] overflow-hidden shadow-lg bg-[#EBE4DF] text-[#5F2C3E]">
@@ -271,7 +270,8 @@
                 d="M53.4121 3.28125C26.2434 3.28125 4.19336 25.3313 4.19336 52.5C4.19336 79.6687 26.2434 101.719 53.4121 101.719C80.5809 101.719 102.631 79.6687 102.631 52.5C102.631 25.3313 80.5809 3.28125 53.4121 3.28125ZM53.4121 82.0312C49.8027 82.0312 46.8496 79.0781 46.8496 75.4688C46.8496 71.8594 49.8027 68.9062 53.4121 68.9062C57.0215 68.9062 59.9746 71.8594 59.9746 75.4688C59.9746 79.0781 57.0215 82.0312 53.4121 82.0312ZM60.9262 31.1391L58.7277 57.4547C58.4981 60.2109 56.2012 62.3438 53.4121 62.3438C50.623 62.3438 48.3262 60.2109 48.0965 57.4547L45.898 31.1391C45.5371 26.7422 48.9824 22.9688 53.4121 22.9688C54.4032 22.9688 55.3845 23.164 56.3002 23.5432C57.2158 23.9225 58.0478 24.4784 58.7486 25.1792C59.4493 25.88 60.0052 26.7119 60.3845 27.6276C60.7638 28.5432 60.959 29.5246 60.959 30.5156C60.959 30.7125 60.959 30.9422 60.9262 31.1391Z"
                 fill="#C44E4E" />
             </svg>
-            <h2 class="text-[#A0576F] text-center mt-[15px] mb-[5px] text-[20px] font-bold leading-normal">Cancel Reservation</h2>
+            <h2 class="text-[#A0576F] text-center mt-[15px] mb-[5px] text-[20px] font-bold leading-normal">Cancel
+              Reservation</h2>
             <p class="text-[#5B605C] text-center mb-[24px] text-[16px] font-normal leading-normal">Are You sure you want
               to cancel your reservation</p>
 
@@ -279,17 +279,15 @@
             <div class="space-y-[10px]">
 
 
-              <BaseButton
+              <BaseButton label="Yes, Cancel"
                 class="h-[49px] bg-[#C44E4E] hover:bg-[#913E5D] text-white text-[16px] font-normal rounded-[100px] leading-normal"
-                @click="confirmDeleteBooking">
-                Delete
-              </BaseButton>
+                @click="confirmDeleteBooking" />
 
-              <BaseButton
+
+              <BaseButton label="No, Keep"
                 class="h-[49px] bg-[#6B8B9B] text-white text-[16px] font-normal rounded-[100px] leading-normal hover:bg-[#5a7886] transition"
-                @click="deleteModalOpen = false">
-                Cancel
-              </BaseButton>
+                @click="deleteModalOpen = false" />
+
 
 
             </div>
@@ -363,7 +361,7 @@ const modalOpen = ref(false);
 
 // Booking to delete (for confirmation dialog)
 const bookingToDelete = ref(null);
-const deleteModalOpen = ref(true);
+const deleteModalOpen = ref(false);
 
 // Check if there are any bookings
 const hasAnyBookings = computed(() => bookings.value.length > 0);

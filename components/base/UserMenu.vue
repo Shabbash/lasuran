@@ -30,12 +30,73 @@
             <span class="text-[#A0576F] font-[350] text-[15px] leading-[100%] tracking-[0]">{{ item.label }}</span>
           </div>
         </div> -->
-        <div class="grid grid-cols-2 gap-y-[20px] text-[#A0576F] text-sm my-[40px]">
+        <div class="grid grid-cols-2 gap-y-[5px] text-[#A0576F] text-sm my-[40px]">
 
-          <NuxtLink v-for="(item, index) in menuItems" :key="index" :to="item.route"
-            class="flex items-center gap-2 cursor-pointer hover:opacity-70 transition">
-            <img :src="item.image_url" class="w-[20px] h-[20px]" />
-            <span class="text-[#A0576F] font-[350] text-[15px]">{{ item.label }}</span>
+
+          <NuxtLink to="/dashboard?tab=profile" v-if="authModule.isAuthenticated"
+            class="flex items-center gap-2 px-4 py-2 rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
+            <img src="/assets/img/menu-icons/Layer.svg" alt="" class="w-[20px] h-[20px]" />
+            <span class="text-[15px] font-[350] leading-none">My Profile</span>
+          </NuxtLink>
+
+          <NuxtLink to="/branches"
+            class="flex items-center gap-2 px-4 py-2 rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
+            <img src="/assets/img/menu-icons/Group.svg" alt="" class="w-[20px] h-[20px]" />
+            <span class="text-[15px] font-[350] leading-none">Branches</span>
+          </NuxtLink>
+
+          <NuxtLink to="/dashboard?tab=bookings" v-if="authModule.isAuthenticated"
+            class="flex items-center gap-2 px-4 py-2 rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
+            <img src="/assets/img/menu-icons/Frame-5.svg" alt="" class="w-[20px] h-[20px]" />
+            <span class="text-[15px] font-[350] leading-none">My Bookings</span>
+          </NuxtLink>
+
+          <NuxtLink to="/support" 
+            class="flex items-center gap-2 px-4 py-2 rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
+            <img src="/assets/img/menu-icons/Group-1.svg" alt="" class="w-[20px] h-[20px]" />
+            <span class="text-[15px] font-[350] leading-none">Customer Service</span>
+          </NuxtLink>
+
+          <NuxtLink to="/dashboard?tab=wallet"  v-if="authModule.isAuthenticated"
+            class="flex items-center gap-2 px-4 py-2 rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
+            <img src="/assets/img/menu-icons/Frame-1.svg" alt="" class="w-[20px] h-[20px]" />
+            <span class="text-[15px] font-[350] leading-none">My Wallet</span>
+          </NuxtLink>
+
+          <NuxtLink to="/invite"  v-if="authModule.isAuthenticated"
+            class="flex items-center gap-2 px-4 py-2 rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
+            <img src="/assets/img/menu-icons/Frame-3.svg" alt="" class="w-[20px] h-[20px]" />
+            <span class="text-[15px] font-[350] leading-none">Invite Friends</span>
+          </NuxtLink>
+
+          <NuxtLink to="/gift-cards"  v-if="authModule.isAuthenticated"
+            class="flex items-center gap-2 px-4 py-2 rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
+            <img src="/assets/img/menu-icons/svgexport-17.svg" alt="" class="w-[20px] h-[20px]" />
+            <span class="text-[15px] font-[350] leading-none">My Gift Cards</span>
+          </NuxtLink>
+
+          <NuxtLink to="/"
+            class="flex items-center gap-2 px-4 py-2 rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
+            <img src="/assets/img/menu-icons/Frame-4.svg" alt="" class="w-[20px] h-[20px]" />
+            <span class="text-[15px] font-[350] leading-none">العربية</span>
+          </NuxtLink>
+
+          <NuxtLink to="/dashboard?tab=tickets" v-if="authModule.isAuthenticated"
+            class="flex items-center gap-2 px-4 py-2 rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
+            <img src="/assets/img/menu-icons/Frame-2.svg" alt="" class="w-[20px] h-[20px]" />
+            <span class="text-[15px] font-[350] leading-none">My Tickets</span>
+          </NuxtLink>
+
+          <NuxtLink to="/terms"
+            class="flex items-center gap-2 px-4 py-2 rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
+            <img src="/assets/img/menu-icons/vector.svg" alt="" class="w-[20px] h-[20px]" />
+            <span class="text-[15px] font-[350] leading-none">Terms & Conditions</span>
+          </NuxtLink>
+
+          <NuxtLink to="/privacy"
+            class="flex items-center gap-2 px-4 py-2 rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
+            <img src="/assets/img/menu-icons/Layer_1.svg" alt="" class="w-[20px] h-[20px]" />
+            <span class="text-[15px] font-[350] leading-none">Privacy Policy</span>
           </NuxtLink>
 
         </div>
@@ -66,17 +127,18 @@ const logout = function () {
 }
 
 const menuItems = [
-  { label: "My Profile", image_url: "/assets/img/menu-icons/Layer.svg", route: "/dashboard" },
+  { label: "My Profile", image_url: "/assets/img/menu-icons/Layer.svg", route: "/dashboard?tab=profile" },
   { label: "Branches", image_url: "/assets/img/menu-icons/Group.svg", route: "/branches" },
-  { label: "My Bookings", image_url: "/assets/img/menu-icons/Frame-5.svg", route: "/dashboard" },
+  { label: "My Bookings", image_url: "/assets/img/menu-icons/Frame-5.svg", route: "/dashboard?tab=bookings" },
   { label: "Customer Service", image_url: "/assets/img/menu-icons/Group-1.svg", route: "/support" },
-  { label: "My Wallet", image_url: "/assets/img/menu-icons/Frame-1.svg", route: "/dashboard" },
+  { label: "My Wallet", image_url: "/assets/img/menu-icons/Frame-1.svg", route: "/dashboard?tab=wallet" },
   { label: "Invite Friends", image_url: "/assets/img/menu-icons/Frame-3.svg", route: "/invite" },
   { label: "My Gift Cards", image_url: "/assets/img/menu-icons/svgexport-17.svg", route: "/gift-cards" },
-  { label: "العربية", image_url: "/assets/img/menu-icons/Frame-4.svg", route: "/" }, //
-  { label: "My Tickets", image_url: "/assets/img/menu-icons/Frame-2.svg", route: "/dashboard" },
+  { label: "العربية", image_url: "/assets/img/menu-icons/Frame-4.svg", route: "/" },
+  { label: "My Tickets", image_url: "/assets/img/menu-icons/Frame-2.svg", route: "/dashboard?tab=tickets" },
   { label: "Terms & Conditions", image_url: "/assets/img/menu-icons/vector.svg", route: "/terms" },
   { label: "Privacy Policy", image_url: "/assets/img/menu-icons/Layer_1.svg", route: "/privacy" }
-]
+];
+
 
 </script>
