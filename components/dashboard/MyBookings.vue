@@ -296,13 +296,62 @@
       </template>
     </Dialog>
 
+
+    <Dialog v-model:open="ratingModalOpen" :modalMaxWidth="'max-w-[420px]'">
+      <template #body>
+        <div class="bg-[#F9F2EF] mx-auto rounded-[30px] overflow-hidden shadow-lg text-[#5F2C3E] p-[30px] space-y-6">
+          <h3 class="text-center text-[#A0576F] text-[20px] font-semibold">Deep Facial Cleanse</h3>
+
+          <!-- Service Quality -->
+          <div class="bg-[#A0576F] text-white rounded-[16px] p-4 space-y-2">
+            <p class="text-sm">Service Quality</p>
+            <StarRating v-model="rating.serviceQuality" />
+            <!-- <StarRating :model-value="apiData.serviceQuality" :editable="false" /> -->
+
+          </div>
+
+          <!-- Atmosphere -->
+          <div class="bg-[#A0576F] text-white rounded-[16px] p-4 space-y-2">
+            <p class="text-sm">Atmosphere</p>
+            <StarRating v-model="rating.atmosphere" />
+
+          </div>
+
+          <!-- Comment -->
+          <textarea v-model="rating.comment" placeholder="Leave your comment (Optional)"
+            class="w-full p-4 rounded-[16px] border border-[#A0576F] placeholder:text-[#A0576F] text-sm bg-transparent resize-none"
+            rows="3" />
+
+          <!-- Submit Button -->
+          <button @click="submitRating"
+            class="w-full bg-[#A0576F] text-white py-3 rounded-full font-medium hover:opacity-90 transition">
+            Submit Your Rating
+          </button>
+        </div>
+      </template>
+    </Dialog>
+
+
   </div>
 </template>
 
 <script setup>
 import { ref, computed } from 'vue';
 import Dialog from '@/components/base/Dialog.vue';
+import StarRating from '@/components/cart/StarRating.vue'
 
+const ratingModalOpen = ref(true)
+
+const rating = ref({
+  serviceQuality: 0,
+  atmosphere: 0,
+  comment: ''
+})
+
+function submitRating() {
+  console.log('Submitted:', rating.value)
+  ratingModalOpen.value = false
+}
 
 const showEmptyState = computed(() => filteredBookings.value.length === 0);
 

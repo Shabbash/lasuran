@@ -1,31 +1,35 @@
-
-
 <template>
-<h1> this is payment selection </h1>
-  <div class="payment-selection container p-8 mt-4">
-    <BaseButton v-for="paymentMethod in cartModule.getPaymentMethods" @click="selectPaymentMethod(paymentMethod)"  :loading="isLoading(paymentMethod.id)">
-      {{ paymentMethod.name }}
-    </BaseButton>
+
+  <div class="p-[24px] pb-[40px] rounded-[16px] border border-[#E7E7E7] bg-[#EBE4DF]">
+    <h2 class="select-payment text-[#A0576F] mb-[16px] text-[20px] font-medium leading-normal">Payment Details</h2>
+    <p class="text-[#5B605C] text-[14px] font-[350">Select your preferred payment method</p>
+
+    <div class="payment-selection container p-8 mt-4">
+      <BaseButton v-for="paymentMethod in cartModule.getPaymentMethods" @click="selectPaymentMethod(paymentMethod)"
+        :loading="isLoading(paymentMethod.id)" class="disabled:bg-transparent">
+        {{ paymentMethod.name }}
+      </BaseButton>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import {COMPONENTS} from "~/data/constants";
+import { COMPONENTS } from "~/data/constants";
 
 const cartModule = useCart();
 const appModule = useApp();
 const selected = ref(null);
-const selectPaymentMethod = function (paymentMethod:any) {
+const selectPaymentMethod = function (paymentMethod: any) {
   selected.value = paymentMethod.id;
   cartModule.setPaymentMethod(paymentMethod.id);
-  cartModule.createOrder({} , (data: any) => {
+  cartModule.createOrder({}, (data: any) => {
 
     appModule.setDialogComponent(COMPONENTS.PAYMENT_CREATE_CARD)
-    // appModule.setDialogShow(true);
+    appModule.setDialogShow(true);
   })
 }
 
-const isLoading = function (methodId : any) {
+const isLoading = function (methodId: any) {
   return cartModule.isOrderLoading && methodId == selected.value;
 }
 
@@ -53,6 +57,4 @@ const isLoading = function (methodId : any) {
 // }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

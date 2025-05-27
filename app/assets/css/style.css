@@ -101,3 +101,8 @@
 .cart-scroll::-webkit-scrollbar-thumb {
   background-color: #EBE4DF;
 }
+
+
+.max-w-\[638px\]:has(.select-payment) {
+  max-width: 450px !important;
+}
