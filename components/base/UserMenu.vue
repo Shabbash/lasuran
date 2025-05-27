@@ -89,7 +89,7 @@
 
           <NuxtLink to="/terms"
             class="flex items-center gap-2 px-4 py-2 rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
-            <img src="/assets/img/menu-icons/vector.svg" alt="" class="w-[20px] h-[20px]" />
+            <img src="/assets/img/menu-icons/terms.svg" alt="" class="w-[20px] h-[20px]" />
             <span class="text-[15px] font-[350] leading-none">Terms & Conditions</span>
           </NuxtLink>
 
