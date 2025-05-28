@@ -297,36 +297,38 @@
     </Dialog>
 
 
-    <Dialog v-model:open="ratingModalOpen" :modalMaxWidth="'max-w-[420px]'">
+    <Dialog v-model:open="ratingModalOpen" :modalMaxWidth="'max-w-[608px]'">
       <template #body>
-        <div class="bg-[#F9F2EF] mx-auto rounded-[30px] overflow-hidden shadow-lg text-[#5F2C3E] p-[30px] space-y-6">
-          <h3 class="text-center text-[#A0576F] text-[20px] font-semibold">Deep Facial Cleanse</h3>
+        <div
+          class="bg-decore-modal mx-auto rounded-[30px] overflow-hidden shadow-lg text-[#5F2C3E] pt-[24px] pb-[45px] px-[100px]">
+          <div class="relative">
+            <h3 class="text-[#A0576F] text-center text-[22px] font-bold leading-normal mb-[30px]">Deep Facial Cleanse
+            </h3>
 
-          <!-- Service Quality -->
-          <div class="bg-[#A0576F] text-white rounded-[16px] p-4 space-y-2">
-            <p class="text-sm">Service Quality</p>
-            <StarRating v-model="rating.serviceQuality" />
-            <!-- <StarRating :model-value="apiData.serviceQuality" :editable="false" /> -->
+            <!-- Service Quality -->
+            <div class="bg-[#A0576F] text-white rounded-[23px] py-[23px] px-[32px] space-y-[12px] mb-[19px]">
+              <p class="text-[#EBE4DF] text-[17px] font-normal leading-normal">Service Quality</p>
+              <StarRating v-model="rating.serviceQuality" :editable="!isRatingReadOnly" />
+            </div>
+
+            <!-- Atmosphere -->
+            <div class="bg-[#A0576F] text-white rounded-[23px] py-[23px] px-[32px] space-y-[12px] mb-[25px]">
+              <p class="text-[#EBE4DF] text-[17px] font-normal leading-normal">Atmosphere</p>
+              <StarRating v-model="rating.atmosphere" :editable="!isRatingReadOnly" />
+            </div>
+
+            <!-- Comment -->
+            <textarea v-model="rating.comment" :readonly="isRatingReadOnly" placeholder="Leave your comment (Optional)"
+              class="w-full h-[170px] p-4 rounded-[23px] border border-[#A0576F] placeholder:text-[#A0576F] text-sm bg-transparent resize-none"
+              rows="3" />
+
+            <!-- Submit Button -->
+            <button v-if="!isRatingReadOnly" @click="submitRating"
+              class="w-full bg-[#A0576F] text-white py-3 rounded-full font-medium hover:opacity-90 transition mt-[35px]">
+              Submit Your Rating
+            </button>
 
           </div>
-
-          <!-- Atmosphere -->
-          <div class="bg-[#A0576F] text-white rounded-[16px] p-4 space-y-2">
-            <p class="text-sm">Atmosphere</p>
-            <StarRating v-model="rating.atmosphere" />
-
-          </div>
-
-          <!-- Comment -->
-          <textarea v-model="rating.comment" placeholder="Leave your comment (Optional)"
-            class="w-full p-4 rounded-[16px] border border-[#A0576F] placeholder:text-[#A0576F] text-sm bg-transparent resize-none"
-            rows="3" />
-
-          <!-- Submit Button -->
-          <button @click="submitRating"
-            class="w-full bg-[#A0576F] text-white py-3 rounded-full font-medium hover:opacity-90 transition">
-            Submit Your Rating
-          </button>
         </div>
       </template>
     </Dialog>
@@ -340,18 +342,64 @@ import { ref, computed } from 'vue';
 import Dialog from '@/components/base/Dialog.vue';
 import StarRating from '@/components/cart/StarRating.vue'
 
-const ratingModalOpen = ref(true)
+const ratingModalOpen = ref(false)
+
+const isRatingReadOnly = ref(false);
+
+const ratingLevels = [
+  { value: 1, label: 'Very Poor' },
+  { value: 2, label: 'Poor' },
+  { value: 3, label: 'Average' },
+  { value: 4, label: 'Good' },
+  { value: 5, label: 'Excellent' }
+]
 
 const rating = ref({
-  serviceQuality: 0,
+  serviceQuality: 3,
   atmosphere: 0,
   comment: ''
 })
 
+
+// watch(
+//   () => rating.value.serviceQuality,
+//   (val) => {
+//     console.log('✅ Selected Rating (Service Quality):', val)
+//   },
+//   { immediate: true }
+// )
+
 function submitRating() {
   console.log('Submitted:', rating.value)
-  ratingModalOpen.value = false
+
+  // تحديث حالة التقييم
+  if (selectedBooking.value) {
+    selectedBooking.value.rating_status = true;
+
+    // تحديث كمان في البيانات الأساسية لو بدك تخزنها بشكل دائم
+    const index = bookings.value.findIndex(b => b.id === selectedBooking.value.id);
+    if (index !== -1) {
+      bookings.value[index].rating_status = true;
+    }
+  }
+
+  ratingModalOpen.value = false;
 }
+
+
+function handleViewRating() {
+  // البيانات المفترضة من الحجز (ممكن تستبدلها من booking real data)
+  rating.value = {
+    serviceQuality: selectedBooking.value.serviceQuality ?? 4,
+    atmosphere: selectedBooking.value.atmosphere ?? 3,
+    comment: selectedBooking.value.comment ?? 'Service was great!'
+  };
+
+  isRatingReadOnly.value = true; // 🟢 اجعل المودال عرض فقط
+  ratingModalOpen.value = true;
+  modalOpen.value = false;
+}
+
 
 const showEmptyState = computed(() => filteredBookings.value.length === 0);
 
@@ -388,7 +436,7 @@ const bookings = ref([
     branch: 'Jeddah',
     date: 'Sep 15th, 2024',
     time: '7:30 PM',
-    rating_status: true
+    rating_status: false
 
   },
   {
@@ -399,7 +447,7 @@ const bookings = ref([
     branch: 'Riyadh',
     date: 'Sep 10th, 2024',
     time: '7:30 PM',
-    rating_status: true
+    rating_status: false
 
   }
 ]);
@@ -447,11 +495,11 @@ function openBookingDetails(booking) {
 
 // Handle rate service button
 function handleRateService() {
-  // Logic for rating service
-  console.log('Rating service for booking:', selectedBooking.value.id);
-  // Close the popup after action
+  isRatingReadOnly.value = false;
+  ratingModalOpen.value = true;
   modalOpen.value = false;
 }
+
 
 // Handle make service button
 function handleMakeService() {
