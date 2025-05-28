@@ -1,7 +1,7 @@
 <template>
   <UPopover :ui="{ content: 'px-[60px] py-[60px] bg-[#EBE4DF] rounded-[30px]' }">
     <div class="cursor-pointer menu-toggle">
-      <img src="/public/assets/img/dots.svg" alt="menu" class="w-[30px] h-[30px]" />
+      <img src="/assets/img/dots.svg" alt="menu" class="w-[30px] h-[30px]" />
     </div>
     <template #content>
       <div>
@@ -9,7 +9,7 @@
           class="flex items-center bg-[#A0576F] px-[27px] py-[7px] w-full rounded-[20px] gap-[16px]">
           <div class="flex items-center justify-center overflow-hidden w-[81px] h-[81px] rounded-full bg-[#D9D9D91A]">
             <div class="flex items-center justify-center overflow-hidden w-[71px] h-[71px] rounded-full bg-[#D9D9D91A]">
-              <img src="/public/assets/img/pr-img.png" alt="" class="w-[59px] h-[59px] rounded-full">
+              <img src="/assets/img/pr-img.png" alt="" class="w-[59px] h-[59px] rounded-full">
             </div>
           </div>
           <div>
@@ -125,20 +125,6 @@ const showDialog = function () {
 const logout = function () {
   authModule.logout();
 }
-
-const menuItems = [
-  { label: "My Profile", image_url: "/assets/img/menu-icons/Layer.svg", route: "/dashboard?tab=profile" },
-  { label: "Branches", image_url: "/assets/img/menu-icons/Group.svg", route: "/branches" },
-  { label: "My Bookings", image_url: "/assets/img/menu-icons/Frame-5.svg", route: "/dashboard?tab=bookings" },
-  { label: "Customer Service", image_url: "/assets/img/menu-icons/Group-1.svg", route: "/support" },
-  { label: "My Wallet", image_url: "/assets/img/menu-icons/Frame-1.svg", route: "/dashboard?tab=wallet" },
-  { label: "Invite Friends", image_url: "/assets/img/menu-icons/Frame-3.svg", route: "/invite" },
-  { label: "My Gift Cards", image_url: "/assets/img/menu-icons/svgexport-17.svg", route: "/gift-cards" },
-  { label: "العربية", image_url: "/assets/img/menu-icons/Frame-4.svg", route: "/" },
-  { label: "My Tickets", image_url: "/assets/img/menu-icons/Frame-2.svg", route: "/dashboard?tab=tickets" },
-  { label: "Terms & Conditions", image_url: "/assets/img/menu-icons/vector.svg", route: "/terms" },
-  { label: "Privacy Policy", image_url: "/assets/img/menu-icons/Layer_1.svg", route: "/privacy" }
-];
 
 
 </script>
