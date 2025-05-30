@@ -1,8 +1,8 @@
 <template>
   <Container>
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 px-6 py-10 bg-[#A0576F1A]">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 md:px-6 py-10 bg-[#A0576F1A]">
       <!-- Cart List -->
-      <div class="lg:col-span-2 space-y-6 h-[450px] overflow-y-auto">
+      <div class="lg:col-span-2 space-y-6 md:h-[450px] md:overflow-y-auto">
 
         <div class="flex justify-between">
           <h2 class="text-[#EBE4DF] text-[20px] font-medium leading-normal">Cart</h2>
@@ -26,12 +26,12 @@
           </button>
         </div>
         <div v-if="!cartModule.isLoading && cartProducts.length > 0">
-          <div class="flex justify-between px-[29px] border-b border-b-[#AD7084] pb-[14px] mb-[14px]">
+          <div class="flex justify-between md:px-[29px] border-b border-b-[#AD7084] pb-[14px] mb-[14px]">
             <p class="flex-1 text-[#EBE4DF] text-[14px] font-[350] leading-normal">Package</p>
             <div class="flex flex-1 justify-end">
-              <p class="flex-1 text-[#EBE4DF] text-[14px] font-[350] leading-normal">Duration</p>
-              <p class="flex-1 text-[#EBE4DF] text-[14px] font-[350] leading-normal">Price</p>
-              <p class="flex-1 text-[#EBE4DF] text-[14px] font-[350] leading-normal">Action</p>
+              <p class="flex-2 text-[#EBE4DF] text-[14px] font-[350] leading-normal hidden md:block">Duration</p>
+              <p class="flex-1 text-[#EBE4DF] text-[14px] font-[350] leading-normal hidden md:block">Price</p>
+              <p class="md:flex-1 text-[#EBE4DF] text-[14px] font-[350] leading-normal justify-end">Action</p>
             </div>
           </div>
           <div class="">
