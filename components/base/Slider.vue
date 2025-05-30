@@ -3,6 +3,7 @@
     <UCarousel v-slot="{ item }" :dots="dots" :items="items" class="w-full" :ui="uiOptions">
       <slot :item="item"></slot>
     </UCarousel>
+    
 
 </template>
 
@@ -24,16 +25,25 @@ const props = defineProps({
     slidePerRow: {
        type: Number,
        default: 5
+    },
+    slidePerRowMobile: {
+       type: Number,
+       default: 1
     }
 });
 
 const uiOptions = computed(() => {
-  let options :any = {
-    item : `basis-1/${props.slidePerRow} w-1/${props.slidePerRow} max-w-[${100 / props.slidePerRow}%]`
+  const isOneMobile = props.slidePerRowMobile === 1;
+  const isOneDesktop = props.slidePerRow === 1;
+
+  let options: any = {
+    item: `${isOneMobile ? 'basis-full w-full max-w-full' : `basis-1/${props.slidePerRowMobile} w-1/${props.slidePerRowMobile} max-w-[${100 / props.slidePerRowMobile}%]`} md:${isOneDesktop ? 'basis-full w-full max-w-full' : `md:basis-1/${props.slidePerRow} md:w-1/${props.slidePerRow} md:max-w-[${100 / props.slidePerRow}%]`}`
   };
-  if(props.dots) options.dots = `${props.dotsClass}`;
+
+  if (props.dots) options.dots = `${props.dotsClass}`;
   return options;
-})
+});
+
 </script>
 
 

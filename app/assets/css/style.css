@@ -106,3 +106,14 @@
 .max-w-\[638px\]:has(.select-payment) {
   max-width: 450px !important;
 }
+
+@media screen and (max-width:767px){
+  .bg-decore::before{
+    z-index: 0;  
+  }
+
+  .bg-decore::after{
+    display: none;  
+  }
+
+}

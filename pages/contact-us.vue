@@ -31,17 +31,24 @@
               placeholder: 'text-[#90928F] text-[16px] font-[400] leading-normal'
             }" />
 
-          <UInput v-model="value"
+          <UInput v-model="value" placeholder="Subject"
             class="w-full rounded-[23px] border border-[#A0576F] bg-transparent h-[59px] text-[#90928F] text-[16px] font-[400] leading-normal ps-[28px] mb-[20px]"
             :ui="{
               base: ['w-full h-full p-0 bg-transparent border-0 outline-none shadow-none text-[#90928F] text-[16px] font-normal leading-normal ring-0 ring-transparent focus-visible:ring-none']
             }" />
 
-          <UTextarea v-model="value"
-            class="w-full rounded-[23px] border border-[#A0576F] bg-transparent h-[170px] text-[#90928F] text-[16px] font-[400] leading-normal ps-[28px] mb-[20px]"
+          <UTextarea v-model="value" placeholder="Leave your comment"
+            class="w-full rounded-[23px] border border-[#A0576F] bg-transparent h-[170px] text-[#90928F] text-[16px] font-[400] leading-normal ps-[28px] py-[23px] mb-[20px]"
             :ui="{
               base: ['resize-none w-full h-full p-0 bg-transparent border-0 outline-none shadow-none text-[#90928F] text-[16px] font-normal leading-normal ring-0 ring-transparent focus-visible:ring-none']
             }" />
+
+              <UInput type="file" />
+
+
+                <BaseButton label="Submit"
+              class="bg-[#A0576F] text-white rounded-[100px] w-full py-[16px] justify-center text-[18px] font-normal leading-[100%] tracking-[0] border border-[#A0576F] hover:bg-[#913E5D] transition cursor-pointer mt-[30px]" />
+
 
             
         </div>

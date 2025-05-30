@@ -7,30 +7,17 @@
         @update:modelValue="onChange('category_id', $event)"
         class="main-category" />
 
-      <!--      :model-value="menuModule?.category_id"-->
 
-      <!--      @update:modelValue="onChange('sub_category_id',$event)"-->
-      <!--      :model-value="menuModule?.sub_category_id"-->
-      <!--      @update:modelValue="onCategoryChange"-->
-      <!--      <UTabs :ui="{-->
-      <!--        root: 'inline-flex gap-0',-->
-      <!--        list: 'bg-transparent gap-[14px]',-->
-      <!--        trigger: 'px-0 py-[15px] w-[171px] gap-[9px] border  rounded-[100px] justify-center text-[15px] font-medium leading-normal data-[state=inactive]:text-[#BBCACF] hover:data-[state=inactive]:not-disabled:text-[#BBCACF] data-[state=inactive]:border-[#BBCACF] data-[state=active]:border-[#EBE4DF] data-[state=active]:bg-[#EBE4DF] data-[state=active]:text-[#A0576F] ',-->
-      <!--      }"-->
-      <!--      v-model="filters.category_id" :items="menuModule.getCategories"-->
-      <!--      label-key="name"-->
-      <!--      value-key="id"-->
-      <!--      />-->
     </div>
 
-    <div class="flex justify-between items-center">
+    <div class="flex flex-col md:flex-row justify-between md:items-center gap-[20px]">
       <USelectMenu
         v-model="filters.branch"
         :items="branches"
         valueKey="id"
         labelKey="name"
         placeholder="Select Branch"
-        class="min-w-[300px] rounded-[100px] border border-[#EBE4DF] bg-[#EBE4DF] shadow-[1px_3px_8px_0px_#00000012] backdrop-blur-[25px] h-[56px] text-[#A0576F] text-[16px] font-[350] leading-normal ps-[28px]" />
+        class="min-w-[300px] rounded-[100px] border border-[#EBE4DF] bg-[#EBE4DF] shadow-[1px_3px_8px_0px_#00000012] backdrop-blur-[25px] h-[32px] md:h-[56px] text-[#A0576F] text-[16px] font-[350] leading-normal ps-[28px]" />
 
       <SelectableSlider
         v-model="menuModule.sub_category_id"

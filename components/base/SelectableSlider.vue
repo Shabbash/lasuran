@@ -5,7 +5,7 @@
   }">
     <slot :item="item">
       <UBadge @click="selectItem(item)"
-        :class="{ 'font-medium rounded-full bg-[#E6CDC7A3] text-[#A0576F] px-[19px] py-[14px] cursor-pointer': true, 'active text-[#EBE4DF] bg-[#A0576F]': (getItem(item, 'value') == selectedValue) }">
+        :class="{ 'font-medium rounded-full bg-[#E6CDC7A3] text-[#A0576F] px-[19px] py-0 h-[32px] md:h-[56px] cursor-pointer': true, 'active text-[#EBE4DF] bg-[#A0576F]': (getItem(item, 'value') == selectedValue) }">
         {{ getItem(item) }}
       </UBadge>
     </slot>
@@ -56,7 +56,6 @@ const selectItem = function (item: any) {
   font-style: normal;
   font-weight: 500;
   line-height: normal;
-  height: 50px;
   padding: 0 25px;
   border:1px solid var(--Soft-Wave, #BBCACF);
   color: var(--Soft-Wave, #BBCACF);

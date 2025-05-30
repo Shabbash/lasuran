@@ -1,7 +1,7 @@
 <template >
    <div class="bg-[#A0576F] bg-decore" >
     <LayoutHeader></LayoutHeader>
-    <div class="min-h-[calc(100vh-222px)]">
+    <div class="min-h-[calc(100vh-222px)] relative">
     <slot> </slot>
    </div>
     <LayoutFooter></LayoutFooter>

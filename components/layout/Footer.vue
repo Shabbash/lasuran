@@ -1,7 +1,7 @@
 <template>
     <footer>
         <Container>
-            <div class="flex justify-between items-center mt-[55px]">
+            <div class="flex flex-col md:flex-row justify-between items-center mt-[55px]">
                 <ul class="flex justify-between items-center">
                     <li>
                         <a href="#">
@@ -15,10 +15,10 @@
                     </li>
                 </ul>
 
-                <p class="font-medium text-[14px] leading-[14px] tracking-normal text-[white]">Copyright © Lasuran All Rights Reserved
+                <p class="font-medium text-[14px] leading-[14px] tracking-normal text-[white] py-[15px] md:py-0">Copyright © Lasuran All Rights Reserved
                 </p>
 
-                <ul class="flex justify-between items-center gap-[30px]">
+                <ul class="hidden md:flex justify-between items-center gap-[30px]">
                     <li>
                         <a href="#">
                             <img src="/public/assets/img/FB.svg" alt="">
