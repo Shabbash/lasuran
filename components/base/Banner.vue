@@ -1,6 +1,6 @@
 <template>
     <div class="relative overflow-hidden rounded-[20px] mb-[25px]">
-        <div class="relative">
+        <div class="relative h-[150px] md:h-auto">
             <img :src="bannerContent.image" alt="banner" class="w-full h-full object-cover" />
             <div v-if="opacity" class="absolute inset-0" style="background: #000000ba"></div>
         </div>
@@ -8,7 +8,7 @@
             <p class="text-[#A0576F] text-center text-[17px] font-bold leading-[22px] tracking-[-0.408px]">
                 {{ bannerContent.subtitle }}
             </p>
-            <h2 class="text-[#EBE4DF] text-center text-[57px] font-bold leading-[22px] tracking-[-0.408px]">
+            <h2 class="text-[#EBE4DF] text-center text-[40px] md:text-[57px] font-bold leading-[22px] tracking-[-0.408px]">
                 {{ bannerContent.title }}
             </h2>
         </div>

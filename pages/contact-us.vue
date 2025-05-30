@@ -3,10 +3,10 @@
     <Banner :opacity="false" :bannerContent="bannerContent" />
 
 
-    <div class="flex">
+    <div class="flex flex-col md:flex-row">
       <div class="flex-1">
-        <div>
-          <h3 class="text-[#EBE4DF] text-[67px] font-extrabold tracking-[-0.408px] mb-[30px]">Get in Touch</h3>
+        <div class="mb-[30px] md:mb-0">
+          <h3 class="text-[#EBE4DF] text-[30px] md:text-[67px] font-extrabold tracking-[-0.408px] mb-[30px]">Get in Touch</h3>
           <p class="text-white text-[20px] font-[350] tracking-[-0.408px] mb-[30px]">We’d love to hear from you! Whether
             you have a question, a project in mind, or just want to say hello, feel
             free to reach out.</p>
@@ -22,7 +22,7 @@
         </div>
       </div>
       <div class="flex-1">
-        <div class="rounded-[30px] bg-[#EBE4DF] px-[50px] py-[30px]">
+        <div class="rounded-[30px] bg-[#EBE4DF] px-[15px] md:px-[50px] py-[30px]">
 
           <USelectMenu v-model="contactForm.feedback" :items="feedbackOptions" valueKey="id" labelKey="name"
             placeholder="Select Feedback"
