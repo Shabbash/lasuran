@@ -3,8 +3,8 @@
     <!-- Top Section -->
 
 
-    <div class="flex justify-between mt-[14px] mb-[14px] px-[29px]">
-      <div class="flex-1">
+    <div class="flex justify-between mt-[14px] mb-[14px] md:px-[29px]">
+      <div class="flex-2 md:flex-1">
         <div class="flex items-center gap-[11px]">
           <div class="w-[53px] h-[53px] rounded-[10px] overflow-hidden">
             <img :src="item.image" alt="service" class="w-full h-full object-cover" />
@@ -20,9 +20,9 @@
 
       </div>
       <div class="flex flex-1 justify-end">
-        <p class="flex-1 text-[#EBE4DF] text-[14px] font-normal leading-normal">{{ item.duration }}</p>
-        <p class="flex-1 text-[#EBE4DF] text-[14px] font-normal leading-normal">{{ item.price }} SAR</p>
-        <div class="flex-1">
+        <p class="flex-2 text-[#EBE4DF] text-[14px] font-normal leading-normal hidden md:block">{{ item.duration }}</p>
+        <p class="flex-1 text-[#EBE4DF] text-[14px] font-normal leading-normal hidden md:block">{{ item.price }} SAR</p>
+        <div class="md:flex-1">
           <button
           @click="$emit('edit', item)">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="22" viewBox="0 0 24 22" fill="none">
@@ -47,13 +47,20 @@
         </div>
       </div>
     </div>
+    
 
     <!-- Expanded Content -->
     <Transition name="fade-slide" enter-active-class="transition-all duration-200 ease-in-out"
       leave-active-class="transition-all duration-200 ease-in-out" enter-from-class="opacity-0 -translate-y-2"
       enter-to-class="opacity-100 translate-y-0" leave-from-class="opacity-100 translate-y-0"
       leave-to-class="opacity-0 -translate-y-2">
-      <div v-if="item.expanded" class="mt-[6px] mb-[28px] px-[93px] space-y-[25px]">
+      <div v-if="item.expanded" class="mt-[6px] mb-[28px] md:px-[93px] space-y-[5px] md:space-y-[25px]">
+
+        <p class="flex-1 text-[#EBE4DF] text-[14px] font-normal leading-normal md:hidden">{{ item.price }} SAR</p>
+
+        <p class="text-[#EBE4DF] text-[14px] font-[350] leading-normal md:hidden">{{ item.duration }}</p>
+
+
         <div class="text-[#EBE4DF] text-[14px] font-[350] leading-normal" v-if="item.professional">
           <span class="text-[#C6C6C7]">Branch:</span> {{ item.professional }}
         </div>

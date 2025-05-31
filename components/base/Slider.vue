@@ -37,7 +37,7 @@ const uiOptions = computed(() => {
   const isOneDesktop = props.slidePerRow === 1;
 
   let options: any = {
-    item: `${isOneMobile ? 'basis-full w-full max-w-full' : `basis-1/${props.slidePerRowMobile} w-1/${props.slidePerRowMobile} max-w-[${100 / props.slidePerRowMobile}%]`} md:${isOneDesktop ? 'basis-full w-full max-w-full' : `md:basis-1/${props.slidePerRow} md:w-1/${props.slidePerRow} md:max-w-[${100 / props.slidePerRow}%]`}`
+    item: `${isOneMobile ? 'basis-full w-full max-w-full' : `basis-1/${props.slidePerRowMobile} w-1/${props.slidePerRowMobile} max-w-[${100 / props.slidePerRowMobile}%]`} md:${isOneDesktop ? 'basis-full w-full max-w-full' : `basis-1/${props.slidePerRow} md:w-1/${props.slidePerRow} md:max-w-[${100 / props.slidePerRow}%]`}`
   };
 
   if (props.dots) options.dots = `${props.dotsClass}`;
