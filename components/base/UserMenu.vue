@@ -51,7 +51,7 @@
             <span class="text-[15px] font-[350] leading-none">My Bookings</span>
           </NuxtLink>
 
-          <NuxtLink to="/support" 
+          <NuxtLink to="/support"
             class="flex items-center gap-2 px-4 py-2 rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
             <img src="/assets/img/menu-icons/Group-1.svg" alt="" class="w-[20px] h-[20px]" />
             <span class="text-[15px] font-[350] leading-none">Customer Service</span>

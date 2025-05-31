@@ -6,11 +6,20 @@
       <div class="flex flex-col items-center mb-8">
         <div class="relative mb-4">
           <img
-            src="/assets/img/imgg3.png"
-            alt="Lasuban Logo"
+            :src="imagePreview || profileStore.profile?.image_profile || '/assets/img/imgg3.png'"
+            :alt="getFullName() || 'Lasuban Logo'"
             class="w-[139px] h-[139px] rounded-full bg-rose-100 object-cover"
+            :class="{ 'ring-4 ring-yellow-400 ring-opacity-50': selectedImage }"
+          />
+          <input
+            ref="fileInput"
+            type="file"
+            accept="image/*"
+            @change="handleImageUpload"
+            class="hidden"
           />
           <button
+            @click="fileInput?.click()"
             class="absolute bottom-2 right-1 rounded-full p-1 text-white bg-[#6B8B9B] w-[30px] h-[30px] flex items-center justify-center"
             type="button"
           >
@@ -19,8 +28,13 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
           </button>
+          <!-- Indicator for pending image upload -->
+          <div v-if="selectedImage" class="absolute -top-2 -right-2 bg-yellow-500 text-white text-xs px-2 py-1 rounded-full">
+            Pending
+          </div>
         </div>
-        <h2 class="text-xl font-medium text-[#EBE4DF]">{{ user.name }}</h2>
+        <h2 class="text-xl font-medium text-[#EBE4DF]">{{ getFullName() || user.name }}</h2>
+        <p v-if="selectedImage" class="text-xs text-yellow-400 mt-1">Image will be updated when you click Save</p>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -43,7 +57,8 @@
             <input
               type="text"
               placeholder="50 XXXX XXXX"
-              v-model="user.phone"
+              :value="formatPhoneNumber(profileStore.profile?.mobile_number || '') || user.phone"
+              readonly
               class="flex-1 outline-none bg-transparent text-[#BBCACF] placeholder:text-[#D3C9C5] text-[14px]"
             />
           </div>
@@ -63,14 +78,14 @@
               <input
                 placeholder="April - 18th - 2000"
                 id="last-name"
-                v-model="user.birthDate"
+                v-model="formData.date_of_birth"
                 class="flex-1 outline-none bg-transparent text-[#BBCACF] placeholder:text-[#D3C9C5] text-[14px] h-[50px]"
                 type="text"
               />
             </div>
           </div>
         </div>
-   
+
         <div>
           <p class="text-start text-[14px] font-medium text-white mb-3">
             City
@@ -84,7 +99,7 @@
                 </svg>
               </div>
               <select
-                v-model="user.city"
+                v-model="formData.address"
                 class="w-full h-[50px] pl-10 pr-4 py-2 rounded-[14px] bg-[#A0576F] ring-1 ring-[#EBE4DF] focus:ring-0 focus:border-[#A0576F] text-[#BBCACF] placeholder:text-[#D3C9C5] text-[14px] appearance-none"
               >
                 <option v-for="city in cities" :key="city.value" :value="city.value">
@@ -107,7 +122,7 @@
           <div>
             <div class="flex gap-4">
               <div class="flex-1 basis-1/2">
-                <input type="radio" id="gender-male" value="male" v-model="user.gender" name="gender" class="sr-only peer" />
+                <input type="radio" id="gender-male" value="Male" v-model="formData.gender" name="gender" class="sr-only peer" />
                 <label for="gender-male"
                   class="block text-center w-full cursor-pointer py-[10px] rounded-full border border-[#EBE4DF] text-[#EBE4DF] text-[18px] bg-transparent transition-all
                           peer-checked:bg-[#6B8B9B] peer-checked:text-[#EBE4DF] peer-checked:border-[#6B8B9B]">
@@ -116,7 +131,7 @@
               </div>
 
               <div class="flex-1 basis-1/2">
-                <input type="radio" id="gender-female" value="female" v-model="user.gender" name="gender" class="sr-only peer" />
+                <input type="radio" id="gender-female" value="Female" v-model="formData.gender" name="gender" class="sr-only peer" />
                 <label for="gender-female"
                   class="block text-center w-full cursor-pointer py-[10px] rounded-full border border-[#EBE4DF] text-[#EBE4DF] text-[18px] bg-transparent transition-all
                   peer-checked:bg-[#6B8B9B] peer-checked:text-[#EBE4DF] peer-checked:border-[#6B8B9B]">
@@ -126,9 +141,9 @@
             </div>
           </div>
         </div>
-        
+
         <div>
-          <button 
+          <button
             class="bg-[#C44E4E] py-[10px] px-8 text-[14px] rounded-[100px] hover:bg-[#C44E4E] text-[#EBE4DF]"
             @click="deleteProfile"
           >
@@ -139,19 +154,26 @@
 
       <div class="flex justify-end gap-6 justify-items-end mt-[30px]">
         <button
-          class="w-[calc(50%-12px)] bg-white py-[10px] px-8 rounded-[100px] hover:bg-white text-[#913E5D] text-center flex items-center justify-center h-[50px] border border-[#913E5D] hover:text-[#913E5D] hover:opacity-100"
+          :disabled="profileStore.isUpdating"
+          class="w-[calc(50%-12px)] bg-white py-[10px] px-8 rounded-[100px] hover:bg-white text-[#913E5D] text-center flex items-center justify-center h-[50px] border border-[#913E5D] hover:text-[#913E5D] hover:opacity-100 disabled:opacity-50 disabled:cursor-not-allowed"
           @click="saveProfile"
         >
-          Save
+          <div v-if="profileStore.isUpdating" class="animate-spin rounded-full h-4 w-4 border-b-2 border-[#913E5D] mr-2"></div>
+          {{ profileStore.isUpdating ? 'Saving...' : 'Save' }}
         </button>
       </div>
     </div>
   </div>
 </template>
 
-<script setup>
-import { ref } from "vue";
+<script setup lang="ts">
+import { ref, reactive, onMounted, watch } from "vue";
+import { useProfile } from '@/stores/profile';
 
+// Initialize profile store
+const profileStore = useProfile();
+
+// Keep your original fallback data
 const user = ref({
   name: "Zahra Ahmed",
   phone: "+966 854 759 9745",
@@ -160,6 +182,16 @@ const user = ref({
   gender: "female"
 });
 
+// Form data for API integration
+const formData = reactive({
+  first_name: '',
+  last_name: '',
+  gender: '',
+  date_of_birth: '',
+  address: '',
+});
+
+// Keep your original cities data
 const cities = [
   { label: "Riyadh", value: "Riyadh" },
   { label: "Jeddah", value: "Jeddah" },
@@ -168,13 +200,124 @@ const cities = [
   { label: "Dammam", value: "Dammam" }
 ];
 
-const saveProfile = () => {
-  console.log('Saving profile', user.value);
+// File input ref for image upload
+const fileInput = ref<HTMLInputElement | null>(null);
+const selectedImage = ref<File | null>(null);
+const imagePreview = ref<string | null>(null);
+
+// Watch for profile changes and update form data
+watch(() => profileStore.profile, (newProfile) => {
+  if (newProfile) {
+    formData.first_name = newProfile.first_name || '';
+    formData.last_name = newProfile.last_name || '';
+    formData.gender = newProfile.gender || '';
+    formData.date_of_birth = newProfile.date_of_birth || '';
+    formData.address = newProfile.address || '';
+  }
+}, { immediate: true });
+
+// Format phone number for display (keeping your original format)
+const formatPhoneNumber = (phoneNumber: string) => {
+  if (!phoneNumber) return '';
+  // Remove country code if present
+  const cleanNumber = phoneNumber.replace(/^966/, '');
+  // Format as XXX XXX XXXX
+  return cleanNumber.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3');
 };
 
+// Get full name from profile
+const getFullName = () => {
+  if (!profileStore.profile) return '';
+  return `${profileStore.profile.first_name} ${profileStore.profile.last_name}`.trim();
+};
+
+// Handle image selection (store file for later upload)
+const handleImageUpload = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  const file = target.files?.[0];
+
+  if (file) {
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      const toast = useToast();
+      toast.add({ title: 'Please select a valid image file', color: 'error' });
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      const toast = useToast();
+      toast.add({ title: 'Image size must be less than 5MB', color: 'error' });
+      return;
+    }
+
+    // Store the selected file for later upload
+    selectedImage.value = file;
+
+    // Create preview URL
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      imagePreview.value = e.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+
+    console.log('Image selected, will be uploaded when Save is clicked');
+  }
+};
+
+// Your original saveProfile function enhanced with API integration
+const saveProfile = () => {
+  // Prepare update data from form
+  const updateData: any = {
+    first_name: formData.first_name.trim(),
+    last_name: formData.last_name.trim(),
+    gender: formData.gender,
+    date_of_birth: formData.date_of_birth || null,
+    address: formData.address || null,
+  };
+
+  // Add selected image if user chose one
+  if (selectedImage.value) {
+    updateData.image_profile = selectedImage.value;
+  }
+
+  // Don't remove required fields - only remove optional empty fields
+  const requiredFields = ['first_name', 'last_name', 'gender'];
+  Object.keys(updateData).forEach(key => {
+    if (key !== 'image_profile' && !requiredFields.includes(key) && (updateData[key] === '' || updateData[key] === null)) {
+      delete updateData[key];
+    } else if (updateData[key] === null) {
+      // Convert null to empty string for required fields
+      updateData[key] = '';
+    }
+  });
+
+  // Call API to update profile
+  profileStore.updateProfile(updateData);
+
+  // Clear selected image after saving
+  selectedImage.value = null;
+  imagePreview.value = null;
+};
+
+// Your original deleteProfile function
 const deleteProfile = () => {
   if (confirm('Are you sure you want to delete your profile?')) {
     console.log('Deleting profile', user.value);
   }
 };
+
+// Fetch profile on component mount
+onMounted(async () => {
+  // Ensure auth is initialized first
+  const authStore = useAuth();
+  if (!authStore.getToken) {
+    await authStore.initAuth();
+  }
+
+  // Then fetch profile if we have a token
+  if (authStore.getToken && !profileStore.profile) {
+    profileStore.fetchProfile();
+  }
+});
 </script>

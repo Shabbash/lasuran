@@ -12,16 +12,4 @@ definePageMeta({
 });
 
 import Container from '@/components/base/Container.vue'
-
-// Redirect to dashboard with profile tab if no tab is specified
-const route = useRoute();
-const router = useRouter();
-
-onMounted(() => {
-  if (!route.query.tab) {
-    router.replace({ path: '/profile', query: { tab: 'profile' } });
-  }
-});
 </script>
-
-

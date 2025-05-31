@@ -15,7 +15,7 @@ export const useApi = (
   const toast = useToast()
 
 
- const headers: RequestHeaders = getRequestHeaders(options.headers);
+ const headers: RequestHeaders = getRequestHeaders(options.headers, options.body);
 //   if (callbacks.transformData) options.transform = callbacks.transformData;
 
   const requestOptions :RequestOptions = {
@@ -47,19 +47,34 @@ export const useApi = (
   );
 }
 
-export const getRequestHeaders = (headers : {} = {}) => {
-  const { getToken } = useAuth();
+export const getRequestHeaders = (headers : {} = {}, body?: any) => {
+  const authStore = useAuth();
   const { getDeviceType , getServiceType , getDeliveryMethod , getLocale } = useApp();
 
-  const defaultHeaders = {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${getToken}`,
+  // Automatically detect FormData and adjust Content-Type
+  const isFormData = body instanceof FormData;
+
+  const defaultHeaders: any = {
+    'Authorization': `Bearer ${authStore.getToken}`,
     'Service-Type': getServiceType,
     'Delivery-Method': getDeliveryMethod,
     'Device-Type': getDeviceType,
     'Accept-Language': getLocale,
   }
-  return {...defaultHeaders, ...(headers ?? {})};
+
+  // Only set Content-Type for non-FormData requests
+  if (!isFormData) {
+    defaultHeaders['Content-Type'] = 'application/json';
+  }
+
+  const mergedHeaders = {...defaultHeaders, ...(headers ?? {})};
+
+  // Remove Content-Type if explicitly set to undefined (for FormData)
+  if (mergedHeaders['Content-Type'] === undefined) {
+    delete mergedHeaders['Content-Type'];
+  }
+
+  return mergedHeaders;
 }
 
 export { endPoints }

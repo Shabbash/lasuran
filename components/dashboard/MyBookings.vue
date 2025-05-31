@@ -23,7 +23,12 @@
       </div>
     </div>
 
-    <div v-if="filteredBookings.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <!-- Loading State -->
+    <div v-if="isLoading" class="flex justify-center items-center py-16">
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#6B8B9B]"></div>
+    </div>
+
+    <div v-else-if="filteredBookings.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div v-for="booking in filteredBookings" :key="booking.id"
         class="py-[14px] px-[20px] h-full flex flex-col border border-[#AD7084] border-solid rounded-[20px] text-white relative cursor-pointer"
         @click="openBookingDetails(booking)">
@@ -32,13 +37,11 @@
         <div class="flex justify-between items-start mb-3">
           <h3 class="text-[#EBE4DF] text-[18px] font-bold">Booking No. {{ booking.bookingNumber }}</h3>
 
-          <span :class="[
-            'px-3 h-[18px] rounded-full text-xs font-medium',
-            booking.status === 'active' ? 'bg-[#6B8B9B] text-white' :
-              booking.status === 'served' ? 'bg-[#D29F8C] text-white' :
-                'bg-[#C44E4E] text-white'
-          ]">
-            {{ capitalizeFirstLetter(booking.status) }}
+          <span
+            :class="`inline-flex px-3 py-1 rounded-full text-xs font-medium text-white`"
+            :style="`background-color: ${booking._originalData?.status?.color || '#6B8B9B'}`"
+          >
+            {{ booking._originalData?.status_text || capitalizeFirstLetter(booking.status) }}
           </span>
         </div>
 
@@ -112,21 +115,18 @@
           class="bg-decore-modal mx-auto rounded-[30px] overflow-hidden shadow-lg bg-[#EBE4DF] text-[#5F2C3E]">
           <!-- Header -->
           <div class="pt-[34px] px-[50px] pb-[30px] relative">
-            <h2 class="text-[#A0576F] text-[18px] font-bold leading-normal text-center mb-[20px]">Booking No. {{
-              selectedBooking.bookingNumber }}</h2>
+            <h2 class="text-[#A0576F] text-[18px] font-bold leading-normal text-center mb-[20px]">Booking No. {{ selectedBooking.bookingNumber }}</h2>
 
             <!-- Booking Info Grid -->
             <div class="p-[20px] rounded-[20px] bg-[#A0576F] relative mb-[18px]">
               <div class="flex justify-between mb-[20px]">
                 <h3 class="text-[#EBE4DF] text-[17.108px] font-medium leading-normal">Booking Details </h3>
 
-                <span :class="[
-                  'px-[18px] h-[24px] rounded-full text-[14px] font-medium flex items-center justify-center',
-                  selectedBooking.status === 'active' ? 'bg-[#6B8B9B] text-white' :
-                    selectedBooking.status === 'served' ? 'bg-[#D29F8C] text-white' :
-                      'bg-[#C44E4E] text-white'
-                ]">
-                  {{ capitalizeFirstLetter(selectedBooking.status) }}
+                <span
+                  :class="`inline-flex px-[18px] h-[24px] rounded-full text-[14px] font-medium items-center justify-center text-white`"
+                  :style="`background-color: ${selectedBooking._originalData?.status?.color || '#6B8B9B'}`"
+                >
+                  {{ selectedBooking._originalData?.status_text || capitalizeFirstLetter(selectedBooking.status) }}
                 </span>
 
 
@@ -135,12 +135,12 @@
 
                 <div class="flex justify-between pb-[12px] border-b border-b-[#AD7084] last:border-b-0 last:pb-0">
                   <h3 class="text-[#EBE4DF] text-[13.082px] font-[350] leading-normal">Username</h3>
-                  <p class="text-[#EBE4DF] text-[13px] font-[350] leading-normal">Zahra Ahmed</p>
+                  <p class="text-[#EBE4DF] text-[13px] font-[350] leading-normal">{{ authStore.getUserName }}</p>
                 </div>
                 <div
                   class="flex justify-between pb-[12px] mb-[12px] border-b border-b-[#AD7084] last:border-b-0 last:pb-0">
-                  <h3 class="text-[#EBE4DF] text-[13.082px] font-[350] leading-normal">Zahra Arrived</h3>
-                  <p class="text-[#EBE4DF] text-[13px] font-[350] leading-normal">Yes</p>
+                  <h3 class="text-[#EBE4DF] text-[13.082px] font-[350] leading-normal">Customer Arrived</h3>
+                  <p class="text-[#EBE4DF] text-[13px] font-[350] leading-normal">{{ selectedBooking._originalData?.customer_arrived ? 'Yes' : 'No' }}</p>
                 </div>
                 <div class="flex justify-between pb-[12px] border-b border-b-[#AD7084] last:border-b-0 last:pb-0">
                   <h3 class="text-[#EBE4DF] text-[13.082px] font-[350] leading-normal">Visitors</h3>
@@ -170,7 +170,7 @@
                 <div class="flex justify-between pb-[12px] border-b border-b-[#B2B0B0]">
                   <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">Subtotal ({{ selectedBooking.guests }}
                     Persons)</p>
-                  <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">00.00 SAR</p>
+                  <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">{{ selectedBooking._originalData?.total || '00.00' }} SAR</p>
                 </div>
                 <div class="flex justify-between pb-[12px] border-b border-b-[#B2B0B0]">
                   <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">VAT Amount (15%)</p>
@@ -178,30 +178,30 @@
                 </div>
                 <div class="flex justify-between pb-[12px] border-b border-b-[#B2B0B0]">
                   <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">Service Cost</p>
-                  <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">00.00 SAR</p>
+                  <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">{{ selectedBooking._originalData?.order_service_fee_price || '00.00' }} SAR</p>
                 </div>
                 <div class="flex justify-between pb-[12px] border-b border-b-[#B2B0B0]">
                   <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">Discount</p>
-                  <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">00.00 SAR</p>
+                  <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">{{ selectedBooking._originalData?.promo_discount || '00.00' }} SAR</p>
                 </div>
                 <div class="flex justify-between pb-[12px] border-b border-b-[#B2B0B0]">
                   <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">Bookmarked points (-100 Pts.)</p>
-                  <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">00.00 SAR</p>
+                  <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">{{ selectedBooking._originalData?.redeem_points_price || '00.00' }} SAR</p>
                 </div>
               </div>
 
               <div class="mt-[28px]">
                 <div class="flex justify-between">
                   <p class="text-[#A0576F] text-[21px] font-bold leading-normal">Total</p>
-                  <p class="text-[#A0576F] text-[21px] font-bold leading-normal">00.00 SAR</p>
+                  <p class="text-[#A0576F] text-[21px] font-bold leading-normal">{{ selectedBooking._originalData?.total || '00.00' }} SAR</p>
                 </div>
               </div>
             </div>
 
             <!-- Action Buttons -->
             <div class="flex flex-col space-y-3">
-              <!-- ✅ الحالة: served && لم يتم التقييم -->
-              <BaseButton v-if="selectedBooking.status === 'served' && selectedBooking.rating_status === false"
+              <!-- ✅ Rate Service - Show if order can be rated -->
+              <BaseButton v-if="selectedBooking._originalData?.can_rate"
                 class="rate w-full h-[50px] bg-transparent hover:bg-transparent text-[#6B8B9B] border border-[#6B8B9B] rounded-full text-[13px] font-medium"
                 @click="handleRateService">
                 <svg xmlns="http://www.w3.org/2000/svg" width="17" height="18" viewBox="0 0 17 18" fill="none">
@@ -218,8 +218,8 @@
                 </svg><span>Rate Service</span>
               </BaseButton>
 
-              <!-- ✅ الحالة: served && تم التقييم -->
-              <BaseButton v-if="selectedBooking.status === 'served' && selectedBooking.rating_status === true"
+              <!-- ✅ View Rating - Show if order has been rated -->
+              <BaseButton v-if="selectedBooking._originalData?.has_rating"
                 class="rated w-full h-[50px] bg-[#6B8B9B] hover:bg-[#6B8B9B] text-[#EBE4DF] border border-[#6B8B9B] rounded-full text-[13px] font-medium"
                 @click="handleViewRating">
                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
@@ -237,15 +237,15 @@
                 <span>View Rating</span>
               </BaseButton>
 
-              <!-- ✅ View Invoice للحالات: active, served, cancelled -->
-              <BaseButton v-if="['active', 'served', 'cancelled'].includes(selectedBooking.status)"
+              <!-- ✅ View Invoice - Show if invoice is available -->
+              <BaseButton v-if="selectedBooking._originalData?.invoice_link"
                 class="w-full h-[50px] bg-[#A0576F] hover:bg-[#A0576F] text-[#EBE4DF] rounded-full text-[13px] font-medium"
                 @click="handleMakeService">
                 View Invoice
               </BaseButton>
 
-              <!-- ✅ Cancel Booking فقط إذا كانت active -->
-              <BaseButton v-if="selectedBooking.status === 'active'"
+              <!-- ✅ Cancel Booking - Show if order is cancelable -->
+              <BaseButton v-if="selectedBooking._originalData?.is_cancelable"
                 class="w-full h-[50px] bg-[#C44E4E] hover:bg-[#C44E4E] text-[#EBE4DF] rounded-full text-[13px] font-medium"
                 @click="handleCancelBooking">
                 Cancel Booking
@@ -280,7 +280,9 @@
 
 
               <BaseButton label="Yes, Cancel"
-                class="h-[49px] bg-[#C44E4E] hover:bg-[#913E5D] text-white text-[16px] font-normal rounded-[100px] leading-normal"
+                :loading="bookingsStore.isLoading"
+                :disabled="bookingsStore.isLoading"
+                class="h-[49px] bg-[#C44E4E] hover:bg-[#913E5D] text-white text-[16px] font-normal rounded-[100px] leading-normal disabled:opacity-50"
                 @click="confirmDeleteBooking" />
 
 
@@ -338,9 +340,11 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import Dialog from '@/components/base/Dialog.vue';
-import StarRating from '@/components/cart/StarRating.vue'
+import StarRating from '@/components/cart/StarRating.vue';
+import { useBookings } from '@/stores/bookings';
+import { useAuth } from '@/stores/auth';
 
 const ratingModalOpen = ref(false)
 
@@ -401,7 +405,7 @@ function handleViewRating() {
 }
 
 
-const showEmptyState = computed(() => filteredBookings.value.length === 0);
+const showEmptyState = computed(() => !isLoading.value && filteredBookings.value.length === 0);
 
 
 // Filter options
@@ -415,42 +419,47 @@ const filters = [
 // Currently active filter
 const activeFilter = ref('all');
 
-// Bookings data
-const bookings = ref([
-  {
-    id: 1,
-    bookingNumber: '05585',
-    status: 'active',
-    guests: 3,
-    branch: 'Riyadh',
-    date: 'Sep 18th, 2024',
-    time: '7:30 PM',
-    rating_status: false
+// Initialize stores
+const bookingsStore = useBookings();
+const authStore = useAuth();
 
-  },
-  {
-    id: 2,
-    bookingNumber: '05586',
-    status: 'served',
-    guests: 2,
-    branch: 'Jeddah',
-    date: 'Sep 15th, 2024',
-    time: '7:30 PM',
-    rating_status: false
+// API Integration - Transform API data to match existing UI
+const bookings = computed(() => {
+  return bookingsStore.orders.map(order => ({
+    id: order.id,
+    bookingNumber: order.order_number,
+    status: mapApiStatusToUIStatus(order.status.value),
+    guests: order.number_of_users || 1, // Default to 1 if not specified
+    branch: order.branch_name,
+    date: formatDate(order.date),
+    time: order.time,
+    rating_status: !order.can_rate, // If can't rate, means already rated
+    // Store original API data for detailed view
+    _originalData: order
+  }));
+});
 
-  },
-  {
-    id: 3,
-    bookingNumber: '05587',
-    status: 'cancelled',
-    guests: 4,
-    branch: 'Riyadh',
-    date: 'Sep 10th, 2024',
-    time: '7:30 PM',
-    rating_status: false
+// Map API status values to UI status values
+function mapApiStatusToUIStatus(apiStatus) {
+  // Map based on your API status values
+  const statusMap = {
+    1: 'active',     // Order Confirmed
+    2: 'served',     // Completed/Served
+    3: 'cancelled',  // Cancelled
+    // Add more mappings as needed
+  };
+  return statusMap[apiStatus] || 'active';
+}
 
-  }
-]);
+// Format date to match existing UI format
+function formatDate(dateString) {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric'
+  });
+}
 
 // Selected booking for details popup
 const selectedBooking = ref(null);
@@ -462,6 +471,9 @@ const deleteModalOpen = ref(false);
 
 // Check if there are any bookings
 const hasAnyBookings = computed(() => bookings.value.length > 0);
+
+// Loading state
+const isLoading = computed(() => bookingsStore.isLoading);
 
 // Check if there are bookings with a specific status
 const hasBookingsWithStatus = (status) => {
@@ -501,11 +513,13 @@ function handleRateService() {
 }
 
 
-// Handle make service button
+// Handle make service button (View Invoice)
 function handleMakeService() {
-  // Logic for making service
-  console.log('Making service for booking:', selectedBooking.value.id);
-  // Close the popup after action
+  if (selectedBooking.value?._originalData?.invoice_link) {
+    window.open(selectedBooking.value._originalData.invoice_link, '_blank');
+  } else {
+    console.log('No invoice available for booking:', selectedBooking.value.id);
+  }
   modalOpen.value = false;
 }
 
@@ -523,19 +537,39 @@ watch(bookingToDelete, (newValue) => {
   }
 });
 
-function confirmDeleteBooking() {
+async function confirmDeleteBooking() {
   if (!bookingToDelete.value) return;
 
-  const bookingIndex = bookings.value.findIndex(
-    (b) => b.id === bookingToDelete.value.id
-  );
+  try {
+    // Call the API to cancel the order
+    const result = await bookingsStore.cancelOrder(bookingToDelete.value.id);
 
-  if (bookingIndex !== -1) {
-    bookings.value[bookingIndex].status = 'cancelled';
+    if (result.success) {
+      // API call successful - the store has already updated the order status
+      // Close the modal
+      deleteModalOpen.value = false;
+      bookingToDelete.value = null;
+    } else {
+      // API call failed - error message already shown by the store
+      console.error('Failed to cancel order:', result.error);
+    }
+  } catch (error) {
+    console.error('Error cancelling order:', error);
+    // Error handling is done in the store, so we just log here
+  }
+}
+
+// Fetch bookings on component mount
+onMounted(async () => {
+  // Ensure auth is initialized first
+  if (!authStore.getToken) {
+    await authStore.initAuth();
   }
 
-  deleteModalOpen.value = false;
-  bookingToDelete.value = null;
-}
+  // Then fetch bookings if we have a token
+  if (authStore.getToken) {
+    bookingsStore.fetchOrders();
+  }
+});
 
 </script>

@@ -194,7 +194,7 @@
                                         <span class="text-[15px] font-[350] leading-none">My Gift Cards</span>
                                     </NuxtLink>
 
-                                    
+
                                     <NuxtLink to="/profile?tab=tickets" v-if="authModule.isAuthenticated"
                                         class="flex items-center gap-2 px-4 py-[6px] rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
                                         <img src="/assets/img/menu-icons/Frame-2.svg" alt=""

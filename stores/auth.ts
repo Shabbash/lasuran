@@ -152,7 +152,7 @@ export const useAuth = defineStore("auth", {
 
             // Clear token from localStorage and cookies
             this.clearToken();
-  
+
         navigateTo('/');
         },
         setStepComponent(step: any) {
@@ -170,8 +170,8 @@ export const useAuth = defineStore("auth", {
             const authCookie = useCookie('auth_token', {
                 default: () => null,
                 maxAge: 60 * 60 * 24 * 7, // 7 days
-                secure: true,
-                sameSite: 'strict',
+                secure: false, // Set to false for development (localhost)
+                sameSite: 'lax',
             });
             authCookie.value = token;
         },
