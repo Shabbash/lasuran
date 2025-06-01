@@ -12,7 +12,7 @@
 
                                 <div class=" w-full">
                                     <div class=" w-full overflow-hidden relative rounded-[23px]">
-                                        <img class="mx-auto h-auto md-h-full w-full object-contain md:object-cover inset-0 relative"
+                                        <img class="mx-auto h-auto md:h-full w-full object-contain md:object-cover inset-0 relative"
                                             :src="item.image_url" />
                                     </div>
                                 </div>
@@ -78,7 +78,7 @@
             </div>
             
 
-            <div class="w-full md:mt-[30px]">
+            <div class="w-full md:mt-[30px] slide-5">
                 <BaseCard title="Recommended Services" with-action>
                     <template #default>
                         <BaseSlider :items="slides4" :slide-per-row="5" :slide-per-row-mobile="3">

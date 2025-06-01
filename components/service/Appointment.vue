@@ -39,7 +39,7 @@
       </div>
 
       <div class="">
-        <h3 class="text-[17px] font-normal leading-normal text-[#A0576F] mb-[12px]">Availabe Time</h3>
+        <h3 class="text-[17px] font-normal leading-normal text-[#A0576F] mb-[12px]">Available Time</h3>
          <SelectableSlider  v-model="form.time" :items="selectedDateObject?.slots ?? []" value-key="from" label-key="from" />
          
                  <!-- <URadioGroup v-model="selectedTime" orientation="horizontal" indicator="hidden" variant="card"
