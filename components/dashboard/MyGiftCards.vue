@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="flex justify-between items-center pb-7 mb-7 border-b border-[#AD7084]">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-[20px] pb-7 mb-7 border-b border-[#AD7084]">
       <h1 class="text-lg font-medium text-[#EBE4DF]">My Gift Cards</h1>
 
       <div class="flex space-x-2">

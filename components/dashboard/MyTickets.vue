@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="flex justify-between items-center pb-7 mb-7 border-b border-[#AD7084]">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-[20px] pb-7 mb-7 border-b border-[#AD7084]">
       <h1 class="text-lg font-medium text-[#EBE4DF]">My Bookings</h1>
 
       <div class="flex space-x-2">
@@ -17,10 +17,11 @@
           {{ filter.label }}
         </button>
 
-        <button class="px-6 py-1.5 bg-[#6B8B9B] text-white rounded-full text-sm font-medium transition-colors">
+        
+      </div>
+      <button class="px-6 py-1.5 bg-[#6B8B9B] text-white rounded-full text-sm font-medium transition-colors">
           Book A Table
         </button>
-      </div>
     </div>
 
     <!-- Loading State -->
@@ -38,7 +39,7 @@
           <h3 class="text-[#EBE4DF] text-[18px] font-bold">Booking No. {{ booking.bookingNumber }}</h3>
 
           <span
-            :class="`inline-flex px-3 py-1 rounded-full text-xs font-medium text-white`"
+            :class="`text-center inline-flex px-3 py-1 rounded-full text-xs font-medium text-white`"
             :style="`background-color: ${booking._originalData?.status?.color || '#6B8B9B'}`"
           >
             {{ booking._originalData?.status_text || capitalizeFirstLetter(booking.status) }}

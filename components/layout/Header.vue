@@ -299,6 +299,14 @@ import { ref } from 'vue'
 import { useAuth } from '~/stores/auth'
 
 const isOpen = ref(false);
+import { useRoute } from 'vue-router'
+import { watch } from 'vue'
+
+const route = useRoute()
+
+watch(() => route.fullPath, () => {
+  isOpen.value = false
+})
 
 </script>
 

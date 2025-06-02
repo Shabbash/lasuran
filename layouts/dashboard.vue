@@ -1,10 +1,10 @@
 <template>
   <div class="flex">
-    <div class="w-[320px]">
+    <div class="w-[320px] hidden md:block">
       <DashboardSideMenu @menu-click="handleMenuClick" />
     </div>
 
-    <div class="flex-1 ps-6">
+    <div class="flex-1 md:ps-6">
       <component :is="activeComponent" />
     </div>
   </div>
