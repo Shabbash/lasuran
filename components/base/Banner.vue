@@ -1,5 +1,5 @@
 <template>
-    <div class="relative overflow-hidden rounded-[20px] mb-[25px]">
+    <div class="relative overflow-hidden rounded-[20px] mb-[35px] mt-[40px]">
         <div class="relative h-[150px] md:h-auto">
             <img :src="bannerContent.image" alt="banner" class="w-full h-full object-cover" />
             <div v-if="opacity" class="absolute inset-0" style="background: #000000ba"></div>

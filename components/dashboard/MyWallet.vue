@@ -1,7 +1,7 @@
 <template>
-  <div class="py-[34px] px-[30px] h-full flex flex-col border border-[#AD7084] border-solid rounded-[20px]">
+  <div class="py-[34px] px-[15px] md:px-[30px] h-full flex flex-col border border-[#AD7084] border-solid rounded-[20px]">
 
-    <div class="mb-[20px] flex justify-between items-center">
+    <div class="mb-[20px] flex flex-col md:flex-row gap-[10px] justify-between items-center">
       <h2 class="text-[#EBE4DF] text-[20px] font-extrabold leading-normal">Zahra Ahmed</h2>
       <p
         class="px-[12px] h-[30px] flex items-center justify-center gap-[6px] rounded-[100px] bg-[#EBE4DF] text-[#373A42] text-[14px] font-[350] leading-normal ">
@@ -11,7 +11,7 @@
 
 
 
-    <div class="flex gap-[35px]">
+    <div class="flex flex-col md:flex-row gap-[35px]">
 
 
 
@@ -31,12 +31,12 @@
                         fill="white" />
                     </svg>
                   </div>
-                  <div class="flex justify-between w-[57%]">
+                  <div class="flex justify-between w-[70%] md:w-[57%]">
                     <span class="text-white text-[16px] font-normal leading-normal">Redeem Points</span>
                     <span class="text-white text-[16px] font-bold leading-normal">800 Pts</span>
                   </div>
 
-                  <div class="flex justify-between w-[57%]">
+                  <div class="flex justify-between w-[70%] md:w-[57%]">
                     <span class="text-white text-[16px] font-normal leading-normal">Expired Points</span>
                     <span class="text-white text-[16px] font-bold leading-normal">400 Pts</span>
                   </div>

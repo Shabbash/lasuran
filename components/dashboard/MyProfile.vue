@@ -1,6 +1,6 @@
 <template>
   <div
-    class="py-[34px] px-[30px] h-full flex flex-col border border-[#AD7084] border-solid rounded-[20px]"
+    class="py-[34px] px-[15px] md:px-[30px] h-full flex flex-col border border-[#AD7084] border-solid rounded-[20px]"
   >
     <div class="">
       <div class="flex flex-col items-center mb-8">

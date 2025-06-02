@@ -39,7 +39,7 @@
           <h3 class="text-[#EBE4DF] text-[18px] font-bold">Booking No. {{ booking.bookingNumber }}</h3>
 
           <span
-            :class="` text-center inline-flex px-3 py-1 rounded-full text-xs font-medium text-white`"
+            :class="`text-center inline-flex px-3 py-1 rounded-full text-xs font-medium text-white`"
             :style="`background-color: ${booking._originalData?.status?.color || '#6B8B9B'}`"
           >
             {{ booking._originalData?.status_text || capitalizeFirstLetter(booking.status) }}
@@ -283,7 +283,7 @@
               <BaseButton label="Yes, Cancel"
                 :loading="bookingsStore.isLoading"
                 :disabled="bookingsStore.isLoading"
-                class="h-[49px] bg-[#C44E4E] hover:bg-[#913E5D] text-white text-[16px] font-normal rounded-[100px] leading-normal disabled:opacity-50 disabled:bg-[#A0576F]"
+                class="h-[49px] bg-[#C44E4E] hover:bg-[#913E5D] text-white text-[16px] font-normal rounded-[100px] leading-normal disabled:opacity-50"
                 @click="confirmDeleteBooking" />
 
 
