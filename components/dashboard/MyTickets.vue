@@ -17,11 +17,10 @@
           {{ filter.label }}
         </button>
 
-        
-      </div>
-      <button class="px-6 py-1.5 bg-[#6B8B9B] text-white rounded-full text-sm font-medium transition-colors">
+        <button class="px-6 py-1.5 bg-[#6B8B9B] text-white rounded-full text-sm font-medium transition-colors">
           Book A Table
         </button>
+      </div>
     </div>
 
     <!-- Loading State -->
@@ -283,7 +282,7 @@
               <BaseButton label="Yes, Cancel"
                 :loading="bookingsStore.isLoading"
                 :disabled="bookingsStore.isLoading"
-                class="h-[49px] bg-[#C44E4E] hover:bg-[#913E5D] text-white text-[16px] font-normal rounded-[100px] leading-normal disabled:opacity-50 disabled:bg-[#A0576F]"
+                class="h-[49px] bg-[#C44E4E] hover:bg-[#913E5D] text-white text-[16px] font-normal rounded-[100px] leading-normal disabled:opacity-50"
                 @click="confirmDeleteBooking" />
 
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-screen">
+  <div class="flex">
     <div class="w-[320px]">
       <DashboardSideMenu @menu-click="handleMenuClick" />
     </div>
@@ -19,12 +19,16 @@ import DashboardSideMenu from '~/components/dashboard/SideMenu.vue';
 const DashboardMyProfile = defineAsyncComponent(() => import('~/components/dashboard/MyProfile.vue'));
 const DashboardMyBookings = defineAsyncComponent(() => import('~/components/dashboard/MyBookings.vue'));
 const DashboardMyWallet = defineAsyncComponent(() => import('~/components/dashboard/MyWallet.vue'));
+const DashboardMyGiftCards = defineAsyncComponent(() => import('~/components/dashboard/MyGiftCards.vue'));
+const DashboardMyTickets = defineAsyncComponent(() => import('~/components/dashboard/MyTickets.vue'));
 
 // ربط كل تبويب بالمكون الخاص به
 const components = {
   'profile': markRaw(DashboardMyProfile),
   'bookings': markRaw(DashboardMyBookings),
   'wallet': markRaw(DashboardMyWallet),
+  'gift-cards': markRaw(DashboardMyGiftCards),
+  'tickets': markRaw(DashboardMyTickets),
 };
 
 // إعدادات الراوتر

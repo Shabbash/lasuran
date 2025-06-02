@@ -42,6 +42,8 @@ const menuItems = [
   { id: 'profile', label: 'My Profile', icon: 'i-heroicons-user' },
   { id: 'bookings', label: 'My Bookings', icon: 'i-heroicons-calendar' },
   { id: 'wallet', label: 'My Wallet', icon: 'i-heroicons-wallet' },
+  { id: 'gift-cards', label: 'My Gift Cards', icon: 'i-heroicons-gift' },
+  { id: 'tickets', label: 'My Tickets', icon: 'i-heroicons-ticket' },
 ];
 
 import { useRoute } from 'vue-router';
