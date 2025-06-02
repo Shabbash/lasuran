@@ -1,19 +1,35 @@
 <template>
   <Container>
-    <!-- Slider Section -->
-    <div>
-      <BaseSlider :items="slides" dots :slide-per-row="1" :slide-per-row-mobile="1" dots-class="dots-style"
-        class="shop-slider">
-        <template #default="{ item }">
-          <div class="w-full">
-            <div class="w-full overflow-hidden relative rounded-[23px]">
-              <img class="mx-auto h-auto md:h-full w-full object-contain md:object-cover inset-0 relative"
-                :src="item.image_url" />
-            </div>
-          </div>
-        </template>
-      </BaseSlider>
+    <!-- Loading State -->
+    <div v-if="productsStore.isLoading" class="flex justify-center items-center py-20">
+      <div class="text-white text-lg">Loading...</div>
     </div>
+
+    <!-- Error State -->
+    <div v-else-if="productsStore.error" class="flex justify-center items-center py-20">
+      <div class="text-red-500 text-lg">{{ productsStore.error }}</div>
+    </div>
+
+    <!-- Content -->
+    <div v-else>
+      <!-- Slider Section -->
+      <div>
+        <BaseSlider :items="productsStore.sliders" dots :slide-per-row="1" :slide-per-row-mobile="1" dots-class="dots-style"
+          class="shop-slider">
+          <template #default="{ item }">
+            <div class="w-full">
+              <div class="w-full overflow-hidden relative rounded-[23px]">
+                <img class="mx-auto h-auto md:h-full w-full object-contain md:object-cover inset-0 relative"
+                  :src="item.image_url" />
+              </div>
+            </div>
+          </template>
+        </BaseSlider>
+      </div>
+
+
+
+
 
     <!-- Popular Items Section -->
     <div>
@@ -23,7 +39,7 @@
             <h2 class="text-[#EBE4DF] font-[500] text-[24.665px] leading-none">Popular Items</h2>
           </template>
           <template #default>
-            <BaseSlider :items="products" :slide-per-row-mobile="2" :slide-per-row="6">
+            <BaseSlider :items="productsStore.getPopularProducts" :slide-per-row-mobile="2" :slide-per-row="6">
               <template #default="{ item }">
                 <div class="relative min-h-[215px]" @click="openProductModal(item)">
                   <div class="absolute inset-0 top-[75px] rounded-[24px] bg-[#EBE4DF]"></div>
@@ -34,28 +50,27 @@
                     <div class="pb-[17px] px-[15px] flex items-end justify-between">
                       <div class="flex flex-col justify-between gap-[8px]">
                         <h3 class="text-[#A0566E] text-[15px] font-[350]">{{ item.title }}</h3>
-                        <p class="text-[#A0566E] text-[12px] font-bold leading-none tracking-[-0.236px]">{{ item.price
-                        }}</p>
+                        <p class="text-[#A0566E] text-[12px] font-bold leading-none tracking-[-0.236px]">{{ item.price }}</p>
                       </div>
                       <div>
                         <button
                           class="w-[24px] h-[24px] rounded-full flex items-center justify-center border border-[#A0576F]"
                           :class="{ 'bg-transparent': item.liked, 'bg-[#A0576F]': !item.liked }"
-                          @click.stop="item.liked = !item.liked">
+                          @click.stop="productsStore.toggleProductLike(item.id)">
                           <svg v-if="item.liked" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#A0576F]"
                             fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 
-                             2 8.5 2 5.42 4.42 3 7.5 3c1.74 
-                             0 3.41 0.81 4.5 2.09C13.09 3.81 
-                             14.76 3 16.5 3 19.58 3 22 5.42 
-                             22 8.5c0 3.78-3.4 6.86-8.55 
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28
+                             2 8.5 2 5.42 4.42 3 7.5 3c1.74
+                             0 3.41 0.81 4.5 2.09C13.09 3.81
+                             14.76 3 16.5 3 19.58 3 22 5.42
+                             22 8.5c0 3.78-3.4 6.86-8.55
                              11.54L12 21.35z" />
                           </svg>
                           <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none"
                             viewBox="0 0 24 24" stroke="#EBE4DF">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4.318 6.318a4.5 4.5 0 000 
-                             6.364L12 20.364l7.682-7.682a4.5 
-                             4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4.318 6.318a4.5 4.5 0 000
+                             6.364L12 20.364l7.682-7.682a4.5
+                             4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5
                              4.5 0 00-6.364 0z" />
                           </svg>
                         </button>
@@ -78,7 +93,7 @@
             <h2 class="text-[#EBE4DF] font-[500] text-[24.665px] leading-none">New Arrival</h2>
           </template>
           <template #default>
-            <BaseSlider :items="products" :slide-per-row-mobile="2" :slide-per-row="6">
+            <BaseSlider :items="productsStore.getNewProducts" :slide-per-row-mobile="2" :slide-per-row="6">
               <template #default="{ item }">
                 <div class="relative min-h-[215px]" @click="openProductModal(item)">
                   <div class="absolute inset-0 top-[75px] rounded-[24px] bg-[#EBE4DF]"></div>
@@ -89,28 +104,27 @@
                     <div class="pb-[17px] px-[15px] flex items-end justify-between">
                       <div class="flex flex-col justify-between gap-[8px]">
                         <h3 class="text-[#A0566E] text-[15px] font-[350]">{{ item.title }}</h3>
-                        <p class="text-[#A0566E] text-[12px] font-bold leading-none tracking-[-0.236px]">{{ item.price
-                        }}</p>
+                        <p class="text-[#A0566E] text-[12px] font-bold leading-none tracking-[-0.236px]">{{ item.price }}</p>
                       </div>
                       <div>
                         <button
                           class="w-[24px] h-[24px] rounded-full flex items-center justify-center border border-[#A0576F]"
                           :class="{ 'bg-transparent': item.liked, 'bg-[#A0576F]': !item.liked }"
-                          @click.stop="item.liked = !item.liked">
+                          @click.stop="productsStore.toggleProductLike(item.id)">
                           <svg v-if="item.liked" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#A0576F]"
                             fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 
-                             2 8.5 2 5.42 4.42 3 7.5 3c1.74 
-                             0 3.41 0.81 4.5 2.09C13.09 3.81 
-                             14.76 3 16.5 3 19.58 3 22 5.42 
-                             22 8.5c0 3.78-3.4 6.86-8.55 
+                            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28
+                             2 8.5 2 5.42 4.42 3 7.5 3c1.74
+                             0 3.41 0.81 4.5 2.09C13.09 3.81
+                             14.76 3 16.5 3 19.58 3 22 5.42
+                             22 8.5c0 3.78-3.4 6.86-8.55
                              11.54L12 21.35z" />
                           </svg>
                           <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none"
                             viewBox="0 0 24 24" stroke="#EBE4DF">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4.318 6.318a4.5 4.5 0 000 
-                             6.364L12 20.364l7.682-7.682a4.5 
-                             4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4.318 6.318a4.5 4.5 0 000
+                             6.364L12 20.364l7.682-7.682a4.5
+                             4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5
                              4.5 0 00-6.364 0z" />
                           </svg>
                         </button>
@@ -124,9 +138,10 @@
         </BaseCard>
       </div>
     </div>
+    </div>
 
     <!-- Product Modal -->
-    <Dialog v-model:open="modalOpen" :modalMaxWidth="'max-w-[539px]'">
+    <Dialog v-model:show="modalOpen" :modalMaxWidth="'max-w-[539px]'">
       <template #body>
         <div v-if="selectedProduct"
           class="bg-decore-modal mx-auto rounded-[30px] overflow-hidden shadow-lg bg-[#EBE4DF] text-[#5F2C3E]">
@@ -159,8 +174,7 @@
               <BaseCounter v-model="quantity" />
             </div>
             <p class="text-[#5B605C] mt-[38px] mb-[16px] text-[14px] font-[350] leading-[23.128px]">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-              dolore magna aliqua. Ut enim ad ate velit esse cillum dolore eu fugiat nulla pariatur.
+              {{ selectedProduct.description || 'Premium quality product from our collection. Experience the best in beauty and wellness with this carefully crafted item.' }}
             </p>
 
             <div class="">
@@ -198,6 +212,24 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * SHOP PAGE - Retail Products
+ *
+ * This page displays retail products (items you can buy) like:
+ * - Hair oils, shampoos, conditioners
+ * - Face creams, serums, moisturizers
+ * - Body lotions, scrubs, treatments
+ *
+ * Different from SERVICES PAGE which shows:
+ * - Spa treatments, massages, facials
+ * - Hair styling, cuts, coloring
+ * - Beauty services you book appointments for
+ *
+ * Both use /api/v1/products but with different parameters:
+ * - Shop: product_type='retail', is_shop=true
+ * - Services: no special filters (default services)
+ */
+
 import Container from '@/components/base/Container.vue'
 import BaseCard from '@/components/base/Card.vue'
 import BaseSlider from '@/components/base/Slider.vue'
@@ -205,38 +237,48 @@ import Dialog from '@/components/base/Dialog.vue'
 import BaseCounter from '@/components/base/Counter.vue'
 import SelectableSlider from '@/components/base/SelectableSlider.vue'
 import { useCart } from '@/stores/cart'
-
-import { ref, computed } from 'vue'
-
+import { useProducts } from '@/stores/products'
+import { onMounted, ref, computed, nextTick } from 'vue'
 
 const cartModule = useCart()
+const productsStore = useProducts()
+
+// Initialize shop data on component mount
+onMounted(async () => {
+    console.log('Shop page mounted, initializing...')
+
+    // Initialize shop with API call and fallback data
+    await productsStore.initializeShop()
+
+    console.log('Shop initialized, products loaded:', productsStore.products.length)
+})
 
 
 
 
 
-const slides = [
-  { title: 'Hair Extensions', image_url: '/assets/img/shop-slide.svg', sub_title: '2500 SAR', id: 1 },
-  { title: 'Mini Keratin Treatment', image_url: '/assets/img/shop-slide.svg', sub_title: '1500 SAR', id: 2 },
-  { title: 'Hair Extensions', image_url: '/assets/img/spa.svg', sub_title: '2500 SAR', id: 3 }
-]
 
-const products = [
-  { title: 'Anti-aging Moisturizer', price: '500 SAR', image_url: '/assets/img/product-1.svg', liked: true },
-  { title: 'I Am Sheet Mask', price: '500 SAR', image_url: '/assets/img/product-2.svg', liked: false },
-  { title: 'Anti-aging Moisturizer', price: '500 SAR', image_url: '/assets/img/product-1.svg', liked: false },
-  { title: 'I Am Sheet Mask', price: '500 SAR', image_url: '/assets/img/product-2.svg', liked: true },
-  { title: 'Anti-aging Moisturizer', price: '500 SAR', image_url: '/assets/img/product-1.svg', liked: false },
-  { title: 'I Am Sheet Mask', price: '500 SAR', image_url: '/assets/img/product-2.svg', liked: false }
-]
 
 // Modal Logic
-const selectedProduct = ref<typeof products[0] | null>(null)
+const selectedProduct = ref<any>(null)
 const modalOpen = ref(false)
 
 function openProductModal(product: any) {
-  selectedProduct.value = product
-  modalOpen.value = true
+  console.log('Opening product modal for:', product);
+  selectedProduct.value = product;
+  modalOpen.value = true;
+
+  // Reset form values when opening modal
+  quantity.value = 1;
+  selectedSize.value = '30ml';
+}
+
+function closeProductModal() {
+  modalOpen.value = false;
+  selectedProduct.value = null;
+  // Reset form values
+  quantity.value = 1;
+  selectedSize.value = '30ml';
 }
 
 
@@ -244,24 +286,94 @@ function openProductModal(product: any) {
 const quantity = ref(1)
 
 const selectedSize = ref('30ml') // القيمة الابتدائية
-const sizes = [
-  { value: '30ml', name: '30 ML', price: 100 },
-  { value: '50ml', name: '50 ML', price: 150 },
-  { value: '100ml', name: '100 ML', price: 200 },
-  { value: '30ml', name: '30 ML', price: 100 },
-  { value: '50ml', name: '50 ML', price: 150 },
-  { value: '100ml', name: '100 ML', price: 200 }
-]
 
+// Dynamic sizes based on product price
+const sizes = computed(() => {
+  // Extract numeric price from string format like "40 SAR" or use number directly
+  const rawPrice = selectedProduct.value?.price;
+  let basePrice = 100; // Default fallback
+
+  if (typeof rawPrice === 'number' && !isNaN(rawPrice)) {
+    basePrice = rawPrice;
+  } else if (typeof rawPrice === 'string') {
+    // Extract number from string like "40 SAR"
+    const numericPrice = parseFloat(rawPrice.replace(/[^\d.]/g, ''));
+    if (!isNaN(numericPrice)) {
+      basePrice = numericPrice;
+    }
+  }
+
+  console.log('Product price calculation:', {
+    product: selectedProduct.value?.name,
+    rawPrice,
+    basePrice,
+    type: typeof rawPrice
+  });
+
+  return [
+    { value: '30ml', name: '30 ML', price: basePrice },
+    { value: '50ml', name: '50 ML', price: Math.round(basePrice * 1.5) },
+    { value: '100ml', name: '100 ML', price: Math.round(basePrice * 2) }
+  ];
+});
 
 const selectedSizePrice = computed(() => {
-  const size = sizes.find((s) => s.value === selectedSize.value)
-  return size ? size.price : 0
-})
+  const size = sizes.value.find((s) => s.value === selectedSize.value);
+  const price = size ? size.price : (selectedProduct.value?.price || 0);
+
+  console.log('Selected size price:', {
+    selectedSize: selectedSize.value,
+    size,
+    price,
+    isNumber: typeof price === 'number' && !isNaN(price)
+  });
+
+  return typeof price === 'number' && !isNaN(price) ? price : 0;
+});
 
 const totalPrice = computed(() => {
-  return selectedSizePrice.value * quantity.value
+  const price = selectedSizePrice.value;
+  const qty = quantity.value;
+  const total = price * qty;
+
+  console.log('Total price calculation:', {
+    price,
+    quantity: qty,
+    total,
+    isValidTotal: typeof total === 'number' && !isNaN(total)
+  });
+
+  return typeof total === 'number' && !isNaN(total) ? total : 0;
 })
+
+// Add to cart function
+const addToCart = async () => {
+  if (!selectedProduct.value) return;
+
+  // Prepare product data for cart - use the same structure as services
+  const productForCart = {
+    id: selectedProduct.value.id,
+    quantity: quantity.value,
+    size: selectedSize.value,
+    price: selectedSizePrice.value
+  };
+
+  try {
+    console.log('Adding product to cart:', productForCart);
+
+    // Use the same method as services - it handles both products and services
+    await cartModule.addOrUpdateServiceInCart(productForCart);
+
+    // Close modal and reset form on success
+    closeProductModal();
+
+    // Show success message (optional)
+    console.log('Product added to cart successfully!');
+  } catch (error) {
+    console.error('Error adding to cart:', error);
+    // Keep modal open on error so user can try again
+  }
+}
 
 
 
