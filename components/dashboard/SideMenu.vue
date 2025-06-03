@@ -4,7 +4,7 @@
         <div class="py-[22px] px-[30px] h-full flex flex-col border border-[#AD7084] border-solid rounded-[20px] mb-8">
         <div class="text-base font-medium mb-4 text-[#BBCACF] ">Menu</div>
 
-        <ul class="space-y-2">
+        <ul class="space-y-2 side-menu" >
         <li v-for="item in menuItems" :key="item.id" class="rounded-md">
             <UButton
             block
@@ -21,29 +21,44 @@
         </div>
         <div>
             <div class="mt-auto mb-6">
-            <UButton 
-                block 
-                variant="solid" 
-                class="py-3 bg-[#C44E4E] h-[56px] text-[#EBE4DF]  rounded-[100px] hover:bg-[#C44E4E] hover:text-[#EBE4DF] opacity-100 !hover:opacity-100"
-                @click="handleLogout"
-            >
-                Log Out
-            </UButton>
+
+<BaseButton
+  label="Log Out"
+  @click="handleLogout"
+  class="bg-[#C44E4E] text-white rounded-[100px] w-full py-[16px] justify-center text-[18px] font-normal leading-[100%] tracking-[0] border border-[#A0576F] hover:bg-[#913E5D] transition cursor-pointer"
+/>
+
+
             </div>
         </div>
     </div>
 
 </template>
 
-<script setup>
+<script  setup lang="ts" >
 import { ref } from 'vue';
+
+
+// Apply admin middleware to protect this page
+definePageMeta({
+  middleware: 'admin'
+});
+
+const authStore = useAuth();
+const router = useRouter();
+
+const handleLogout = async () => {
+  await authStore.logout();
+  await router.push('/');
+};
+
 
 const menuItems = [
   { id: 'profile', label: 'My Profile', icon: 'i-heroicons-user' },
   { id: 'bookings', label: 'My Bookings', icon: 'i-heroicons-calendar' },
   { id: 'wallet', label: 'My Wallet', icon: 'i-heroicons-wallet' },
-  { id: 'gift-cards', label: 'My Gift Cards', icon: 'i-heroicons-gift' },
-  { id: 'tickets', label: 'My Tickets', icon: 'i-heroicons-ticket' },
+  // { id: 'gift-cards', label: 'My Gift Cards', icon: 'i-heroicons-gift' },
+  // { id: 'tickets', label: 'My Tickets', icon: 'i-heroicons-ticket' },
 ];
 
 import { useRoute } from 'vue-router';
@@ -63,7 +78,12 @@ function handleMenuClick(menuId) {
   emit('menu-click', menuId);
 }
 
-function handleLogout() {
-  console.log('Logging out...');
-}
+
 </script>
+
+
+<style>
+.side-menu button:hover span{
+  color: #A0576F;
+}
+</style>

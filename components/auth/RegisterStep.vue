@@ -11,10 +11,8 @@
         <template #close>
             <button @click="closeModal"
                 class="w-[42px] h-[42px] rounded-full bg-[#A0576F] text-white flex items-center justify-center hover:bg-[#913E5D] transition cursor-pointer">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-[20px] h-[20px]" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                </svg>
+                <CloseModalIcon/>
+
             </button>
         </template>
 
@@ -76,6 +74,9 @@
 
 
 <script setup lang="ts">
+
+import CloseModalIcon from '~/components/icons/CloseModalIcon.vue'
+
 const props = defineProps<{
     open: boolean
     title: string

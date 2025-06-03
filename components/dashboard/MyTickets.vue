@@ -3,7 +3,7 @@
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-[20px] pb-7 mb-7 border-b border-[#AD7084]">
       <h1 class="text-lg font-medium text-[#EBE4DF]">My Bookings</h1>
 
-      <div class="flex space-x-2">
+      <!-- <div class="flex space-x-2">
         <button v-for="filter in filters" :key="filter.id" @click="activeFilter = filter.id" :class="[
           'px-4 py-1.5 pt-2 rounded-full text-sm font-medium transition-colors',
           activeFilter === filter.id
@@ -18,7 +18,7 @@
         </button>
 
         
-      </div>
+      </div> -->
       <button class="px-6 py-1.5 bg-[#6B8B9B] text-white rounded-full text-sm font-medium transition-colors">
           Book A Table
         </button>

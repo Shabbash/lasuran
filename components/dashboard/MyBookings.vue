@@ -3,7 +3,7 @@
     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-[20px] pb-7 mb-7 border-b border-[#AD7084]">
       <h1 class="text-lg font-medium text-[#EBE4DF]">My Bookings</h1>
 
-      <div class="flex space-x-2">
+      <!-- <div class="flex space-x-2">
         <button v-for="filter in filters" :key="filter.id" @click="activeFilter = filter.id" :class="[
           'px-4 py-1.5 pt-2 rounded-full text-sm font-medium transition-colors',
           activeFilter === filter.id
@@ -18,7 +18,7 @@
         </button>
 
         
-      </div>
+      </div> -->
       <button class="px-6 py-1.5 bg-[#6B8B9B] text-white rounded-full text-sm font-medium transition-colors">
           Book A Table
         </button>
@@ -47,42 +47,27 @@
         </div>
 
         <div class="space-y-2">
-          <div class="flex items-center text-sm text-[#EBE4DF]">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            </svg>
-            <span class="text-[#C6C6C7] text-[14px]">No. of Guests: {{ booking.guests }} Guests</span>
+          <div class="flex items-center text-sm text-[#EBE4DF] gap-[6px]">
+            
+            <GuestsIcon />
+            <span class="text-[#C6C6C7] text-[15px]">No. of Guests: {{ booking.guests }} Guests</span>
           </div>
 
-          <div class="flex items-center text-sm text-[#EBE4DF]">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-            </svg>
-            <span class="text-[#C6C6C7] text-[14px]">Branch: {{ booking.branch }}</span>
+          <div class="flex items-center text-sm text-[#EBE4DF] gap-[6px]">
+
+            <LocationIcon />
+
+            <span class="text-[#C6C6C7] text-[15px]">Branch: {{ booking.branch }}</span>
           </div>
 
-          <div class="flex items-center text-sm text-[#EBE4DF]">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-            <span class="text-[#C6C6C7] text-[14px]">{{ booking.date }}</span>
+          <div class="flex items-center text-sm text-[#EBE4DF] gap-[6px]">
+            <CalendarIcon2/>
+            <span class="text-[#C6C6C7] text-[15px]">{{ booking.date }}</span>
           </div>
 
-          <div class="flex items-center text-sm text-[#EBE4DF]">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span class="text-[#C6C6C7] text-[14px]">{{ booking.time }}</span>
+          <div class="flex items-center text-sm text-[#EBE4DF] gap-[6px]">
+            <ClockIcon />
+            <span class="text-[#C6C6C7] text-[15px]">{{ booking.time }}</span>
           </div>
         </div>
       </div>
@@ -346,6 +331,13 @@ import Dialog from '@/components/base/Dialog.vue';
 import StarRating from '@/components/cart/StarRating.vue';
 import { useBookings } from '@/stores/bookings';
 import { useAuth } from '@/stores/auth';
+
+import UserIcon from '~/components/icons/UserIcon.vue'
+import GuestsIcon from '~/components/icons/GuestsIcon.vue'
+import LocationIcon from '~/components/icons/LocationIcon.vue'
+import CalendarIcon2 from '~/components/icons/CalendarIcon2.vue'
+import ClockIcon from '~/components/icons/ClockIcon.vue'
+
 
 const ratingModalOpen = ref(false)
 

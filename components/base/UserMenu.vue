@@ -9,20 +9,19 @@
           class="flex items-center bg-[#A0576F] px-[27px] py-[7px] w-full rounded-[20px] gap-[16px]">
           <div class="flex items-center justify-center overflow-hidden w-[81px] h-[81px] rounded-full bg-[#D9D9D91A]">
             <div class="flex items-center justify-center overflow-hidden w-[71px] h-[71px] rounded-full bg-[#D9D9D91A]">
-              <img src="/assets/img/pr-img.png" alt="" class="w-[59px] h-[59px] rounded-full">
+              <img :src="profileStore.getProfileImage" alt="user image" class="w-[59px] h-[59px] rounded-full">
             </div>
           </div>
           <div>
             <p class="text-[20px] font-medium leading-[100%] tracking-[0] text-[#EBE4DF] mb-[5px]">
-              {{ authModule.getUserName }}
-              <!--              Zahra Ahmed-->
+              {{ profileStore.getFullName }}
             </p>
             <p class="font-[350] text-[14px] leading-[100%] tracking-[0] text-[#C6C6C7]">
-              {{ authModule.getMobileNumber }}
-              <!--              +966 864 777 634-->
+              {{ profileStore.profile?.mobile_number }}
             </p>
           </div>
         </div>
+
 
         <!-- <div class="grid grid-cols-2 gap-y-[20px] text-[#A0576F] text-sm my-[40px]">
           <div v-for="(item, index) in menuItems" :key="index" class="flex items-center gap-2 cursor-pointer">
@@ -57,19 +56,19 @@
             <span class="text-[15px] font-[350] leading-none">Customer Service</span>
           </NuxtLink>
 
-          <NuxtLink to="/profile?tab=wallet"  v-if="authModule.isAuthenticated"
+          <NuxtLink to="/profile?tab=wallet" v-if="authModule.isAuthenticated"
             class="flex items-center gap-2 px-4 py-2 rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
             <img src="/assets/img/menu-icons/Frame-1.svg" alt="" class="w-[20px] h-[20px]" />
             <span class="text-[15px] font-[350] leading-none">My Wallet</span>
           </NuxtLink>
 
-          <NuxtLink to="/invite"  v-if="authModule.isAuthenticated"
+          <NuxtLink to="/invite" v-if="authModule.isAuthenticated"
             class="flex items-center gap-2 px-4 py-2 rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
             <img src="/assets/img/menu-icons/Frame-3.svg" alt="" class="w-[20px] h-[20px]" />
             <span class="text-[15px] font-[350] leading-none">Invite Friends</span>
           </NuxtLink>
 
-          <NuxtLink to="/gift-cards"  v-if="authModule.isAuthenticated"
+          <NuxtLink to="/gift-cards" v-if="authModule.isAuthenticated"
             class="flex items-center gap-2 px-4 py-2 rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
             <img src="/assets/img/menu-icons/svgexport-17.svg" alt="" class="w-[20px] h-[20px]" />
             <span class="text-[15px] font-[350] leading-none">My Gift Cards</span>
@@ -114,6 +113,9 @@
 <script setup>
 
 import { COMPONENTS } from "~/data/constants";
+import { useProfile } from '~/stores/profile';
+
+const profileStore = useProfile();
 const { setDialogComponent, setDialogShow } = useApp();
 const authModule = useAuth();
 const showDialog = function () {

@@ -124,10 +124,12 @@
               class="flex-1 outline-none bg-transparent text-[#BBCACF] placeholder:text-[#D3C9C5] text-[14px]" />
           </div>
         </div>
-        <UButton
-          class="flex h-[50px] w-full justify-center items-center self-stretch rounded-[100px] bg-[#EBE4DF] text-[#A0576F] text-[16px] font-normal leading-normal mt-[30px]">
-          Transfer
-        </UButton>
+
+<BaseButton 
+  label="Transfer"
+  class="flex h-[50px] w-full justify-center items-center self-stretch rounded-[100px] bg-[#EBE4DF] text-[#A0576F] text-[16px] font-normal leading-normal mt-[30px] disabled:bg-[#EBE4DF]" />
+
+
       </div>
 
       <div class="flex-1 rounded-[16px] border border-[#AD7084] px-[14px] py-[16px]">

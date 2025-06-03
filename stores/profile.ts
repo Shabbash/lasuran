@@ -85,7 +85,10 @@ export const useProfile = defineStore("profile", {
 
         isEmailVerified(state): boolean {
             return state.profile?.email_verified === 1;
-        }
+        },
+        getProfileImage(state): string {
+        return state.profile?.image_profile || '/assets/img/default-user.png';
+}
     },
 
     actions: {
