@@ -6,7 +6,7 @@
    </div>
     <LayoutFooter></LayoutFooter>
 
-    <BaseDialog v-model:show="isDialogDisplayed" >
+    <BaseDialog v-model:show="isDialogDisplayed" :options="appModule.getDialogOptions" >
       <template #body>
         <component :is="appModule.getDialogComponent" />
       </template>

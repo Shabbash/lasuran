@@ -38,6 +38,9 @@ export const useApp = defineStore("app", {
             const componentKey = state.dialog.component;
             console.log("components[component] ", componentKey in components ? components[componentKey] : null);
             return (componentKey in components) ? components[componentKey] : state.dialog.component;
+        },
+        getDialogOptions(state:AppState) {
+            return state.dialog.options ?? {};
         }
     },
     actions: {
@@ -56,8 +59,9 @@ export const useApp = defineStore("app", {
         setDialogComponent(component: string) {
             this.dialog.component = component;
         },
-        setDialogShow(show: boolean) {
+        setDialogShow(show: boolean, options: {} = {}) {
             this.dialog.show = show;
+            this.dialog.options = options;
         },
         setDialogOptions(options: object | []){
             this.dialog.data = options

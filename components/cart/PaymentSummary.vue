@@ -100,7 +100,11 @@ const proceedToCheckout = function () {
         (_data: any) => {
           // Success callback
           clearTimeout(timeoutId);
-          appModule.setDialogComponent(COMPONENTS.PAYMENT_CREATE_CARD);
+          appModule.setDialogComponent(COMPONENTS.PAYMENT_LOADING);
+          appModule.setDialogShow(true,{
+            dismissible: false,
+            close: false
+          });
           isProcessing.value = false; // Reset loading when done
         },
         (error: any) => {

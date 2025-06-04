@@ -2,6 +2,9 @@ import { defineStore } from "pinia";
 import { useMenu } from "./menu";
 import { useApi } from "../composables/useApi";
 
+let paymentWindow: Window | null = null;
+let paymentInterval: any = null;
+
 export const useCart = defineStore("cart", {
     state: () => {
         return {
@@ -321,36 +324,37 @@ export const useCart = defineStore("cart", {
               });
       },
 
-      openPaymentPopup(payload: any = {}) {
-          const url = this.$state.payment?.create_token_url?.url;
-          if (!url) {
-              console.error('Payment URL not available');
-              return;
-          }
+        openPaymentPopup(payload: any = {}) {
+            const url = this.$state.payment?.create_token_url?.url;
+            if (!url) {
+                console.error('Payment URL not available');
+                return;
+            }
 
-          // Reset payment attempts
-          this.$state.paymentAttempts = 20;
+            // Reset payment attempts
+            this.$state.paymentAttempts = 20;
 
-          // Open payment window
-          this.$state.paymentWindow = window.open(
-              url,
-              'PaymentPopup',
-              'width=600,height=700,scrollbars=yes,resizable=yes'
-          );
+            // Open payment popup and store it in non-reactive variable
+            paymentWindow = window.open(
+                url,
+                'PaymentPopup',
+                'width=600,height=700,scrollbars=yes,resizable=yes'
+            );
 
-          if (!this.$state.paymentWindow) {
-              console.error('Failed to open payment window. Please check popup blocker settings.');
-              return;
-          }
+            if (!paymentWindow) {
+                console.error('Failed to open payment window. Please check popup blocker settings.');
+                return;
+            }
 
-          // Start checking payment status every 3 seconds
-          this.$state.paymentInterval = setInterval(this.checkPaymentStatus,3000);
+            // Start checking payment status every 3 seconds
+            paymentInterval = setInterval(() => {
+                this.checkPaymentStatus(paymentWindow);
+            }, 3000);
 
+            console.log('Payment window opened successfully, status checking started');
+        },
 
-
-          console.log('Payment window opened successfully, status checking started');
-      },
-        async checkPaymentStatus() {
+        async checkPaymentStatus(paymentWin: Window | null) {
             const appModule = useApp();
             try {
                 const { data } = await useApi(`payments/check-payment-status`, {
@@ -358,37 +362,46 @@ export const useCart = defineStore("cart", {
                     body: {
                         merchant_reference: this.$state.order.data?.order_number,
                     }
-                },
-                    {
+                }, {
                     onSuccess: (data: any) => {
                         const payload = data.data;
                         console.log('onSuccess', payload);
-                        if (payload?.success === "pending" && this.$state.paymentAttempts > 0) {
-                            this.$state.paymentAttempts--;
-                            // Continue checking - interval will call this method again
-                        } else if (payload?.success === true) {
-                            this.fetchCart();
-                            const toast = useToast();
-                            toast.add({ title: this.$state.confirmation_message?.message_1, color: 'success' });
 
-                            // Close all modals and dialogs
+                        try {
+                            if (payload?.success === "pending" && this.$state.paymentAttempts > 0) {
+                                this.$state.paymentAttempts--;
+                            } else if (payload?.success === true) {
+
+                                const toast = useToast();
+                                toast.add({ title: this.$state.confirmation_message?.message_1, color: 'success' });
+
+                                appModule.setDialogShow(false);
+
+                                if (paymentInterval) {
+                                    clearInterval(paymentInterval);
+                                    paymentInterval = null;
+                                }
+
+                                if (paymentWin && !paymentWin.closed) {
+                                    paymentWin.close();
+                                    paymentWindow = null;
+                                }
+                                navigateTo("/profile?tab=bookings");
+                                this.$state.products = [];
+                                this.fetchCart();
+                            } else {
+                                console.log('Payment failed or unknown status:', payload);
+                                if (paymentInterval) {
+                                    clearInterval(paymentInterval);
+                                    paymentInterval = null;
+                                }
+                            }
+                        } catch (e) {
+                            console.warn("Cross-origin access blocked", e);
                             appModule.setDialogShow(false);
-
-                            // Stop payment checking and close window
-                            if (this.$state.paymentInterval) {
-                                clearInterval(this.$state.paymentInterval);
-                                this.$state.paymentInterval = null;
-                            }
-                            if (this.$state.paymentWindow) {
-                                this.$state.paymentWindow.close();
-                                this.$state.paymentWindow = null;
-                            }
-                        } else {
-                            // Payment failed or unknown status
-                            console.log('Payment failed or unknown status:', payload);
-                            if (this.$state.paymentInterval) {
-                                clearInterval(this.$state.paymentInterval);
-                                this.$state.paymentInterval = null;
+                            if (paymentInterval) {
+                                clearInterval(paymentInterval);
+                                paymentInterval = null;
                             }
                         }
                     }
