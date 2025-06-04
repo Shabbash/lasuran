@@ -1,6 +1,7 @@
 <template>
   <div>
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-[20px] pb-7 mb-7 border-b border-[#AD7084]">
+    <div
+      class="flex flex-col md:flex-row justify-between items-start md:items-center gap-[20px] pb-7 mb-7 border-b border-[#AD7084]">
       <h1 class="text-lg font-medium text-[#EBE4DF]">My Bookings</h1>
 
       <!-- <div class="flex space-x-2">
@@ -19,9 +20,11 @@
 
         
       </div> -->
-      <button class="px-6 py-1.5 bg-[#6B8B9B] text-white rounded-full text-sm font-medium transition-colors">
-          Book A Table
-        </button>
+  
+
+      <BaseButton label="Book A Table" @click="navigateTo('/services')"
+        class="px-6 py-1.5 bg-[#6B8B9B] hover:bg-[#6B8B9B] hover:opacity-[.9] text-white rounded-full text-sm font-medium transition-colors max-w-[175px]" />
+
     </div>
 
     <!-- Loading State -->
@@ -38,17 +41,15 @@
         <div class="flex justify-between items-start mb-3">
           <h3 class="text-[#EBE4DF] text-[18px] font-bold">Booking No. {{ booking.bookingNumber }}</h3>
 
-          <span
-            :class="` text-center inline-flex px-3 py-1 rounded-full text-xs font-medium text-white`"
-            :style="`background-color: ${booking._originalData?.status?.color || '#6B8B9B'}`"
-          >
+          <span :class="` text-center inline-flex px-3 py-1 rounded-full text-xs font-medium text-white`"
+            :style="`background-color: ${booking._originalData?.status?.color || '#6B8B9B'}`">
             {{ booking._originalData?.status_text || capitalizeFirstLetter(booking.status) }}
           </span>
         </div>
 
         <div class="space-y-2">
           <div class="flex items-center text-sm text-[#EBE4DF] gap-[6px]">
-            
+
             <GuestsIcon />
             <span class="text-[#C6C6C7] text-[15px]">No. of Guests: {{ booking.guests }} Guests</span>
           </div>
@@ -61,7 +62,7 @@
           </div>
 
           <div class="flex items-center text-sm text-[#EBE4DF] gap-[6px]">
-            <CalendarIcon2/>
+            <CalendarIcon2 />
             <span class="text-[#C6C6C7] text-[15px]">{{ booking.date }}</span>
           </div>
 
@@ -101,7 +102,8 @@
           class="bg-decore-modal mx-auto rounded-[30px] overflow-hidden shadow-lg bg-[#EBE4DF] text-[#5F2C3E]">
           <!-- Header -->
           <div class="pt-[34px] px-[50px] pb-[30px] relative">
-            <h2 class="text-[#A0576F] text-[18px] font-bold leading-normal text-center mb-[20px]">Booking No. {{ selectedBooking.bookingNumber }}</h2>
+            <h2 class="text-[#A0576F] text-[18px] font-bold leading-normal text-center mb-[20px]">Booking No. {{
+              selectedBooking.bookingNumber }}</h2>
 
             <!-- Booking Info Grid -->
             <div class="p-[20px] rounded-[20px] bg-[#A0576F] relative mb-[18px]">
@@ -110,8 +112,7 @@
 
                 <span
                   :class="`inline-flex px-[18px] h-[24px] rounded-full text-[14px] font-medium items-center justify-center text-white`"
-                  :style="`background-color: ${selectedBooking._originalData?.status?.color || '#6B8B9B'}`"
-                >
+                  :style="`background-color: ${selectedBooking._originalData?.status?.color || '#6B8B9B'}`">
                   {{ selectedBooking._originalData?.status_text || capitalizeFirstLetter(selectedBooking.status) }}
                 </span>
 
@@ -126,7 +127,8 @@
                 <div
                   class="flex justify-between pb-[12px] mb-[12px] border-b border-b-[#AD7084] last:border-b-0 last:pb-0">
                   <h3 class="text-[#EBE4DF] text-[13.082px] font-[350] leading-normal">Customer Arrived</h3>
-                  <p class="text-[#EBE4DF] text-[13px] font-[350] leading-normal">{{ selectedBooking._originalData?.customer_arrived ? 'Yes' : 'No' }}</p>
+                  <p class="text-[#EBE4DF] text-[13px] font-[350] leading-normal">{{
+                    selectedBooking._originalData?.customer_arrived ? 'Yes' : 'No' }}</p>
                 </div>
                 <div class="flex justify-between pb-[12px] border-b border-b-[#AD7084] last:border-b-0 last:pb-0">
                   <h3 class="text-[#EBE4DF] text-[13.082px] font-[350] leading-normal">Visitors</h3>
@@ -156,7 +158,8 @@
                 <div class="flex justify-between pb-[12px] border-b border-b-[#B2B0B0]">
                   <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">Subtotal ({{ selectedBooking.guests }}
                     Persons)</p>
-                  <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">{{ selectedBooking._originalData?.total || '00.00' }} SAR</p>
+                  <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">{{
+                    selectedBooking._originalData?.total || '00.00' }} SAR</p>
                 </div>
                 <div class="flex justify-between pb-[12px] border-b border-b-[#B2B0B0]">
                   <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">VAT Amount (15%)</p>
@@ -164,22 +167,26 @@
                 </div>
                 <div class="flex justify-between pb-[12px] border-b border-b-[#B2B0B0]">
                   <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">Service Cost</p>
-                  <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">{{ selectedBooking._originalData?.order_service_fee_price || '00.00' }} SAR</p>
+                  <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">{{
+                    selectedBooking._originalData?.order_service_fee_price || '00.00' }} SAR</p>
                 </div>
                 <div class="flex justify-between pb-[12px] border-b border-b-[#B2B0B0]">
                   <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">Discount</p>
-                  <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">{{ selectedBooking._originalData?.promo_discount || '00.00' }} SAR</p>
+                  <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">{{
+                    selectedBooking._originalData?.promo_discount || '00.00' }} SAR</p>
                 </div>
                 <div class="flex justify-between pb-[12px] border-b border-b-[#B2B0B0]">
                   <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">Bookmarked points (-100 Pts.)</p>
-                  <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">{{ selectedBooking._originalData?.redeem_points_price || '00.00' }} SAR</p>
+                  <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">{{
+                    selectedBooking._originalData?.redeem_points_price || '00.00' }} SAR</p>
                 </div>
               </div>
 
               <div class="mt-[28px]">
                 <div class="flex justify-between">
                   <p class="text-[#A0576F] text-[21px] font-bold leading-normal">Total</p>
-                  <p class="text-[#A0576F] text-[21px] font-bold leading-normal">{{ selectedBooking._originalData?.total || '00.00' }} SAR</p>
+                  <p class="text-[#A0576F] text-[21px] font-bold leading-normal">{{ selectedBooking._originalData?.total
+                    || '00.00' }} SAR</p>
                 </div>
               </div>
             </div>
@@ -265,9 +272,7 @@
             <div class="space-y-[10px]">
 
 
-              <BaseButton label="Yes, Cancel"
-                :loading="bookingsStore.isLoading"
-                :disabled="bookingsStore.isLoading"
+              <BaseButton label="Yes, Cancel" :loading="bookingsStore.isLoading" :disabled="bookingsStore.isLoading"
                 class="h-[49px] bg-[#C44E4E] hover:bg-[#913E5D] text-white text-[16px] font-normal rounded-[100px] leading-normal disabled:opacity-50 disabled:bg-[#A0576F]"
                 @click="confirmDeleteBooking" />
 

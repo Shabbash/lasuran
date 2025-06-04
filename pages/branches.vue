@@ -19,7 +19,7 @@
     <!-- Content -->
     <div v-else>
       <!-- اختيار المدينة -->
-      <USelectMenu v-model="filters.city" :items="cityOptions" placeholder="Select City"
+      <USelectMenu hidden v-model="filters.city" :items="cityOptions" placeholder="Select City"
         class="min-w-[300px] rounded-[100px] border border-[#EBE4DF] bg-[#EBE4DF] shadow-[1px_3px_8px_0px_#00000012] backdrop-blur-[25px] h-[56px] text-[#A0576F] text-[16px] font-[350] leading-normal ps-[28px]" />
 
       <!-- بطاقات الفروع -->

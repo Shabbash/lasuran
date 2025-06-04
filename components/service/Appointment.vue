@@ -62,7 +62,7 @@
       <BaseButton @click="addToCart" :loading="cartModule.isAddLoading" :disabled="selectedExtension === ''"
               class="cart-btn flex align-center gap-[24px] w-full text-white py-3 rounded-full font-[600] text-[16px] justify-center mt-[35px] disabled:bg-[#A0576F] hover:bg-[#913E5D]"
               :class="selectedExtension === '' ? 'bg-[#a0576f69]' : 'bg-[#A0576F]'">
-        <span>{{ selectedExtension === '' ? '' : selectedService.price + ' SAR - ' }}Continue</span>
+        <span>{{ selectedExtension === '' ? '' : (selectedService.price ?? computedService?.price) + ' SAR - ' }}Continue</span>
       </BaseButton>
     </div>
     <div class="relative z-[1] pt-[42px] px-[80px] pb-[20px]" v-else>
@@ -179,6 +179,7 @@ const submitAddToGuest = function() {
 
 const selectedService = ref<Service>({} as Service);
 selectedService.value = menuModule.service.data as Service;
+const computedService = computed(() => menuModule.getService?.data ?? menuModule.getService?.item);
 const reserveOption = ref('');
 
 // --------------calender start ------//
@@ -214,6 +215,7 @@ const addToCart = function(){
     console.log('selectedDateObject.value.slots ',selectedDateObject.value.slots ,body)
     cartModule.updateServiceAvailableSlot(body).then((availableSlots) => {
       setDialogComponent(COMPONENTS.SERVICE_SUCCESS);
+      cartModule.fetchCart();
     })
     // setDialogComponent(COMPONENTS.SERVICE_SUCCESS);
 

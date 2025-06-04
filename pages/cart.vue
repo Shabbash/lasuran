@@ -257,8 +257,8 @@ const editCartItem = (item: any) => {
   // Set the service in the menu store
   // Our updated setService method will handle preserving the editing state
   menuModule.setService(serviceData);
+  setDialogComponent(COMPONENTS.SERVICE_APPOINTMENT);
 
-  setDialogComponent(COMPONENTS.SERVICE_SHOW);
   setDialogShow(true);
 };
 

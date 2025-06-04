@@ -21,6 +21,8 @@ const isDialogDisplayed = computed({
    set:(newValue) => appModule.setDialogShow(newValue),
    get:() => appModule.dialog.show
 });
+
+appModule.setDialogShow(false)
 </script>
 
 

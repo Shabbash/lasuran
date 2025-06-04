@@ -74,11 +74,11 @@
             </div>
           </div>
 
-          <BaseButton
+          <BaseButton 
             :label="contactStore.isSubmitting ? 'Submitting...' : 'Submit'"
             :disabled="contactStore.isSubmitting || !isFormValid"
             @click="submitForm"
-            class="bg-[#A0576F] text-white rounded-[100px] w-full py-[16px] justify-center text-[18px] font-normal leading-[100%] tracking-[0] border border-[#A0576F] hover:bg-[#913E5D] transition cursor-pointer mt-[30px] disabled:opacity-50 disabled:cursor-not-allowed" />
+            class="bg-[#A0576F] disabled:bg-[#A0576F] text-white rounded-[100px] w-full py-[16px] justify-center text-[18px] font-normal leading-[100%] tracking-[0] border border-[#A0576F] hover:bg-[#913E5D] transition cursor-pointer mt-[30px] disabled:opacity-50 disabled:cursor-not-allowed" />
 
         </div>
       </div>

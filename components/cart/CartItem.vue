@@ -21,13 +21,15 @@
       </div>
       <div class="flex flex-1 justify-end">
         <p class="flex-2 text-[#EBE4DF] text-[14px] font-normal leading-normal hidden md:block">{{ item.duration }}</p>
+        
         <p class="flex-1 text-[#EBE4DF] text-[14px] font-normal leading-normal hidden md:block">{{ item.price }} SAR</p>
         <div class="md:flex-1">
-          <button
+          <button class="cursor-pointer"
           @click="$emit('edit', item)">
             <EditIcon/>
           </button>
-          <button @click="$emit('remove')">
+          <button class="cursor-pointer"
+          @click="$emit('remove')">
             <DeleteIcon/>
           </button>
 
