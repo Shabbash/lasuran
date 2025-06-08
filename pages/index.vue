@@ -5,15 +5,16 @@
         <div class="flex flex-row-reverse flex-wrap w-full gap-[24px]">
 
             <div class="w-full lg:w-[calc(50%-12px)]">
+              
                 <BaseCard>
                     <template #default>
-                        <BaseSlider :items="slides3" dots :slide-per-row="1" :slide-per-row-mobile="1" dots-class="dots-style">
+                        <BaseSlider :items="homeStore.homeData?.data?.sliders" dots :slide-per-row="1" :slide-per-row-mobile="1" dots-class="dots-style">
                             <template #default="{ item }">
-
+                               
                                 <div class=" w-full">
                                     <div class=" w-full overflow-hidden relative rounded-[23px]">
                                         <img class="mx-auto h-auto md:h-full w-full object-contain md:object-cover inset-0 relative"
-                                            :src="item.image_url" />
+                                            :src="item.image" />
                                     </div>
                                 </div>
 
@@ -109,13 +110,17 @@
 </template>
 <script lang="ts" setup>
 import Container from '~/components/base/Container.vue'
-
+import { useHome } from '@/stores/home'
+import { onMounted } from 'vue'
 const open = ref(false)
-
+const homeStore = useHome()
 defineShortcuts({
     o: () => open.value = !open.value
 })
-
+onMounted(async () => {
+    await homeStore.initializeHome()
+})
+ 
 const slides = [
     {
         "title": "Hair Extensions",

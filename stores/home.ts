@@ -75,7 +75,7 @@ export const useHome = defineStore("home", {
     getters: {
         // Home data getters
         sliders(state): Slider[] {
-            return state.homeData?.sliders || [];
+            return state.homeData?.data?.sliders || [];
         },
         
         deliveryMethods(state): DeliveryMethod[] {
@@ -141,7 +141,9 @@ export const useHome = defineStore("home", {
                 });
 
                 if (response.status) {
+                    console.log('home: ',response.data);
                     this.$state.homeData = response.data;
+                    console.log('state.homeData: ',this.$state.homeData);
                     return { success: true, data: response.data };
                 } else {
                     throw new Error(response.message || 'Failed to fetch home data');
