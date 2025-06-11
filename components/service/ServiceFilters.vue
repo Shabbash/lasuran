@@ -12,6 +12,7 @@
 
     <div class="flex flex-col md:flex-row justify-between md:items-center gap-[20px]">
       <USelectMenu
+        v-if="showBranchSelect"
         v-model="filters.branch"
         :items="branches"
         valueKey="id"
@@ -42,6 +43,7 @@ import { useMenu } from '~/stores/menu';
 
 const menuModule = useMenu();
 
+
 // Create computed properties for the menu data
 const categories = computed(() => {
   return menuModule.getCategories || [];
@@ -54,6 +56,14 @@ const subCategories = computed(() => {
 const branches = computed(() => {
   return menuModule.getBranches || [];
 });
+
+const props = defineProps({
+  showBranchSelect: {
+    type: Boolean,
+    default: true
+  }
+})
+
 
 // Initialize filters
 const filters = ref({

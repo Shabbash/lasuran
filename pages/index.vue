@@ -80,7 +80,7 @@
             
 
             <div class="w-full md:mt-[30px] slide-5">
-                <BaseCard title="Recommended Services" with-action>
+                <!-- <BaseCard title="Recommended Services" with-action>
                     <template #default>
                         <BaseSlider :items="slides4" :slide-per-row="5" :slide-per-row-mobile="3">
                             <template #default="{ item }">
@@ -102,7 +102,10 @@
                         </BaseSlider>
                     </template>
 
-                </BaseCard>
+                </BaseCard> -->
+
+                <ServiceFilters v-model="filters" :showBranchSelect="false" class="mt-[40px]" />
+
             </div>
         </div>
 
