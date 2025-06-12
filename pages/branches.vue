@@ -3,9 +3,8 @@
     <Banner :opacity="false" :bannerContent="bannerContent" />
 
     <!-- Loading State -->
-    <div v-if="branchesStore.isLoading" class="flex justify-center items-center py-12">
-      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#A0576F]"></div>
-    </div>
+    <BranchSkeleton v-if="branchesStore.isLoading" />
+
 
     <!-- Error State -->
     <div v-else-if="branchesStore.error" class="text-center mt-8 p-6 bg-red-50 rounded-lg">
@@ -132,6 +131,9 @@ import Banner from '@/components/base/Banner.vue'
 import BaseCard from '@/components/base/Card.vue'
 import Dialog from '@/components/base/Dialog.vue'
 import { useBranches, type Branch } from '@/stores/branches'
+
+import BranchSkeleton from '@/components/skeletons/BranchSkeleton.vue'
+
 
 // Initialize branches store
 const branchesStore = useBranches()

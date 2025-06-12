@@ -1,5 +1,7 @@
 <template>
-  <div
+  <ProfileSkeleton v-if="!profileStore.profile" />
+
+  <div v-else
     class="py-[34px] px-[15px] md:px-[30px] h-full flex flex-col border border-[#AD7084] border-solid rounded-[20px]">
     <div class="">
       <div class="flex flex-col items-center mb-8">
@@ -11,7 +13,7 @@
           <button @click="fileInput?.click()"
             class="absolute bottom-2 right-1 rounded-full p-1 text-white bg-[#6B8B9B] w-[30px] h-[30px] flex items-center justify-center cursor-pointer"
             type="button">
-            
+
             <CameraIcon />
           </button>
           <!-- Indicator for pending image upload -->
@@ -74,7 +76,7 @@
           <div>
             <div class="relative">
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                
+
 
                 <LocationIcon2 />
               </div>
@@ -86,7 +88,7 @@
                 </option>
               </select>
               <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                
+
                 <SelectArrowIcon />
               </div>
             </div>
@@ -123,11 +125,8 @@
         <div>
 
 
-          <BaseButton
-  label="Delete Profile"
-  @click="deleteProfile"
-  class="bg-[#C44E4E] text-[#EBE4DF] rounded-[100px] py-[10px] px-8 text-[14px] hover:bg-[#913E5D] transition cursor-pointer"
-/>
+          <BaseButton label="Delete Profile" @click="deleteProfile"
+            class="bg-[#C44E4E] text-[#EBE4DF] rounded-[100px] py-[10px] px-8 text-[14px] hover:bg-[#913E5D] transition cursor-pointer" />
 
 
         </div>
@@ -135,12 +134,9 @@
 
       <div class="flex justify-end gap-6 justify-items-end mt-[30px]">
 
-        <BaseButton 
-        :loading="profileStore.isUpdating"
-  :label="profileStore.isUpdating ? 'Saving...' : 'Save'"
-  :disabled="profileStore.isUpdating"
-  @click="saveProfile"
-  class="w-[calc(50%-12px)] bg-white disabled:bg-white py-[10px] px-8 rounded-[100px] hover:bg-white text-[#913E5D] text-center flex items-center justify-center h-[50px] border border-[#913E5D] hover:text-[#913E5D] hover:opacity-100 disabled:opacity-50 disabled:cursor-not-allowed" />
+        <BaseButton :loading="profileStore.isUpdating" :label="profileStore.isUpdating ? 'Saving...' : 'Save'"
+          :disabled="profileStore.isUpdating" @click="saveProfile"
+          class="w-[calc(50%-12px)] bg-white disabled:bg-white py-[10px] px-8 rounded-[100px] hover:bg-white text-[#913E5D] text-center flex items-center justify-center h-[50px] border border-[#913E5D] hover:text-[#913E5D] hover:opacity-100 disabled:opacity-50 disabled:cursor-not-allowed" />
 
       </div>
     </div>
@@ -156,6 +152,8 @@ import CameraIcon from '@/components/icons/CameraIcon.vue';
 import CalendarIcon3 from '@/components/icons/CalendarIcon3.vue';
 import LocationIcon2 from '@/components/icons/LocationIcon2.vue';
 import SelectArrowIcon from '@/components/icons/SelectArrowIcon.vue';
+import ProfileSkeleton from '@/components/skeletons/ProfileSkeleton.vue'
+
 
 // Stores
 const profileStore = useProfile();

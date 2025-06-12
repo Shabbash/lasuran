@@ -9,7 +9,7 @@
               <BaseSlider :items="slider?.items ?? homeStore?.homeData?.data?.sliders" dots :slide-per-row="1" :slide-per-row-mobile="1" dots-class="dots-style">
                 <template #default="{ item }">
                   <div class=" w-full">
-                    <div class=" w-full overflow-hidden relative rounded-[23px]">
+                    <div class=" w-full overflow-hidden relative rounded-[23px] md:mt-[31px]">
                       <img class="mx-auto h-auto md:h-full w-full object-contain md:object-cover inset-0 relative"
                            :src="item.image_url ?? item.image" />
                     </div>
@@ -24,7 +24,7 @@
         <div class="w-full lg:w-[calc(50%-12px)]">
 
           <!--              {{ widgetComponents }}-->
-          <BaseCard v-for="(widget , index) in widgetComponents" :title="widget.title" with-action  class="mt-[30px] md:mt-0" @action-click="navigateToServices">
+          <BaseCard v-for="(widget , index) in widgetComponents" :title="widget.title" with-action  class=" mt-[30px] first:mt-0" @action-click="navigateToServices">
             <template #default>
               <BaseSlider v-if="widget.items_per_slide == 3" :items="widget.items" :slide-per-row="3" :slide-per-row-mobile="2">
                 <template #default="{ item }">
@@ -155,6 +155,10 @@ import Container from '~/components/base/Container.vue'
 import { useHome } from '@/stores/home'
 import { onMounted } from 'vue'
 import {COMPONENTS} from "~/data/constants";
+
+import HomeSkeleton from '@/components/skeletons/HomeSkeleton.vue'
+
+
 const open = ref(false)
 const homeStore = useHome()
 defineShortcuts({

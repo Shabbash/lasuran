@@ -28,9 +28,8 @@
     </div>
 
     <!-- Loading State -->
-    <div v-if="isLoading" class="flex justify-center items-center py-16">
-      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-[#6B8B9B]"></div>
-    </div>
+    <BookingSkeleton v-if="isLoading" />
+
 
     <div v-else-if="filteredBookings.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div v-for="booking in filteredBookings" :key="booking.id"
@@ -342,6 +341,7 @@ import GuestsIcon from '~/components/icons/GuestsIcon.vue'
 import LocationIcon from '~/components/icons/LocationIcon.vue'
 import CalendarIcon2 from '~/components/icons/CalendarIcon2.vue'
 import ClockIcon from '~/components/icons/ClockIcon.vue'
+import BookingSkeleton from '@/components/skeletons/BookingSkeleton.vue'
 
 
 const ratingModalOpen = ref(false)
