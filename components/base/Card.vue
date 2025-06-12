@@ -4,7 +4,7 @@
         <div v-if="title || $slots.head" class="base_card--head flex justify-between items-center mb-[16px] px-[15px]">
             <slot name="head">
                 <h2 class="font-normal text-[white] text-[15px] leading-[1] tracking-[0]">{{ title }}</h2>
-                <a v-if="withAction" href="#" class="font-medium text-[#D29F8C] text-[14px] leading-[1]  tracking-[0]">See All</a>
+                <a v-if="withAction"  @click="onActionClick" href="javascript:;" class="font-medium text-[#D29F8C] text-[14px] leading-[1]  tracking-[0]">See All</a>
             </slot>
 
         </div>
@@ -25,6 +25,12 @@ const props = defineProps({
         default: false,
     }
 
-})
+});
+
+const emit = defineEmits(['action-click']);
+
+const onActionClick = function (event) {
+  emit('action-click', event);
+}
 
 </script>

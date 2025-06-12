@@ -8,7 +8,7 @@
       <div class="flex justify-between items-center mb-2">
         <h2 class="font-bold text-[30px] text-[#A0576F] leading-[100%]">{{ defaultService.name }}</h2>
         <span class="font-bold text-[19px] text-[#A0576F] leading-[100%]">
-                {{ selectedExtension === '' ? 'Price Upon Selection' : selectedService.price + ' SAR' }}
+                {{ selectedExtension === '' && selectedService.price <= 0 ? 'Price Upon Selection' : selectedService.price + ' SAR' }}
               </span>
       </div>
 

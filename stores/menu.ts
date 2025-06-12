@@ -53,6 +53,9 @@ export const useMenu = defineStore("menu", {
         getSubCategories(state){
             return this.getSelectedCategory.children ?? [];
         },
+        getFlatMapCategories(state){
+            return this.getMenus.flatMap((el:any) => el.menu_categories).flatMap((el : any) => el.children);
+        },
         getServices(state)  {
             return state.services.data ?? [];
         },
