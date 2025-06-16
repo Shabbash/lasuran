@@ -1,6 +1,7 @@
 <template>
   <Container>
-    <Banner :opacity="false" :bannerContent="bannerContent" />
+
+  <Banner :loading="branchesStore.isLoading" :opacity="false" :bannerContent="bannerContent" />
 
     <!-- Loading State -->
     <BranchSkeleton v-if="branchesStore.isLoading" />
@@ -28,7 +29,8 @@
             <div @click="openBranchDialog(branch)"
               class="pt-[8px] pb-[20px] px-[8px] rounded-[16px] overflow-hidden bg-[#EBE4DF] cursor-pointer hover:shadow-lg transition">
               <div class="mb-[12px] h-[114px] rounded-[16px] overflow-hidden">
-                <img :src="branch.image || branch.thumpimage_image" alt="Branch Image" class="w-full h-full object-cover" />
+                <img :src="branch.image || branch.thumpimage_image" alt="Branch Image"
+                  class="w-full h-full object-cover" />
               </div>
               <div class="px-[6px]">
                 <h3 class="text-[#A0576F] text-[14px] font-medium leading-normal mb-[10px]">
@@ -37,7 +39,7 @@
                 <p class="location flex text-[#5B605C] text-[12px] font-[350] gap-[4px]">
                   {{ branch.address || branch.city_name }}
                 </p>
-                
+
               </div>
             </div>
           </template>
@@ -81,8 +83,7 @@
               <span>{{ selectedBranch.phone }}</span>
             </div>
 
-            <div v-if="selectedBranch.description"
-              class="text-[#5B605C] text-[14px] font-[350] mb-[20px]"
+            <div v-if="selectedBranch.description" class="text-[#5B605C] text-[14px] font-[350] mb-[20px]"
               v-html="selectedBranch.description">
             </div>
 
@@ -112,9 +113,7 @@
                 </div>
               </div>
 
-              <BaseButton
-                @click="openDirections"
-                label="Get Directions"
+              <BaseButton @click="openDirections" label="Get Directions"
                 class="location-btn bg-[#A0576F] text-white rounded-[100px] w-full h-[50px] py-0 justify-center text-[16px] font-normal leading-[100%] tracking-[0] border border-[#A0576F] hover:bg-[#913E5D] transition cursor-pointer mt-[30px]" />
             </div>
           </div>
@@ -133,7 +132,7 @@ import Dialog from '@/components/base/Dialog.vue'
 import { useBranches, type Branch } from '@/stores/branches'
 
 import BranchSkeleton from '@/components/skeletons/BranchSkeleton.vue'
-
+import BannerSkeleton from '@/components/skeletons/BannerSkeleton.vue'
 
 // Initialize branches store
 const branchesStore = useBranches()
