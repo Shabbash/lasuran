@@ -49,7 +49,7 @@
           </UButton>
         </li>
 
-        <!-- <li class="rounded-md">
+        <li class="rounded-md">
           <UButton block
             :class="activeItem === 'tickets' ? 'active text-[#A0576F] bg-[#EBE4DF] hover:bg-[#EBE4DF] !hover:text-[#A0576F] !hover:opacity-100' : 'text-[#EBE4DF] hover:bg-white opacity-100 !hover:opacity-100'"
             variant="ghost"
@@ -58,7 +58,7 @@
             <MenuTicketsIcon />
             <span :class="activeItem === 'tickets' ? 'text-[#A0576F]' : 'text-[#EBE4DF]'">My Tickets</span>
           </UButton>
-        </li> -->
+        </li>
 
 
 
