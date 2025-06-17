@@ -3,28 +3,21 @@
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 md:px-6 py-10 bg-[#A0576F1A]">
       <!-- Cart List -->
       <div class="lg:col-span-2 space-y-6 md:h-[450px] md:overflow-y-auto">
-
         <div class="flex justify-between">
           <h2 class="text-[#EBE4DF] text-[20px] font-medium leading-normal">Cart</h2>
           <button @click="emptyCart" :disabled="cartModule.isEmptying || cartProducts.length === 0"
             class="text-[#EBE4DF] text-[14px] font-[350] leading-normal">
             <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30" fill="none">
-              <g clip-path="url(#clip0_2106_5409)">
-                <path
-                  d="M24.375 30H5.625C2.51818 30 0 27.4818 0 24.375V5.625C0 2.51818 2.51818 0 5.625 0H24.375C27.4818 0 30 2.51818 30 5.625V24.375C30 27.4818 27.4818 30 24.375 30Z"
-                  fill="#E4D1C7" />
-                <path
-                  d="M15 5.5C9.76209 5.5 5.5 9.76209 5.5 15C5.5 20.2379 9.76209 24.5 15 24.5C20.2379 24.5 24.5 20.2379 24.5 15C24.5 9.76209 20.2379 5.5 15 5.5ZM18.4984 17.3797C18.8072 17.6884 18.8072 18.1897 18.4984 18.4996C18.425 18.5731 18.3378 18.6313 18.2419 18.6711C18.1459 18.7108 18.0431 18.7312 17.9392 18.7312C17.8353 18.7313 17.7324 18.7109 17.6364 18.6711C17.5403 18.6314 17.4531 18.5731 17.3796 18.4996L15 16.12L12.6203 18.4996C12.5469 18.573 12.4596 18.6313 12.3636 18.6711C12.2676 18.7108 12.1647 18.7313 12.0608 18.7312C11.9569 18.7313 11.854 18.711 11.7581 18.6712C11.6621 18.6315 11.5749 18.5732 11.5016 18.4996C11.1928 18.1909 11.1928 17.6895 11.5016 17.3797L13.88 15L11.5004 12.6203C11.1917 12.3116 11.1917 11.8103 11.5004 11.5004C11.8092 11.1905 12.3105 11.1916 12.6204 11.5004L15 13.88L17.3796 11.5004C17.6884 11.1917 18.1897 11.1917 18.4996 11.5004C18.8095 11.8092 18.8083 12.3105 18.4996 12.6204L16.12 15L18.4984 17.3797Z"
-                  fill="#C44E4E" />
-              </g>
-              <defs>
-                <clipPath id="clip0_2106_5409">
-                  <rect width="30" height="30" fill="white" />
-                </clipPath>
-              </defs>
+              <path
+                d="M24.375 30H5.625C2.51818 30 0 27.4818 0 24.375V5.625C0 2.51818 2.51818 0 5.625 0H24.375C27.4818 0 30 2.51818 30 5.625V24.375C30 27.4818 27.4818 30 24.375 30Z"
+                fill="#E4D1C7" />
+              <path
+                d="M18.4984 17.3797C18.8072 17.6884 18.8072 18.1897 18.4984 18.4996C18.425 18.5731 18.3378 18.6313 18.2419 18.6711C18.1459 18.7108 18.0431 18.7312 17.9392 18.7312C17.7324 18.7109 17.4531 18.5731 17.3796 18.4996L15 16.12L12.6203 18.4996C12.5469 18.573 12.4596 18.6313 12.3636 18.6711C12.2676 18.7108 12.1647 18.7313 12.0608 18.7312C11.854 18.711 11.5749 18.5732 11.5016 18.4996C11.1928 18.1909 11.1928 17.6895 11.5016 17.3797L13.88 15L11.5004 12.6203C11.1917 12.3116 11.1917 11.8103 11.5004 11.5004C11.8092 11.1905 12.3105 11.1916 12.6204 11.5004L15 13.88L17.3796 11.5004C17.6884 11.1917 18.1897 11.1917 18.4996 11.5004C18.8095 11.8092 18.8083 12.3105 18.4996 12.6204L16.12 15L18.4984 17.3797Z"
+                fill="#C44E4E" />
             </svg>
           </button>
         </div>
+
         <div v-if="!cartModule.isLoading && cartProducts.length > 0">
           <div class="flex justify-between md:px-[29px] border-b border-b-[#AD7084] pb-[14px] mb-[14px]">
             <p class="flex-1 text-[#EBE4DF] text-[14px] font-[350] leading-normal">Package</p>
@@ -34,9 +27,14 @@
               <p class="md:flex-1 text-[#EBE4DF] text-[14px] font-[350] leading-normal justify-end">Action</p>
             </div>
           </div>
-          <div class="">
-            <CartItem v-for="(item, index) in cartProducts" :key="item.id || index" :item="formatCartItem(item)"
-              @toggle="toggleItem(index)" @remove="removeCartItem(item)" @edit="editCartItem(item)" />
+
+          <div>
+        <template v-for="(item, index) in cartProducts" :key="item.cart_product_id || index">
+          <CartItem v-if="item?.type !== 'gift_card'" :item="formatCartItem(item)" @toggle="toggleItem(index)" @remove="removeCartItem(item)" @edit="editCartItem(item)" />
+          <CartItemGiftCard v-else :card="item" @remove="removeCartItem(item)" />
+        </template>
+
+
           </div>
         </div>
 
@@ -45,257 +43,135 @@
         </div>
 
         <div v-else class="flex items-center justify-center h-full">
-          <img src="/public/assets/img/empty-card.svg" />
+          <img src="/assets/img/empty-card.svg" alt="empty cart" />
         </div>
       </div>
+
       <!-- Payment Summary -->
       <template v-if="!cartModule.isLoading">
         <PaymentSummary :services-count="cartProducts.length" :subtotal="cartModule.getSubtotal"
           :vat="cartModule.getVat" :discount="cartModule.getDiscount" :service-cost="cartModule.getServiceCost"
           :total="cartModule.getTotal" @checkout="checkoutModalOpen = true" />
       </template>
+
       <template v-else>
         <PaymentSummarySkeleton />
       </template>
     </div>
 
+    <!-- Checkout Dialog -->
+    <Dialog v-model:open="checkoutModalOpen" :modalMaxWidth="'max-w-[539px]'">
+      <template #body>
+        <div class="pt-[24px] pb-[50px] px-[28px]">
+          <h2 class="font-bold text-[30px] text-[#A0576F] leading-[100%] mb-[25px]">Payment Method</h2>
+          <p class="text-[#5B605C] text-[14px] font-[350] mb-[15px]">Select your preferred payment method:</p>
+
+          <URadioGroup v-model="selectedPayment" orientation="vertical" indicator="hidden" variant="card"
+            :items="paymentOptions" class="flex flex-col gap-4" :ui="{
+              root: 'relative block',
+              fieldset: 'flex flex-col gap-4 radiogroup',
+              item: 'h-[80px] rounded-[16px] flex items-center gap-3 bg-[#E6CDC7A3] border-0 px-[19px] py-[14px] text-[15px] font-normal leading-normal has-data-[state=checked]:bg-[#A0576F] has-data-[state=checked]:text-[#EBE4DF]',
+              container: 'flex items-center gap-3',
+              label: 'text-[#A0576F] font-medium'
+            }">
+            <template #leading="{ item }">
+              <img :src="item.icon" alt="icon" class="w-[24px] h-[24px]" />
+            </template>
+          </URadioGroup>
+
+          <BaseButton label="Continue"
+            class="bg-[#A0576F] text-white rounded-[100px] w-full py-[16px] mt-[50px] justify-center text-[18px] font-normal leading-[100%] tracking-[0] border border-[#A0576F] hover:bg-[#913E5D] transition cursor-pointer disabled:bg-[#A0576F]" />
+        </div>
+      </template>
+    </Dialog>
   </Container>
-
-
-  <Dialog v-model:open="checkoutModalOpen" :modalMaxWidth="'max-w-[539px]'">
-    <template #body>
-
-      <div class="pt-[24px] pb-[50px] px-[28px]">
-
-
-        <h2 class="font-bold text-[30px] text-[#A0576F] leading-[100%] mb-[25px]">Payment Method</h2>
-        <p class="text-[#5B605C] text-[14px] font-[350] mb-[15px]">
-          Select your preferred payment method:
-        </p>
-
-        <URadioGroup v-model="selectedPayment" orientation="vertical" indicator="hidden" variant="card"
-          :items="paymentOptions" class="flex flex-col gap-4" :ui="{
-            root: 'relative block',
-            fieldset: 'flex flex-col gap-4 radiogroup',
-            item: 'h-[80px] rounded-[16px] flex items-center gap-3 bg-[#E6CDC7A3] border-0 px-[19px] py-[14px] text-[15px] font-normal leading-normal has-data-[state=checked]:bg-[#A0576F] has-data-[state=checked]:text-[#EBE4DF]',
-            container: 'flex items-center gap-3',
-            label: 'text-[#A0576F] font-medium',
-          }">
-          <template #leading="{ item }">
-            <img :src="item.icon" alt="icon" class="w-[24px] h-[24px]" />
-          </template>
-        </URadioGroup>
-
-        <BaseButton label="Continue"
-          class="bg-[#A0576F] text-white rounded-[100px] w-full py-[16px] mt-[50px] justify-center text-[18px] font-normal leading-[100%] tracking-[0] border border-[#A0576F] hover:bg-[#913E5D] transition cursor-pointer disabled:bg-[#A0576F]" />
-
-      </div>
-
-
-    </template>
-  </Dialog>
-
-
 </template>
 
 <script setup lang="ts">
-// Apply auth middleware to protect this page
-definePageMeta({
-  middleware: 'auth'
-});
-
 import { ref, onMounted, computed } from 'vue'
 import Container from '@/components/base/Container.vue'
 import CartItem from '~/components/cart/CartItem.vue'
+import CartItemGiftCard from '~/components/cart/CartItemGiftCard.vue'
 import CartItemSkeleton from '~/components/cart/CartItemSkeleton.vue'
 import PaymentSummary from '~/components/cart/PaymentSummary.vue'
 import PaymentSummarySkeleton from '~/components/cart/PaymentSummarySkeleton.vue'
-import { useCart } from '~/stores/cart'
-import { COMPONENTS } from '~/data/constants'
 import Dialog from '@/components/base/Dialog.vue'
+import BaseButton from '@/components/base/Button.vue'
+import { useCart } from '~/stores/cart'
+import { useApp } from '~/stores/app'
+import { useMenu } from '~/stores/menu'
+import { COMPONENTS } from '~/data/constants'
 
-// Initialize cart store
+definePageMeta({ middleware: 'auth' })
+
 const cartModule = useCart()
-const expandedItems = ref<{ [key: string]: boolean }>({})
-const { setDialogComponent, setDialogShow } = useApp()
 const menuModule = useMenu()
-
-// Fetch cart data on component mount
-onMounted(() => {
-  cartModule.fetchCart()
-})
-
-// Get products from cart store
-const cartProducts = computed(() => {
-  return cartModule.getProducts as any[]
-})
-
-// Format cart item for display
-const formatCartItem = (item: any) => {
-  // Preserve all original data but format for display
-  const formattedItem = {
-    // Preserve all original properties
-    ...item,
-
-    // Format display properties
-    id: item.id,
-    product_id: item.product_id || item.id,
-    cart_product_id: item.cart_product_id,
-    image: item.image || '/public/assets/img/service-1.png',
-    name: item.name || 'Service',
-    duration: item.start_time && item.end_time ? `${item.start_time} - ${item.end_time}` : '1 Hour',
-    price: item.price_with_tax || item.unit_price_with_tax || 0,
-    professional: item.branch?.name || '',
-    date: item.date || '',
-    expanded: expandedItems.value[item.id] || false,
-
-    // Preserve these properties for editing
-    branch_id: item.branch_id,
-    selectedExtension: item.selectedExtension,
-    selectedTime: item.selectedTime || (item.start_time || ''),
-  };
-
-  return formattedItem;
-}
-
-// Toggle expanded state of cart item
-const toggleItem = (index: number) => {
-  const item = cartProducts.value[index]
-  if (item && item.id) {
-    expandedItems.value[item.id] = !expandedItems.value[item.id]
-  }
-}
-
-// Remove item from cart
-const removeCartItem = (item: any) => {
-  if (item && item.cart_product_id) {
-    cartModule.removeProduct(item.cart_product_id)
-  }
-}
-const editCartItem = (item: any) => {
-  console.log('Editing cart item:', item);
-
-  // Find the original cart item from the cart products
-  const originalItem = cartProducts.value.find(product => product.cart_product_id === item.cart_product_id);
-
-  if (!originalItem) {
-    console.error('Original cart item not found:', item.cart_product_id);
-    return;
-  }
-
-  console.log('Original cart item found:', originalItem);
-
-  // Extract time from duration if available
-  let selectedTime = '';
-  if (item.duration && item.duration.includes('-')) {
-    const times = item.duration.split('-');
-    if (times.length > 0) {
-      selectedTime = times[0].trim();
-    }
-  }
-
-  // Get the product data from the original item
-  // If the original item has a products array, use the first product
-  const productData = originalItem.products && originalItem.products.length > 0
-    ? originalItem.products[0]
-    : originalItem;
-
-  // Create a properly formatted service object for editing
-  const serviceData = {
-    // Include essential data for the service
-    id: productData.id || originalItem.product_master_id || originalItem.id || item.id,
-    product_id: productData.id || originalItem.product_master_id || originalItem.id,
-    cart_product_id: item.cart_product_id, // Critical for updating
-    name: item.name || productData.name,
-    image: item.image || productData.image,
-    price: item.price || productData.price,
-    duration: item.duration,
-    description: productData.description,
-
-    // Include any additional data from the original item
-    branch_id: originalItem.branch?.id || originalItem.branch_id,
-
-    // Include editing-specific data
-    selectedExtension: originalItem.selectedExtension || '',
-    selectedTime: selectedTime || item.start_time || '',
-    date: item.date || '',
-
-    // Include any additional data that might be needed for the update
-    start_at: item.start_at || null,
-    end_at: item.end_at || null,
-
-    // Add a custom property to track that this is an edit operation
-    // This won't be sent to the API but will be used by our code
-    _isEditing: true
-  };
-
-  // Store the edit flag in a way that won't interfere with the API
-  // We'll use this in our code but it won't be sent to the server
-  Object.defineProperty(serviceData, 'is_editing', {
-    value: true,
-    enumerable: false, // Make it non-enumerable so it doesn't show up in JSON
-    configurable: true,
-    writable: true
-  });
-
-  // Also store the cart_product_id as a non-enumerable property to ensure it's preserved
-  // This is a backup in case the API response doesn't include it
-  Object.defineProperty(serviceData, '_original_cart_product_id', {
-    value: item.cart_product_id,
-    enumerable: false,
-    configurable: true,
-    writable: true
-  });
-
-  // Log the service data we're about to set
-  console.log('Setting service data for editing:', serviceData);
-
-  // Make sure the _isEditing flag is set as an enumerable property
-  // This ensures it will be preserved when the object is copied
-  serviceData._isEditing = true;
-
-  // Set the service in the menu store
-  // Our updated setService method will handle preserving the editing state
-  menuModule.setService(serviceData);
-  setDialogComponent(COMPONENTS.SERVICE_APPOINTMENT);
-
-  setDialogShow(true);
-};
-
-
-// Empty the cart
-const emptyCart = () => {
-  cartModule.emptyCart()
-}
-
-
+const { setDialogComponent, setDialogShow } = useApp()
+const expandedItems = ref<{ [key: string]: boolean }>({})
 const checkoutModalOpen = ref(false)
-
 const selectedPayment = ref('cash')
 
 const paymentOptions = [
-  {
-    label: 'Cash on Delivery',
-    value: 'cash',
-    icon: '/assets/img/icon-cash.svg',
-  },
-  {
-    label: 'Online Payment',
-    value: 'online',
-    icon: '/assets/img/icon-online.svg',
-  },
+  { label: 'Cash on Delivery', value: 'cash', icon: '/assets/img/icon-cash.svg' },
+  { label: 'Online Payment', value: 'online', icon: '/assets/img/icon-online.svg' }
 ]
 
+onMounted(() => cartModule.fetchCart())
 
+const cartProducts = computed(() => cartModule.getProducts as any[])
 
-</script>
+const formatCartItem = (item: any) => ({
+  ...item,
+  id: item.id,
+  product_id: item.product_id || item.id,
+  cart_product_id: item.cart_product_id,
+  image: item.image || '/assets/img/service-1.png',
+  name: item.name || 'Gift Card',
+  duration: item.start_time && item.end_time ? `${item.start_time} - ${item.end_time}` : '1 Hour',
+  price: item.price_with_tax || item.unit_price_with_tax || item.price || 0,
+  professional: item.branch?.name || '',
+  date: item.date || '',
+  expanded: expandedItems.value[item.id] || false,
+  serial_number: item.serial_number,
+  expiry_date: item.expiry_date,
+  type: item.type
+})
 
-
-<style>
-
-
-.radiogroup label:has(*[data-state="checked"]) p{
-    color: #EBE4DF !important;
+const toggleItem = (index: number) => {
+  const item = cartProducts.value[index]
+  if (item?.id) expandedItems.value[item.id] = !expandedItems.value[item.id]
 }
 
+const removeCartItem = (item: any) => {
+  if (item?.cart_product_id) cartModule.removeProduct(item.cart_product_id)
+}
+
+const editCartItem = (item: any) => {
+  const original = cartProducts.value.find(p => p.cart_product_id === item.cart_product_id)
+  if (!original) return
+  const productData = original.products?.[0] || original
+  const serviceData = {
+    ...productData,
+    id: productData.id || original.id,
+    product_id: productData.id,
+    cart_product_id: item.cart_product_id,
+    image: item.image,
+    branch_id: original.branch?.id || original.branch_id,
+    selectedExtension: original.selectedExtension || '',
+    selectedTime: item.duration?.split('-')?.[0]?.trim() || '',
+    date: item.date || '',
+    _isEditing: true
+  }
+  menuModule.setService(serviceData)
+  setDialogComponent(COMPONENTS.SERVICE_APPOINTMENT)
+  setDialogShow(true)
+}
+
+const emptyCart = () => cartModule.emptyCart()
+</script>
+
+<style>
+.radiogroup label:has(*[data-state="checked"]) p {
+  color: #EBE4DF !important;
+}
 </style>

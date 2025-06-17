@@ -23,7 +23,7 @@
                 </h3>
               </div>
               <p class="text-white text-[11px] font-bold leading-normal">
-                expires: {{ card.expiry_date }}
+                  {{ card.name }}
               </p>
             </div>
             <div>
@@ -114,37 +114,36 @@ import Banner from '@/components/base/Banner.vue'
 import Dialog from '@/components/base/Dialog.vue'
 import BaseCounter from '@/components/base/Counter.vue'
 import BaseButton from '@/components/base/Button.vue'
+import { useCart } from '@/stores/cart' // ✅ ربط بـ cart store الحقيقي
 
-// State
 const modalOpen = ref(false)
 const selectedCard = ref<any>(null)
 const quantity = ref(1)
+const cartModule = useCart() // ✅ استخدام المتجر
 
-// Dummy cart module (replace with actual store)
-const cartModule = {
-  isAddLoading: ref(false)
-}
-
-// Open modal
-function openCardModal(card: any) {
+const openCardModal = (card: any) => {
   selectedCard.value = card
   quantity.value = 1
   modalOpen.value = true
 }
 
-// Total Price
 const totalPrice = computed(() => {
   return selectedCard.value ? quantity.value * Number(selectedCard.value.price) : 0
 })
 
-// Fake Add to Cart
-function addToCart() {
-  cartModule.isAddLoading.value = true
-  setTimeout(() => {
-    cartModule.isAddLoading.value = false
-    modalOpen.value = false
-    alert(`Added ${quantity.value} gift card(s) to cart`)
-  }, 1000)
+const addToCart = async () => {
+  if (!selectedCard.value) return
+
+  await cartModule.addOrUpdateServiceInCart({
+    id: selectedCard.value.id,
+    is_gift_card: true,
+    name: selectedCard.value.name,
+    price: selectedCard.value.price,
+    image: selectedCard.value.card_image,
+    quantity: quantity.value,
+  })
+
+  modalOpen.value = false
 }
 
 // Banner Content
@@ -154,18 +153,29 @@ const bannerContent = {
   title: "Gift Cards"
 }
 
-// Cards Data
+// Fake Cards List (يفضل تغيره لاحقًا بـ API)
 const cardContent = [
-  { price: "500", logo: "assets/img/laz-1.svg", expiry_date: "01/07/22", title: "Gift Card", card_image: "assets/img/13.svg" },
-  { price: "1000", logo: "assets/img/laz-2.svg", expiry_date: "01/07/22", title: "Gift Card", card_image: "assets/img/11.svg" },
-  { price: "1500", logo: "assets/img/laz-2.svg", expiry_date: "01/07/22", title: "Gift Card", card_image: "assets/img/12.svg" },
-  { price: "1000", logo: "assets/img/laz-2.svg", expiry_date: "01/07/22", title: "Gift Card", card_image: "assets/img/11.svg" },
-  { price: "1500", logo: "assets/img/laz-2.svg", expiry_date: "01/07/22", title: "Gift Card", card_image: "assets/img/12.svg" },
-  { price: "500", logo: "assets/img/laz-1.svg", expiry_date: "01/07/22", title: "Gift Card", card_image: "assets/img/13.svg" }
+  {
+    id: 1,
+    name: "Lasuran Gift 500",
+    price: 500,
+    card_image: "assets/img/13.svg",
+  },
+  {
+    id: 2,
+    name: "Lasuran Gift 1000",
+    price: 1000,
+    card_image: "assets/img/11.svg",
+  },
+  {
+    id: 3,
+    name: "Lasuran Gift 1500",
+    price: 1500,
+    card_image: "assets/img/12.svg",
+  }
 ]
-
-
 </script>
+
 
 <style>
 .hint::before {

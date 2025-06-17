@@ -26,8 +26,8 @@ export const useCart = defineStore("cart", {
             total: 0,
             payment_method_id: null,
             order: {
-              loading: true,
-              data: {}
+                loading: true,
+                data: {}
             },
             payment: {} as any,
             confirmation_message: {} as any,
@@ -73,256 +73,264 @@ export const useCart = defineStore("cart", {
         }
     },
     actions: {
-      setPaymentMethod(paymentMethod: any) {
-          this.$state.payment_method_id = paymentMethod;
-      },
-      // Reset loading states manually (useful for debugging or error recovery)
-      resetLoadingStates() {
-          this.$state.isAddLoading = false;
-          this.$state.isLoading = false;
-          this.$state.isRemoving = false;
-          this.$state.isEmptying = false;
-          this.$state.order.loading = false;
-      },
-      fetchCart() {
-          this.$state.isLoading = true;
-          return useApi(`cart`, {
-              method: "GET"
-          },
-          {
-              onSuccess: (data: any) => {
-                  // Update cart state with data from API
-                  this.$state.products = data.data.products || [];
-                  this.$state.loyalty_points = data.data.loyalty_points || {};
-                  this.$state.payment_methods = data.data.payment_methods || [];
-                  this.$state.working_times = data.data.working_times || [];
-                  this.$state.title = data.data.cart_title || "";
-                  this.$state.sub_title = data.data.cart_title_sub_message || "";
-                  this.$state.message = data.data.message || "";
+        setPaymentMethod(paymentMethod: any) {
+            this.$state.payment_method_id = paymentMethod;
+        },
+        // Reset loading states manually (useful for debugging or error recovery)
+        resetLoadingStates() {
+            this.$state.isAddLoading = false;
+            this.$state.isLoading = false;
+            this.$state.isRemoving = false;
+            this.$state.isEmptying = false;
+            this.$state.order.loading = false;
+        },
+        fetchCart() {
+            this.$state.isLoading = true;
+            return useApi(`cart`, {
+                method: "GET"
+            },
+                {
+                    onSuccess: (data: any) => {
+                        // Update cart state with data from API
+                        this.$state.products = (data.data.products || []).map((item: any) => {
+                            if (item.serial_number || item.voucher_group_name) {
+                                item.type = 'gift_card';
+                            } else {
+                                item.type = 'service';
+                            }
+                            return item;
+                        });
 
-                  // Update pricing information
-                  this.$state.subtotal = data.data.sub_total || 0;
-                  this.$state.vat = data.data.tax_amount || 0;
-                  this.$state.discount = (data.data.promo_discount || 0) + (data.data.extra_discount || 0) + (data.data.gift_card_discount || 0);
-                  this.$state.service_cost = data.data.order_service_fees_price || 0;
-                  this.$state.total = data.data.total || 0;
+                        this.$state.loyalty_points = data.data.loyalty_points || {};
+                        this.$state.payment_methods = data.data.payment_methods || [];
+                        this.$state.working_times = data.data.working_times || [];
+                        this.$state.title = data.data.cart_title || "";
+                        this.$state.sub_title = data.data.cart_title_sub_message || "";
+                        this.$state.message = data.data.message || "";
 
-                  this.$state.isLoading = false;
-              },
-              onError: (err: any) => {
-                  this.$state.isLoading = false;
-                  console.error("Error fetching cart:", err);
-              }
-          });
-      },
-      emptyCart() {
-          this.$state.isEmptying = true;
-          return useApi(`delete-all-cart`, {
-              method: "DELETE"
-          },
-          {
-              onSuccess: (data: any) => {
-                  // Clear cart data
-                  this.$state.products = [];
-                  this.$state.subtotal = 0;
-                  this.$state.vat = 0;
-                  this.$state.discount = 0;
-                  this.$state.service_cost = 0;
-                  this.$state.total = 0;
-                  this.$state.isEmptying = false;
+                        // Update pricing information
+                        this.$state.subtotal = data.data.sub_total || 0;
+                        this.$state.vat = data.data.tax_amount || 0;
+                        this.$state.discount = (data.data.promo_discount || 0) + (data.data.extra_discount || 0) + (data.data.gift_card_discount || 0);
+                        this.$state.service_cost = data.data.order_service_fees_price || 0;
+                        this.$state.total = data.data.total || 0;
 
-                  // Show success message if available
-                  if (data && data.message) {
-                      console.log('Cart emptied successfully:', data.message);
-                  }
+                        this.$state.isLoading = false;
+                    },
+                    onError: (err: any) => {
+                        this.$state.isLoading = false;
+                        console.error("Error fetching cart:", err);
+                    }
+                });
+        },
+        emptyCart() {
+            this.$state.isEmptying = true;
+            return useApi(`delete-all-cart`, {
+                method: "DELETE"
+            },
+                {
+                    onSuccess: (data: any) => {
+                        // Clear cart data
+                        this.$state.products = [];
+                        this.$state.subtotal = 0;
+                        this.$state.vat = 0;
+                        this.$state.discount = 0;
+                        this.$state.service_cost = 0;
+                        this.$state.total = 0;
+                        this.$state.isEmptying = false;
 
-                  // Refresh cart data to ensure UI is in sync with server
-                  this.fetchCart();
-              },
-              onError: (err: any) => {
-                  this.$state.isEmptying = false;
-                  console.error("Error emptying cart:", err);
-              }
-          });
-      },
-      addOrUpdateServiceInCart(service: any, branchId = null) {
-          const menuModule = useMenu();
-          this.$state.isAddLoading = true;
+                        // Show success message if available
+                        if (data && data.message) {
+                            console.log('Cart emptied successfully:', data.message);
+                        }
 
-          // Determine if this is an update operation
-          const isUpdate = service.cart_product_id && service.cart_product_id !== undefined;
+                        // Refresh cart data to ensure UI is in sync with server
+                        this.fetchCart();
+                    },
+                    onError: (err: any) => {
+                        this.$state.isEmptying = false;
+                        console.error("Error emptying cart:", err);
+                    }
+                });
+        },
+        addOrUpdateServiceInCart(service: any, branchId = null) {
+            const menuModule = useMenu();
+            this.$state.isAddLoading = true;
 
-          if (isUpdate) {
-              console.log('Updating existing cart item:', service.cart_product_id);
+            // Determine if this is an update operation
+            const isUpdate = service.cart_product_id && service.cart_product_id !== undefined;
 
-              // For updates, use the same endpoint as adding but include cart_product_id
-              // The API will detect this is an update operation based on the cart_product_id
-              const updateRequestBody: any = {
-                  product_id: service.id,
-                  quantity: 1,
-                  branch_id: branchId ?? service.branch_id ?? menuModule.branch_id,
-                  cart_product_id: service.cart_product_id // Include this for the API to identify as update
-              };
+            if (isUpdate) {
+                console.log('Updating existing cart item:', service.cart_product_id);
 
-              // Include any additional data needed for the update
-              if (service.selectedExtension) {
-                  updateRequestBody.selectedExtension = service.selectedExtension;
-              }
-              if (service.selectedTime) {
-                  updateRequestBody.selectedTime = service.selectedTime;
-              }
-              if (service.date) {
-                  updateRequestBody.date = service.date;
-              }
+                // For updates, use the same endpoint as adding but include cart_product_id
+                // The API will detect this is an update operation based on the cart_product_id
+                const updateRequestBody: any = {
+                    product_id: service.id,
+                    quantity: 1,
+                    branch_id: branchId ?? service.branch_id ?? menuModule.branch_id,
+                    cart_product_id: service.cart_product_id // Include this for the API to identify as update
+                };
 
-              console.log('Cart update API request body:', updateRequestBody);
+                // Include any additional data needed for the update
+                if (service.selectedExtension) {
+                    updateRequestBody.selectedExtension = service.selectedExtension;
+                }
+                if (service.selectedTime) {
+                    updateRequestBody.selectedTime = service.selectedTime;
+                }
+                if (service.date) {
+                    updateRequestBody.date = service.date;
+                }
 
-              // Use POST method with the cart endpoint for both add and update
-              return useApi(`cart`, {
-                     method: "POST",
-                     body: updateRequestBody
-                  },
-              {
-                  onSuccess: (data: any) => {
-                      console.log('Cart API response:', data);
+                console.log('Cart update API request body:', updateRequestBody);
 
-                      // Update cart with new data
-                      if (data.data) {
-                          this.$state.products = data.data.products || this.$state.products;
-                          this.$state.subtotal = data.data.subtotal || this.$state.subtotal;
-                          this.$state.vat = data.data.vat || this.$state.vat;
-                          this.$state.total = data.data.total || this.$state.total;
-                      }
-                      this.$state.isAddLoading = false;
-                      // Refresh cart data
-                      this.fetchCart();
-                  },
-                  onError: (err: any) => {
-                      this.$state.isAddLoading = false;
-                      console.error("Error updating cart:", err);
-                  }
-              });
-          } else {
-              console.log('Adding new item to cart');
+                // Use POST method with the cart endpoint for both add and update
+                return useApi(`cart`, {
+                    method: "POST",
+                    body: updateRequestBody
+                },
+                    {
+                        onSuccess: (data: any) => {
+                            console.log('Cart API response:', data);
 
-              // For adding new items, use the standard cart endpoint with POST
-              const addRequestBody: any = {
-                  product_id: service.id,
-                  quantity: 1,
-                  branch_id: branchId ?? service.branch_id ?? menuModule.branch_id
-              };
+                            // Update cart with new data
+                            if (data.data) {
+                                this.$state.products = data.data.products || this.$state.products;
+                                this.$state.subtotal = data.data.subtotal || this.$state.subtotal;
+                                this.$state.vat = data.data.vat || this.$state.vat;
+                                this.$state.total = data.data.total || this.$state.total;
+                            }
+                            this.$state.isAddLoading = false;
+                            // Refresh cart data
+                            this.fetchCart();
+                        },
+                        onError: (err: any) => {
+                            this.$state.isAddLoading = false;
+                            console.error("Error updating cart:", err);
+                        }
+                    });
+            } else {
+                console.log('Adding new item to cart');
 
-              // Include any additional data for the new item
-              if (service.selectedExtension) {
-                  addRequestBody.selectedExtension = service.selectedExtension;
-              }
-              if (service.selectedTime) {
-                  addRequestBody.selectedTime = service.selectedTime;
-              }
-              if (service.date) {
-                  addRequestBody.date = service.date;
-              }
+                // For adding new items, use the standard cart endpoint with POST
+                const addRequestBody: any = {
+                    product_id: service.id,
+                    quantity: 1,
+                    branch_id: branchId ?? service.branch_id ?? menuModule.branch_id
+                };
 
-              console.log('Cart add API request body:', addRequestBody);
+                // Include any additional data for the new item
+                if (service.selectedExtension) {
+                    addRequestBody.selectedExtension = service.selectedExtension;
+                }
+                if (service.selectedTime) {
+                    addRequestBody.selectedTime = service.selectedTime;
+                }
+                if (service.date) {
+                    addRequestBody.date = service.date;
+                }
 
-              return useApi(`cart`, {
-                     method: "POST",
-                     body: addRequestBody
-                  },
-              {
-                  onSuccess: (data: any) => {
-                      console.log('Cart API response:', data);
+                console.log('Cart add API request body:', addRequestBody);
 
-                      // Update cart with new data
-                      if (data.data) {
-                          this.$state.products = data.data.products || this.$state.products;
-                          this.$state.subtotal = data.data.subtotal || this.$state.subtotal;
-                          this.$state.vat = data.data.vat || this.$state.vat;
-                          this.$state.total = data.data.total || this.$state.total;
-                      }
-                      this.$state.isAddLoading = false;
-                      // Refresh cart data
-                      this.fetchCart();
-                  },
-                  onError: (err: any) => {
-                      this.$state.isAddLoading = false;
-                      console.error("Error adding to cart:", err);
-                  }
-              });
-          }
-      },
-      removeProduct(cartProductId: number | string) {
-          console.log('Removing cart item:', cartProductId);
-          this.$state.isRemoving = true;
-          return useApi(`cart/${cartProductId}`, {
-              method: "DELETE"
-          },
-          {
-              onSuccess: (data: any) => {
-                  // Remove product from local state
-                  this.$state.products = this.$state.products.filter(
-                      (product: any) => product.cart_product_id !== cartProductId
-                  );
+                return useApi(`cart`, {
+                    method: "POST",
+                    body: addRequestBody
+                },
+                    {
+                        onSuccess: (data: any) => {
+                            console.log('Cart API response:', data);
 
-                  // Update pricing information if available in response
-                  if (data.data) {
-                      this.$state.subtotal = data.data.subtotal || this.$state.subtotal;
-                      this.$state.vat = data.data.vat || this.$state.vat;
-                      this.$state.total = data.data.total || this.$state.total;
-                  }
+                            // Update cart with new data
+                            if (data.data) {
+                                this.$state.products = data.data.products || this.$state.products;
+                                this.$state.subtotal = data.data.subtotal || this.$state.subtotal;
+                                this.$state.vat = data.data.vat || this.$state.vat;
+                                this.$state.total = data.data.total || this.$state.total;
+                            }
+                            this.$state.isAddLoading = false;
+                            // Refresh cart data
+                            this.fetchCart();
+                        },
+                        onError: (err: any) => {
+                            this.$state.isAddLoading = false;
+                            console.error("Error adding to cart:", err);
+                        }
+                    });
+            }
+        },
+        removeProduct(cartProductId: number | string) {
+            console.log('Removing cart item:', cartProductId);
+            this.$state.isRemoving = true;
+            return useApi(`cart/${cartProductId}`, {
+                method: "DELETE"
+            },
+                {
+                    onSuccess: (data: any) => {
+                        // Remove product from local state
+                        this.$state.products = this.$state.products.filter(
+                            (product: any) => product.cart_product_id !== cartProductId
+                        );
 
-                  this.$state.isRemoving = false;
-                  // Refresh cart data
-                  this.fetchCart();
-              },
-              onError: (err: any) => {
-                  this.$state.isRemoving = false;
-                  console.error("Error removing product:", err);
-              }
-          });
-      },
-      updateServiceAvailableSlot(payload: any) {
-          this.$state.isAddLoading = true;
-          return useApi(`cart-products/${this.$state.products?.[0]?.cart_product_id}/update-time-slot`, {
-                  method: "POST",
-                  body: payload
-              },
-              {
-                  onSuccess: (data: any) => {
-                      this.$state.isAddLoading = false;
+                        // Update pricing information if available in response
+                        if (data.data) {
+                            this.$state.subtotal = data.data.subtotal || this.$state.subtotal;
+                            this.$state.vat = data.data.vat || this.$state.vat;
+                            this.$state.total = data.data.total || this.$state.total;
+                        }
 
-                  },
-                  onError: (err: any) => {
-                      this.$state.isAddLoading = false;
-                  }
-              });
-      },
-      createOrder(payload: any = {}, onSuccess: Function = () => {}, onError: Function = () => {}) {
-          this.$state.order.loading = true;
-          return useApi(`orders`, {
-                  method: "POST",
-                  body: {
-                      payment_method_id : this.$state.payment_method_id,
-                      is_scheduled: 0
-                  }
-              },
-              {
-                  onSuccess: (data: any) => {
-                      this.$state.order.loading = false;
-                      this.$state.order.data = data.data.order;
-                      this.$state.payment = data.data.payment;
-                      this.$state.confirmation_message = data.data.confirmation_message;
-                      this.$state.saved_cards = data.data.saved_cards ?? [];
-                      onSuccess(data);
-                      this.openPaymentPopup();
-                  },
-                  onError: (err: any) => {
-                      this.$state.order.loading = false;
-                      console.error('Order creation failed:', err);
-                      onError(err);
-                  }
-              });
-      },
+                        this.$state.isRemoving = false;
+                        // Refresh cart data
+                        this.fetchCart();
+                    },
+                    onError: (err: any) => {
+                        this.$state.isRemoving = false;
+                        console.error("Error removing product:", err);
+                    }
+                });
+        },
+        updateServiceAvailableSlot(payload: any) {
+            this.$state.isAddLoading = true;
+            return useApi(`cart-products/${this.$state.products?.[0]?.cart_product_id}/update-time-slot`, {
+                method: "POST",
+                body: payload
+            },
+                {
+                    onSuccess: (data: any) => {
+                        this.$state.isAddLoading = false;
+
+                    },
+                    onError: (err: any) => {
+                        this.$state.isAddLoading = false;
+                    }
+                });
+        },
+        createOrder(payload: any = {}, onSuccess: Function = () => { }, onError: Function = () => { }) {
+            this.$state.order.loading = true;
+            return useApi(`orders`, {
+                method: "POST",
+                body: {
+                    payment_method_id: this.$state.payment_method_id,
+                    is_scheduled: 0
+                }
+            },
+                {
+                    onSuccess: (data: any) => {
+                        this.$state.order.loading = false;
+                        this.$state.order.data = data.data.order;
+                        this.$state.payment = data.data.payment;
+                        this.$state.confirmation_message = data.data.confirmation_message;
+                        this.$state.saved_cards = data.data.saved_cards ?? [];
+                        onSuccess(data);
+                        this.openPaymentPopup();
+                    },
+                    onError: (err: any) => {
+                        this.$state.order.loading = false;
+                        console.error('Order creation failed:', err);
+                        onError(err);
+                    }
+                });
+        },
 
         openPaymentPopup(payload: any = {}) {
             const url = this.$state.payment?.create_token_url?.url;

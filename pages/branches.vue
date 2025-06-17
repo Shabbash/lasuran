@@ -55,7 +55,8 @@
     <!-- المودال -->
     <Dialog v-model:open="modalOpen" :modalMaxWidth="'max-w-[539px]'">
       <template #body>
-        <div v-if="selectedBranch"
+        <BranchDetailsSkeleton v-if="!selectedBranch" />
+        <div v-else
           class="bg-decore-modal mx-auto rounded-[30px] overflow-hidden shadow-lg bg-[#EBE4DF] text-[#5F2C3E]">
           <!-- صورة الفرع -->
           <img class="w-full h-[200px] object-cover rounded-[30px]"
@@ -133,6 +134,7 @@ import { useBranches, type Branch } from '@/stores/branches'
 
 import BranchSkeleton from '@/components/skeletons/BranchSkeleton.vue'
 import BannerSkeleton from '@/components/skeletons/BannerSkeleton.vue'
+import BranchDetailsSkeleton from '@/components/skeletons/BranchDetailsSkeleton.vue'
 
 // Initialize branches store
 const branchesStore = useBranches()
