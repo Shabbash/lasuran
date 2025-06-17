@@ -17,7 +17,7 @@
       </div>
 
       <p class="text-[14px] font-[350] text-[#5F2C3E] leading-[1.6] mb-[18px]">
-        {{ defaultService.description }}
+        {{ selectedService.description }}
       </p>
 
       <!-- <div class="flex justify-between gap-4">

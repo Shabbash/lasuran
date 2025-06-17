@@ -91,8 +91,7 @@
 import { ref, computed } from 'vue'
 import BaseButton from '@/components/base/Button.vue'
 import ChatBox from '@/components/base/ChatBox.vue'
-import SendIcon from '~/components/icons/SendIcon.vue'
-import attachIcon from '~/components/icons/attachIcon.vue'
+
 
 const filters = [
   { id: 'all', label: 'ALL' },

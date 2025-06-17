@@ -38,7 +38,7 @@
           placeholder="Type a message"
           class="ps-[23px] w-full h-full text-sm outline-none border border-[#D8D8D8] bg-white text-[#959595] font-light text-[14px] leading-normal" />
         <button class="absolute h-full end-0 px-[19px]" @click="attach">
-          <attachIcon />
+          <AttachIcon />
         </button>
       </div>
       <button
