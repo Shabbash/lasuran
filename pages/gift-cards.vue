@@ -3,40 +3,64 @@
     <Banner :opacity="false" :bannerContent="bannerContent" />
 
     <div>
-      <h2 class="text-white mb-[16px] text-[19px] font-normal">Gifts Cards</h2>
-      <p class="hint text-[#C6C6C7] text-[13px] font-[350] flex items-center gap-[10px] mb-[15px]">The gift card is
-        valid for one
-        time use only.</p>
+      <h2 class="text-white mb-[16px] text-[19px] font-normal">Gift Cards</h2>
+      <p class="hint text-[#C6C6C7] text-[13px] font-[350] flex items-center gap-[10px] mb-[15px]">
+        {{ giftCards[0]?.single_use_message || 'The gift card is valid for one time use only.' }}
+      </p>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div v-for="(card, index) in cardContent" :key="index" class="relative cursor-pointer"
+      <!-- Loading State -->
+      <div v-if="isLoading" class="flex justify-center items-center py-12">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
+      </div>
+
+      <!-- Error State -->
+      <div v-else-if="error" class="text-center py-12">
+        <p class="text-red-400 mb-4">{{ error }}</p>
+        <button @click="fetchGiftCards" class="bg-[#A0576F] text-white px-4 py-2 rounded-lg hover:bg-[#913E5D]">
+          Try Again
+        </button>
+      </div>
+
+      <!-- Gift Cards Grid -->
+      <div v-else-if="giftCards.length > 0" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div v-for="(card, index) in giftCards" :key="card.id || index" class="relative cursor-pointer"
           @click="openCardModal(card)">
           <div class="w-full h-full">
-            <img class="w-full h-full cover" :src="card.card_image" alt="gift card image" />
+            <img class="w-full h-full cover" :src="card.card_image"
+                 :alt="card.name || 'Gift card image'"
+                 @error="(e) => (e.target as HTMLImageElement).src = '/assets/img/default-gift-card.png'" />
           </div>
           <div class="flex items-center justify-between absolute inset-0 px-[17px] py-[15px]">
             <div class="flex flex-col justify-between h-full">
               <div>
-                <h2 class="text-white text-[15px] font-bold leading-normal">{{ card.title }}</h2>
+                <h2 class="text-white text-[15px] font-bold leading-normal">{{ card.title || 'Gift Card' }}</h2>
                 <h3 class="text-white text-[40px] font-bold leading-normal">
-                  {{ card.price }} <span class="text-[20px]">SAR</span>
+                  {{ card.price || 0 }} <span class="text-[20px]">SAR</span>
                 </h3>
               </div>
               <p class="text-white text-[11px] font-bold leading-normal">
-                  {{ card.name }}
+                  {{ card.name || 'Lasuran Gift Card' }}
               </p>
             </div>
-            <div>
+            <div v-if="card.logo">
               <img :src="card.logo" alt="logo" />
             </div>
           </div>
         </div>
       </div>
+
+      <!-- Empty State -->
+      <div v-else class="text-center py-12">
+        <p class="text-[#C6C6C7] text-lg mb-4">No gift cards available at the moment</p>
+        <button @click="fetchGiftCards" class="bg-[#A0576F] text-white px-4 py-2 rounded-lg hover:bg-[#913E5D]">
+          Refresh
+        </button>
+      </div>
     </div>
 
 
     <!-- Gift Card Modal -->
-    <Dialog v-model:open="modalOpen" :modalMaxWidth="'max-w-[539px]'">
+    <Dialog v-model:show="modalOpen" :modalMaxWidth="'max-w-[539px]'">
       <template #body>
         <div class="bg-decore-modal mx-auto rounded-[30px] overflow-hidden shadow-lg bg-[#EBE4DF] text-[#5F2C3E]">
           <div class="relative px-[28px] mt-[28px] mb-[40px]">
@@ -44,40 +68,45 @@
 
             <div v-if="selectedCard" class="relative">
               <div class="w-full h-full">
-                <img class="w-full h-full cover" :src="selectedCard.card_image" alt="gift card image" />
+                <img class="w-full h-full cover" :src="selectedCard.card_image"
+                     :alt="selectedCard.name || 'Gift card image'"
+                     @error="(e) => (e.target as HTMLImageElement).src = '/assets/img/default-gift-card.png'" />
               </div>
               <div class="flex items-center justify-between absolute inset-0 px-[17px] py-[15px]">
                 <div class="flex flex-col justify-between h-full">
                   <div>
-                    <h2 class="text-white text-[15px] font-bold leading-normal">{{ selectedCard.title }}</h2>
+                    <h2 class="text-white text-[15px] font-bold leading-normal">{{ selectedCard?.title || 'Gift Card' }}</h2>
                     <h3 class="text-white text-[40px] font-bold leading-normal">
-                      {{ selectedCard.price }} <span class="text-[20px]">SAR</span>
+                      {{ selectedCard?.price || 0 }} <span class="text-[20px]">SAR</span>
                     </h3>
                   </div>
                   <p class="text-white text-[11px] font-bold leading-normal">
-                    expires: {{ selectedCard.expiry_date }}
+                    expires: {{ selectedCard?.expiry_date || '2025-12-31' }}
                   </p>
                 </div>
-                <div>
+                <div v-if="selectedCard?.logo">
                   <img :src="selectedCard.logo" alt="logo" />
                 </div>
               </div>
             </div>
 
             <div class="flex justify-between items-center mt-[40px] mb-[15px]">
-              <h2 class="text-[30px] font-bold text-[#A0576F] leading-normal">{{ selectedCard.title }}</h2>
-              <p class="text-[19px] font-bold text-[#A0576F] leading-normal">{{ selectedCard.price }}</p>
+              <h2 class="text-[30px] font-bold text-[#A0576F] leading-normal">{{ selectedCard?.title || 'Gift Card' }}</h2>
+              <p class="text-[19px] font-bold text-[#A0576F] leading-normal">{{ selectedCard?.price || 0 }} SAR</p>
             </div>
 
-            <p class="text-[#5B605C] mb-[16px] text-[14px] font-[350] leading-[23.128px]">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-              dolore magna aliqua. Ut enim ad ate velit esse cillum dolore eu fugiat nulla pariatur.
+            <div class="text-[#5B605C] mb-[16px] text-[14px] font-[350] leading-[23.128px]"
+                 v-html="selectedCard?.description || 'Give the perfect gift with a Lasuran gift card. Valid for all services and products at our salon.'">
+            </div>
+
+            <p v-if="selectedCard?.single_use_message" class="text-[#5B605C] mb-[16px] text-[12px] font-[350] italic">
+              {{ selectedCard.single_use_message }}
             </p>
 
             <div class="flex justify-between items-center gap-[25px] mt-[55px]">
 
               <BaseCounter v-model="quantity" />
-              <BaseButton @click="addToCart" :loading="cartModule.isAddLoading.value" :disabled="!selectedCard"
+              <BaseButton @click="checkoutGiftCard" :loading="isCheckingOut" :disabled="!selectedCard"
                 class="cart-btn flex align-center gap-[10px] w-full text-white rounded-full font-[400] text-[16px] justify-center disabled:bg-[#A0576F] hover:bg-[#913E5D]"
                 :class="selectedCard ? 'bg-[#A0576F]' : 'bg-[#a0576f69]'">
 
@@ -89,7 +118,7 @@
                     d="M6.25 5.5V4.875C6.25 2.80406 7.92906 1.125 10 1.125C12.0709 1.125 13.75 2.80406 13.75 4.875V5.5H14.2966C15.5391 5.5 16.59 6.41656 16.765 7.64688L18.0994 17.0219C18.3137 18.525 17.1509 19.875 15.6312 19.875H4.36875C2.84906 19.875 1.68625 18.525 1.90031 17.0219L3.235 7.64688C3.41 6.41656 4.46093 5.5 5.70375 5.5H6.25ZM7.5 8C7.5 8.16576 7.43415 8.32473 7.31694 8.44194C7.19973 8.55915 7.04076 8.625 6.875 8.625C6.70924 8.625 6.55026 8.55915 6.43305 8.44194C6.31584 8.32473 6.25 8.16576 6.25 8V6.75H5.70343C5.40347 6.75064 5.1138 6.8595 4.88767 7.05659C4.66153 7.25367 4.51411 7.52575 4.4725 7.82281L3.13812 17.1978C3.03 17.9534 3.61406 18.625 4.36875 18.625H15.6312C16.3856 18.625 16.9697 17.9534 16.8622 17.1978L15.5275 7.82281C15.4859 7.52569 15.3384 7.25358 15.1122 7.05648C14.886 6.85939 14.5963 6.75056 14.2962 6.75H13.75V8C13.75 8.16576 13.6841 8.32473 13.5669 8.44194C13.4497 8.55915 13.2908 8.625 13.125 8.625C12.9592 8.625 12.8003 8.55915 12.6831 8.44194C12.5658 8.32473 12.5 8.16576 12.5 8V6.75H7.5V8ZM12.5 5.5V4.875C12.5 4.21196 12.2366 3.57607 11.7678 3.10723C11.2989 2.63839 10.663 2.375 10 2.375C9.33696 2.375 8.70107 2.63839 8.23223 3.10723C7.76339 3.57607 7.5 4.21196 7.5 4.875V5.5H12.5Z"
                     fill="#EBE4DF" />
                 </svg>
-                <span>Total: {{ totalPrice }} SAR</span>
+                <span>Buy Now: {{ totalPrice }} SAR</span>
 
 
               </BaseButton>
@@ -108,18 +137,22 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import Container from '@/components/base/Container.vue'
 import Banner from '@/components/base/Banner.vue'
 import Dialog from '@/components/base/Dialog.vue'
 import BaseCounter from '@/components/base/Counter.vue'
 import BaseButton from '@/components/base/Button.vue'
-import { useCart } from '@/stores/cart' // ✅ ربط بـ cart store الحقيقي
-
+// Reactive state
 const modalOpen = ref(false)
 const selectedCard = ref<any>(null)
 const quantity = ref(1)
-const cartModule = useCart() // ✅ استخدام المتجر
+
+// API state
+const isLoading = ref(false)
+const error = ref<string | null>(null)
+const giftCards = ref<any[]>([])
+const pagination = ref<any>(null)
 
 const openCardModal = (card: any) => {
   selectedCard.value = card
@@ -127,23 +160,210 @@ const openCardModal = (card: any) => {
   modalOpen.value = true
 }
 
-const totalPrice = computed(() => {
-  return selectedCard.value ? quantity.value * Number(selectedCard.value.price) : 0
+const closeCardModal = () => {
+  modalOpen.value = false
+  selectedCard.value = null
+  quantity.value = 1
+}
+
+// Fetch gift cards from API
+const fetchGiftCards = async () => {
+  isLoading.value = true
+  error.value = null
+
+  try {
+    console.log('Fetching gift cards from API...')
+
+    const { data: response, error: apiError } = await useApi('vouchers/list_available', {
+      method: 'GET'
+    })
+
+    console.log('Gift cards API response:', response)
+    console.log('API error:', apiError)
+
+    if (apiError.value) {
+      throw new Error(apiError.value?.message || 'Failed to fetch gift cards')
+    }
+
+    const apiData = response.value
+    if (apiData?.status && apiData?.data) {
+      // Transform API data to match our UI expectations
+      giftCards.value = apiData.data.items.map((item: any) => ({
+        id: item.id,
+        name: item.name,
+        title: item.name,
+        description: item.description,
+        price: item.price,
+        card_image: item.card_image,
+        cover_image: item.cover_image,
+        logo: item.logo || '/assets/img/logo-white.svg', // Fallback logo
+        single_use_message: item.single_use_message,
+        redeemed_multiple_times: item.redeemed_multiple_times,
+        number_of_gift_card: item.number_of_gift_card,
+        files: item.files || []
+      }))
+
+      pagination.value = apiData.data.pagination_options
+
+      console.log('Gift cards loaded successfully:', giftCards.value.length)
+    } else {
+      throw new Error(apiData?.message || 'Failed to fetch gift cards')
+    }
+  } catch (err: any) {
+    console.error('Error fetching gift cards:', err)
+    error.value = err?.message || 'Failed to load gift cards'
+
+    // Fallback to empty array on error
+    giftCards.value = []
+  } finally {
+    isLoading.value = false
+  }
+}
+
+// Initialize gift cards on component mount
+onMounted(async () => {
+  console.log('Gift cards page mounted, fetching data...')
+  await fetchGiftCards()
 })
 
-const addToCart = async () => {
+const totalPrice = computed(() => {
+  if (!selectedCard.value || !selectedCard.value.price) return 0
+
+  const price = Number(selectedCard.value.price)
+  const qty = Number(quantity.value) || 1
+
+  return isNaN(price) ? 0 : price * qty
+})
+
+// Direct checkout for gift cards
+const isCheckingOut = ref(false)
+const paymentMethods = ref<any[]>([])
+
+// Fetch payment methods first
+const fetchPaymentMethods = async () => {
+  try {
+    const { data: response, error: apiError } = await useApi('cart', {
+      method: 'GET'
+    })
+
+    if (!apiError.value && response.value?.data?.payment_methods) {
+      paymentMethods.value = response.value.data.payment_methods
+      console.log('Payment methods loaded:', paymentMethods.value)
+    }
+  } catch (error) {
+    console.error('Error fetching payment methods:', error)
+  }
+}
+
+const checkoutGiftCard = async () => {
   if (!selectedCard.value) return
 
-  await cartModule.addOrUpdateServiceInCart({
-    id: selectedCard.value.id,
-    is_gift_card: true,
-    name: selectedCard.value.name,
-    price: selectedCard.value.price,
-    image: selectedCard.value.card_image,
-    quantity: quantity.value,
-  })
+  isCheckingOut.value = true
 
-  modalOpen.value = false
+  try {
+    console.log('Starting gift card checkout:', selectedCard.value)
+
+    // Fetch payment methods if not already loaded
+    if (paymentMethods.value.length === 0) {
+      await fetchPaymentMethods()
+    }
+
+    // Use a single, simple payload structure
+    const paymentMethodId = paymentMethods.value.length > 0 ? paymentMethods.value[0].id : 1
+
+    const checkoutPayload: any = {
+      voucher_groups_id: [selectedCard.value.id],
+      quantity: quantity.value,
+      payment_method_id: paymentMethodId
+    }
+
+    console.log('Single checkout attempt with payload:', checkoutPayload)
+
+    // Make a single API call
+    const { data: response, error: apiError } = await useApi('vouchers/checkout', {
+      method: 'POST',
+      body: checkoutPayload
+    })
+
+    console.log('Gift card checkout API response:', response)
+    console.log('Gift card checkout API error:', apiError)
+
+    if (apiError?.value) {
+      // Log detailed error information for debugging
+      console.error('Detailed API error:', apiError.value)
+
+      // Extract validation errors if available
+      let errorMessage = 'Failed to checkout gift card'
+
+      try {
+        const errorData = apiError.value as any
+        if (errorData?.data?.errors) {
+          const validationErrors = Object.values(errorData.data.errors).flat()
+          errorMessage = (validationErrors as string[]).join(', ')
+        } else if (errorData?.data?.message) {
+          errorMessage = String(errorData.data.message)
+        } else if (errorData?.message) {
+          errorMessage = String(errorData.message)
+        }
+      } catch (e) {
+        console.error('Error parsing API error:', e)
+      }
+
+      throw new Error(errorMessage)
+    }
+
+    const apiData = response?.value
+    if (apiData?.status) {
+      console.log('Gift card checkout successful!')
+
+      // Handle successful checkout
+      if (apiData.data) {
+        // If there's a payment URL, open payment window
+        if (apiData.data.payment?.create_token_url?.url) {
+          console.log('Opening payment window for gift card...')
+          const paymentUrl = apiData.data.payment.create_token_url.url
+
+          // Open payment window
+          const paymentWindow = window.open(
+            paymentUrl,
+            'payment',
+            'width=600,height=700,scrollbars=yes,resizable=yes'
+          )
+
+          if (paymentWindow) {
+            // Monitor payment window
+            const checkClosed = setInterval(() => {
+              if (paymentWindow.closed) {
+                clearInterval(checkClosed)
+                console.log('Payment window closed')
+                // You can add payment status check here
+                closeCardModal()
+              }
+            }, 1000)
+          }
+        } else {
+          // No payment needed or already processed
+          console.log('Gift card order completed without payment window')
+          closeCardModal()
+
+          // Show success message
+          alert('Gift card purchased successfully!')
+        }
+      }
+    } else {
+      throw new Error(apiData?.message || 'Failed to checkout gift card')
+    }
+  } catch (error: any) {
+    console.error('Error during gift card checkout:', error)
+
+    // Show user-friendly error message
+    const errorMessage = error.message || 'An unexpected error occurred during checkout'
+    alert(`Checkout failed: ${errorMessage}`)
+
+    // Keep modal open so user can try again
+  } finally {
+    isCheckingOut.value = false
+  }
 }
 
 // Banner Content
@@ -153,27 +373,7 @@ const bannerContent = {
   title: "Gift Cards"
 }
 
-// Fake Cards List (يفضل تغيره لاحقًا بـ API)
-const cardContent = [
-  {
-    id: 1,
-    name: "Lasuran Gift 500",
-    price: 500,
-    card_image: "assets/img/13.svg",
-  },
-  {
-    id: 2,
-    name: "Lasuran Gift 1000",
-    price: 1000,
-    card_image: "assets/img/11.svg",
-  },
-  {
-    id: 3,
-    name: "Lasuran Gift 1500",
-    price: 1500,
-    card_image: "assets/img/12.svg",
-  }
-]
+// Gift cards are now loaded from API via fetchGiftCards()
 </script>
 
 
