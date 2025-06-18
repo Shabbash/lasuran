@@ -171,7 +171,7 @@
             </div>
 
             <UCollapsible v-model:open="level.open" class="flex flex-col gap-2">
-              <UButton class="more-btn bg-transparent text-[#BBCACF] hover:text-[#A0576F] p-0 mt-[16px]">
+              <UButton class="more-btn bg-transparent text-[#BBCACF] hover:text-[#A0576F] p-0 mt-[16px] hover:bg-transparent justify-center">
                 <span>{{ level.open ? 'Show Less' : 'Read More' }}</span>
               </UButton>
               <template #content>

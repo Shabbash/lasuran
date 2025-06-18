@@ -139,7 +139,7 @@ const expandedItems = ref<{ [key: string]: boolean }>({})
 const checkoutModalOpen = ref(false)
 const selectedPayment = ref('cash')
 
-const confirmEmptyCartOpen = ref(true)
+const confirmEmptyCartOpen = ref(false)
 
 const handleConfirmEmptyCart = async () => {
   await cartModule.emptyCart()
