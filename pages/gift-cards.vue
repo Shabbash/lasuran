@@ -272,7 +272,8 @@ const checkoutGiftCard = async () => {
     const paymentMethodId = paymentMethods.value.length > 0 ? paymentMethods.value[0].id : 1
 
     const checkoutPayload: any = {
-      voucher_groups_id: [selectedCard.value.id],
+      type: 'Person',
+      voucher_groups_id: selectedCard.value.id,
       quantity: quantity.value,
       payment_method_id: paymentMethodId
     }
