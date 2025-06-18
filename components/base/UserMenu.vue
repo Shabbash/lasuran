@@ -55,13 +55,18 @@
           </NuxtLink>
 
           <NuxtLink to="/profile?tab=gift-cards" v-if="authModule.isAuthenticated" @click="closePopover" class="flex items-center gap-2 px-4 py-2 rounded-lg hover:opacity-70 transition cursor-pointer">
-            <img src="/assets/img/menu-icons/Frame-3.svg" alt="" class="w-[20px] h-[20px]" />
+            <img src="/assets/img/menu-icons/svgexport-17.svg" alt="" class="w-[20px] h-[20px]" />
             <span class="text-[15px] font-[350] leading-none">My Gift Cards</span>
           </NuxtLink>
 
           <NuxtLink to="/" @click="closePopover" class="flex items-center gap-2 px-4 py-2 rounded-lg hover:opacity-70 transition cursor-pointer">
             <img src="/assets/img/menu-icons/Frame-4.svg" alt="" class="w-[20px] h-[20px]" />
             <span class="text-[15px] font-[350] leading-none">العربية</span>
+          </NuxtLink>
+
+          <NuxtLink to="/profile?tab=tickets" v-if="authModule.isAuthenticated" @click="closePopover" class="flex items-center gap-2 px-4 py-2 rounded-lg hover:opacity-70 transition cursor-pointer">
+            <img src="/assets/img/menu-icons/frame-2.svg" alt="" class="w-[20px] h-[20px]" />
+            <span class="text-[15px] font-[350] leading-none">My Tickets</span>
           </NuxtLink>
 
           <div @click="openTerms" class="flex items-center gap-2 px-4 py-2 rounded-lg hover:opacity-70 transition cursor-pointer">
