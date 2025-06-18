@@ -48,14 +48,14 @@
             <p class="text-start text-[14px] font-medium text-white mb-3">
               Date Of Birth
             </p>
-            <div class="flex items-center gap-[10px] border border-[#EBE4DF] rounded-[13px] px-[23px] bg-transparent">
+            <div class="relative flex items-center gap-[10px] border border-[#EBE4DF] rounded-[13px] px-[23px] bg-transparent">
 
               <!-- التقويم -->
               <UPopover :popper="{ placement: 'bottom-end' }">
-                <UButton color="white" variant="link" class="p-0">
-                  <CalendarIcon3 />
+                <UButton color="white" variant="link" class="p-0 absolute inset-0 cursor-pointer">
+                  
                 </UButton>
-
+                <CalendarIcon3/>
                 <template #content>
                   <UCalendar v-model="calendarDate" />
                 </template>
@@ -287,7 +287,7 @@ const saveProfile = () => {
     first_name: formData.first_name.trim(),
     last_name: formData.last_name.trim(),
     gender: formData.gender,
-    date_of_birth: formData.date_of_birth || null,
+    date_of_birth: formData.date_of_birth,
     address: formData.address || null,
   };
 
@@ -295,7 +295,7 @@ const saveProfile = () => {
     updateData.image_profile = selectedImage.value;
   }
 
-  const requiredFields = ['first_name', 'last_name', 'gender'];
+  const requiredFields = ['first_name', 'last_name', 'gender','date_of_birth'];
   Object.keys(updateData).forEach(key => {
     if (key !== 'image_profile' && !requiredFields.includes(key) && (updateData[key] === '' || updateData[key] === null)) {
       delete updateData[key];

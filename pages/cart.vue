@@ -5,16 +5,9 @@
       <div class="lg:col-span-2 space-y-6 md:h-[450px] md:overflow-y-auto">
         <div class="flex justify-between">
           <h2 class="text-[#EBE4DF] text-[20px] font-medium leading-normal">Cart</h2>
-          <button @click="emptyCart" :disabled="cartModule.isEmptying || cartProducts.length === 0"
-            class="text-[#EBE4DF] text-[14px] font-[350] leading-normal">
-            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 30 30" fill="none">
-              <path
-                d="M24.375 30H5.625C2.51818 30 0 27.4818 0 24.375V5.625C0 2.51818 2.51818 0 5.625 0H24.375C27.4818 0 30 2.51818 30 5.625V24.375C30 27.4818 27.4818 30 24.375 30Z"
-                fill="#E4D1C7" />
-              <path
-                d="M18.4984 17.3797C18.8072 17.6884 18.8072 18.1897 18.4984 18.4996C18.425 18.5731 18.3378 18.6313 18.2419 18.6711C18.1459 18.7108 18.0431 18.7312 17.9392 18.7312C17.7324 18.7109 17.4531 18.5731 17.3796 18.4996L15 16.12L12.6203 18.4996C12.5469 18.573 12.4596 18.6313 12.3636 18.6711C12.2676 18.7108 12.1647 18.7313 12.0608 18.7312C11.854 18.711 11.5749 18.5732 11.5016 18.4996C11.1928 18.1909 11.1928 17.6895 11.5016 17.3797L13.88 15L11.5004 12.6203C11.1917 12.3116 11.1917 11.8103 11.5004 11.5004C11.8092 11.1905 12.3105 11.1916 12.6204 11.5004L15 13.88L17.3796 11.5004C17.6884 11.1917 18.1897 11.1917 18.4996 11.5004C18.8095 11.8092 18.8083 12.3105 18.4996 12.6204L16.12 15L18.4984 17.3797Z"
-                fill="#C44E4E" />
-            </svg>
+          <button @click="confirmEmptyCartOpen = true" :disabled="cartModule.isEmptying || cartProducts.length === 0"
+            class="text-[#EBE4DF] text-[14px] font-[350] leading-normal cursor-pointer">
+            <EmptyCartIcon />
           </button>
         </div>
 
@@ -29,10 +22,11 @@
           </div>
 
           <div>
-        <template v-for="(item, index) in cartProducts" :key="item.cart_product_id || index">
-          <CartItem v-if="item?.type !== 'gift_card'" :item="formatCartItem(item)" @toggle="toggleItem(index)" @remove="removeCartItem(item)" @edit="editCartItem(item)" />
-          <CartItemGiftCard v-else :card="item" @remove="removeCartItem(item)" />
-        </template>
+            <template v-for="(item, index) in cartProducts" :key="item.cart_product_id || index">
+              <CartItem v-if="item?.type !== 'gift_card'" :item="formatCartItem(item)" @toggle="toggleItem(index)"
+                @remove="removeCartItem(item)" @edit="editCartItem(item)" />
+              <CartItemGiftCard v-else :card="item" @remove="removeCartItem(item)" />
+            </template>
 
 
           </div>
@@ -84,6 +78,39 @@
         </div>
       </template>
     </Dialog>
+
+
+    <!-- Confirm Empty Cart Dialog -->
+    <Dialog v-model:open="confirmEmptyCartOpen" :modalMaxWidth="'max-w-[458px]'">
+      <template #body>
+        <div class="bg-decore-modal mx-auto rounded-[30px] overflow-hidden shadow-lg bg-[#EBE4DF] text-[#5F2C3E]">
+          <div class="pt-[34px] px-[50px] pb-[30px] relative text-center">
+            <svg class="mx-auto" xmlns="http://www.w3.org/2000/svg" width="110" height="110" viewBox="0 0 110 110"
+              fill="none">
+              <path
+                d="M55.0001 0.0490723C24.7344 0.0490723 0.170898 24.6125 0.170898 54.8783C0.170898 85.144 24.7344 109.707 55.0001 109.707C85.2658 109.707 109.829 85.144 109.829 54.8783C109.829 24.6125 85.2658 0.0490723 55.0001 0.0490723ZM55.0001 87.7758C50.9793 87.7758 47.6895 84.486 47.6895 80.4652C47.6895 76.4444 50.9793 73.1546 55.0001 73.1546C59.0209 73.1546 62.3106 76.4444 62.3106 80.4652C62.3106 84.486 59.0209 87.7758 55.0001 87.7758ZM63.3707 31.0824L60.9216 60.3977C60.6658 63.4682 58.1071 65.8441 55.0001 65.8441C51.8931 65.8441 49.3344 63.4682 49.0785 60.3977L46.6295 31.0824C46.2274 26.1843 50.0654 21.9807 55.0001 21.9807C56.1041 21.9807 57.1973 22.1982 58.2174 22.6207C59.2374 23.0432 60.1641 23.6625 60.9448 24.4431C61.7255 25.2238 62.3448 26.1506 62.7673 27.1706C63.1898 28.1906 63.4072 29.2838 63.4072 30.3879C63.4072 30.6072 63.4072 30.8631 63.3707 31.0824Z"
+                fill="#C44E4E" />
+            </svg>
+            <h2 class="text-[#A0576F] text-center font-bold text-[22px] leading-normal mt-[16px]">Remove All Services
+            </h2>
+            <p class="text-[#5B605C] text-center font-normal text-[18px] leading-normal mb-[28px]">Are you sure you want to remove
+              all of your services from the cart?</p>
+
+            <div class="space-y-[10px]">
+              <BaseButton label="Yes, Remove All" :loading="cartModule.isEmptying" :disabled="cartModule.isEmptying"
+                class="h-[49px] bg-[#C44E4E] hover:bg-[#913E5D] rounded-[100px] disabled:opacity-50 disabled:bg-[#A0576F] text-[#EBE4DF] font-normal text-[20px] not-italic leading-normal"
+                @click="handleConfirmEmptyCart" />
+
+              <BaseButton label="No, Cancel"
+                class="h-[49px] bg-[#6B8B9B] rounded-[100px] hover:bg-[#5a7886] text-[#EBE4DF] font-normal text-[20px] not-italic leading-normal"
+                @click="confirmEmptyCartOpen = false" />
+            </div>
+          </div>
+        </div>
+      </template>
+    </Dialog>
+
+
   </Container>
 </template>
 
@@ -93,6 +120,7 @@ import Container from '@/components/base/Container.vue'
 import CartItem from '~/components/cart/CartItem.vue'
 import CartItemGiftCard from '~/components/cart/CartItemGiftCard.vue'
 import CartItemSkeleton from '~/components/cart/CartItemSkeleton.vue'
+import EmptyCartIcon from '~/components/icons/EmptyCartIcon.vue'
 import PaymentSummary from '~/components/cart/PaymentSummary.vue'
 import PaymentSummarySkeleton from '~/components/cart/PaymentSummarySkeleton.vue'
 import Dialog from '@/components/base/Dialog.vue'
@@ -110,6 +138,14 @@ const { setDialogComponent, setDialogShow } = useApp()
 const expandedItems = ref<{ [key: string]: boolean }>({})
 const checkoutModalOpen = ref(false)
 const selectedPayment = ref('cash')
+
+const confirmEmptyCartOpen = ref(true)
+
+const handleConfirmEmptyCart = async () => {
+  await cartModule.emptyCart()
+  confirmEmptyCartOpen.value = false
+}
+
 
 const paymentOptions = [
   { label: 'Cash on Delivery', value: 'cash', icon: '/assets/img/icon-cash.svg' },

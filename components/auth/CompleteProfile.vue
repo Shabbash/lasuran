@@ -6,17 +6,17 @@
 
     <div class="space-y-[10px]">
       <!-- First Name -->
-      <div class="flex items-center gap-[10px] border border-[#A0576F] rounded-[13px] px-[23px] bg-transparent">
+      <div :class="['flex items-center gap-[10px] rounded-[13px] px-[23px] bg-transparent', errors.first_name ? 'border border-red-500' : 'border border-[#A0576F]']">
         <UserIcon />
-        <input placeholder="First Name" v-model="form.first_name"
+        <input placeholder="First Name *" v-model="form.first_name"
           class="py-[16px] w-full text-[15.38px] font-normal text-[#90928F] outline-none placeholder:text-[#A0576F]"
           type="text" />
       </div>
 
       <!-- Last Name -->
-      <div class="flex items-center gap-[10px] border border-[#A0576F] rounded-[13px] px-[23px] bg-transparent">
+      <div :class="['flex items-center gap-[10px] rounded-[13px] px-[23px] bg-transparent', errors.last_name ? 'border border-red-500' : 'border border-[#A0576F]']">
         <UserIcon />
-        <input placeholder="Last Name" v-model="form.last_name"
+        <input placeholder="Last Name *" v-model="form.last_name"
           class="py-[16px] w-full text-[15.38px] font-normal text-[#90928F] outline-none placeholder:text-[#A0576F]"
           type="text" />
       </div>
@@ -38,18 +38,15 @@
       </div>
 
       <!-- Date of Birth -->
-      <div class="flex items-center gap-[10px] border border-[#A0576F] rounded-[13px] px-[23px] bg-transparent">
-
-
+      <div :class="['relative flex items-center gap-[10px] rounded-[13px] px-[23px] bg-transparent', errors.date_of_birth ? 'border border-red-500' : 'border border-[#A0576F]']">
         <UPopover :popper="{ placement: 'bottom-end' }">
-          <UButton color="white" variant="link" class="p-0">
-            <CalendarIcon />
-          </UButton>
+          <UButton color="white" variant="link" class="p-0 absolute inset-0 cursor-pointer"></UButton>
+          <CalendarIcon />
           <template #content>
             <UCalendar v-model="calendarDate" />
           </template>
         </UPopover>
-        <input placeholder="Date Of Birth (Optional)" :value="formattedDateOfBirth" readonly
+        <input placeholder="Date Of Birth *" :value="formattedDateOfBirth" readonly
           class="py-[16px] w-full text-[15.38px] font-normal text-[#90928F] outline-none placeholder:text-[#A0576F]"
           type="text" />
       </div>
@@ -57,20 +54,27 @@
 
     <!-- Gender -->
     <div class="mt-[20px]">
-      <h4 class="text-[19.11px] font-medium text-[#A0576F]">Gender</h4>
+      <h4 class="text-[19.11px] font-medium text-[#A0576F]">Gender *</h4>
       <div class="flex gap-4 mt-[20px]">
         <div class="flex-1 basis-1/2">
           <input type="radio" id="gender-male" value="Male" v-model="form.gender" name="gender" class="sr-only peer" />
           <label for="gender-male"
-            class="block text-center w-full cursor-pointer py-[10px] rounded-full border border-[#A0576F] text-[#A0576F] text-[18px] bg-transparent transition-all peer-checked:bg-[#6B8B9B] peer-checked:text-[#EBE4DF] peer-checked:border-[#6B8B9B] peer-checked:shadow-md">
+            class="block text-center w-full cursor-pointer py-[10px] rounded-full border text-[18px] transition-all"
+            :class="[
+              form.gender === 'Male' ? 'bg-[#6B8B9B] text-[#EBE4DF] border-[#6B8B9B] shadow-md' : 'bg-transparent text-[#A0576F] border-[#A0576F]',
+              errors.gender ? 'border-red-500 text-red-500' : ''
+            ]">
             Male
           </label>
         </div>
         <div class="flex-1 basis-1/2">
-          <input type="radio" id="gender-female" value="Female" v-model="form.gender" name="gender"
-            class="sr-only peer" />
+          <input type="radio" id="gender-female" value="Female" v-model="form.gender" name="gender" class="sr-only peer" />
           <label for="gender-female"
-            class="block text-center w-full cursor-pointer py-[10px] rounded-full border border-[#A0576F] text-[#A0576F] text-[18px] bg-transparent transition-all peer-checked:bg-[#6B8B9B] peer-checked:text-[#EBE4DF] peer-checked:border-[#6B8B9B] peer-checked:shadow-md">
+            class="block text-center w-full cursor-pointer py-[10px] rounded-full border text-[18px] transition-all"
+            :class="[
+              form.gender === 'Female' ? 'bg-[#6B8B9B] text-[#EBE4DF] border-[#6B8B9B] shadow-md' : 'bg-transparent text-[#A0576F] border-[#A0576F]',
+              errors.gender ? 'border-red-500 text-red-500' : ''
+            ]">
             Female
           </label>
         </div>
@@ -92,16 +96,25 @@ import EmailIcon from '~/components/icons/EmailIcon.vue'
 import MobileIcon from '~/components/icons/MobileIcon.vue'
 import { useAuth } from '~/stores/auth'
 import { useProfile } from '~/stores/profile'
+import { useToast } from '#imports'
 
 const authModule = useAuth()
 const profileStore = useProfile()
+const toast = useToast()
 
 const form = ref({
   first_name: '',
   last_name: '',
   email: '',
-  gender: 'Male',
+  gender: '',
   date_of_birth: ''
+})
+
+const errors = ref({
+  first_name: false,
+  last_name: false,
+  gender: false,
+  date_of_birth: false
 })
 
 const calendarDate = ref<CalendarDate | null>(null)
@@ -127,9 +140,24 @@ const formattedDateOfBirth = computed(() => {
 })
 
 const completeProfile = async () => {
+  // Reset errors
+  errors.value = {
+    first_name: !form.value.first_name,
+    last_name: !form.value.last_name,
+    gender: !form.value.gender,
+    date_of_birth: !form.value.date_of_birth
+  }
+
+  const hasError = Object.values(errors.value).some(Boolean)
+
+  if (hasError) {
+    toast.add({ title: 'Please fill in all required fields', color: 'red' })
+    return
+  }
+
   const payload = { ...form.value }
 
-  // احذف الحقول الفارغة
+  // Remove empty fields
   Object.keys(payload).forEach((key) => {
     if (!payload[key as keyof typeof payload]) {
       delete payload[key as keyof typeof payload]
