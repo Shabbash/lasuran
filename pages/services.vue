@@ -123,6 +123,41 @@ const menuModule = useMenu();
 menuModule.initMenu();
 
 
+import { useRoute } from 'vue-router';
+
+const route = useRoute();
+
+const initialSubCategoryId = ref<number | null>(null);
+
+onMounted(async () => {
+  // 👈 أولاً: خزن قيمة السب كاتيجوري من URL إذا موجودة
+  if (route.query.sub_category_id) {
+    initialSubCategoryId.value = +route.query.sub_category_id;
+  }
+
+  // 👈 بعدها: حمّل بيانات القوائم الرئيسية
+  if (!menuModule.menus.data || menuModule.menus.data.length === 0) {
+    await menuModule.initMenu();
+  }
+
+  // 👈 عين category افتراضي إذا مش محدد
+  if (!menuModule.category_id) {
+    menuModule.setDefaultCategory();
+  }
+
+  // 👈 الآن: عيّن subcategory فقط إذا فيه قيمة من URL
+  if (initialSubCategoryId.value !== null) {
+    menuModule.sub_category_id = initialSubCategoryId.value;
+  } else if (!menuModule.sub_category_id) {
+    menuModule.setDefaultSubCategory(); // فقط لو فاضي وما جاش من URL
+  }
+
+  // ✅ أخيرًا: حمل الخدمات
+  menuModule.fetchServices();
+});
+
+
+
 // --------------111 start --------------------//
 const services = [
   {

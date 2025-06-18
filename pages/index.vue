@@ -208,7 +208,16 @@ const onChangeMenu = function (key: string, _: any) {
 
 import { useRouter } from 'vue-router'
 
-const router = useRouter()
+const router = useRouter();
+
+function goToSubCategory(item) {
+  router.push({
+    path: '/services',
+    query: {
+      sub_category_id: item.id
+    }
+  });
+}
 
 
 

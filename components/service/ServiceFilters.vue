@@ -51,6 +51,9 @@
 import { ref, onMounted, computed } from 'vue'
 import SelectableSlider from "~/components/base/SelectableSlider.vue";
 import { useMenu } from '~/stores/menu';
+import { useRoute } from 'vue-router';
+
+const route = useRoute();
 
 const menuModule = useMenu();
 
@@ -101,29 +104,29 @@ const onChangeMenu = function (key: string, _: any) {
   menuModule.fetchServices();
 }
 
-// Initialize default selections when component is mounted
 onMounted(async () => {
-  // Initialize menu data if needed
+  const subCategoryIdFromQuery = route.query.sub_category_id;
+
+  if (subCategoryIdFromQuery) {
+    menuModule.sub_category_id = +subCategoryIdFromQuery;
+  }
+
   if (!menuModule.menus.data || menuModule.menus.data.length === 0) {
     await menuModule.initMenu();
   } else {
-    // If category_id is not set, set default category
     if (!menuModule.category_id) {
       menuModule.setDefaultCategory();
     }
 
-    // If sub_category_id is not set, set default subcategory
     if (!menuModule.sub_category_id) {
       menuModule.setDefaultSubCategory();
     }
 
-    // Set default branch if available
     const branchesData = branches.value;
     if (branchesData && branchesData.length > 0 && !filters.value.branch) {
       filters.value.branch = branchesData[0].id;
     }
 
-    // Fetch services with the selected filters
     menuModule.fetchServices();
   }
 });
