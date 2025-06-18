@@ -48,6 +48,7 @@ const uiOptions = computed(() => {
 
 
 <style>
+
 .base_card--body .w-1\/2 {
   width: 50%;
   max-width: 50%;

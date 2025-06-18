@@ -119,9 +119,41 @@
 
         <div class="w-full md:mt-[30px] slide-5">
 
-         
+         <!-- Service Branch Image Filters - Inlined -->
+<!-- Inline Filters Section -->
+<div class="space-y-[20px] mt-[40px]">
+  <div>
+    <SelectableSlider
+      v-model="menuModule.menu_id"
+      :items="Maincategories"
+      notTransition="1"
+      @update:modelValue="onChangeMenu('menu_id', $event)"
+      class="main-category" />
+  </div>
 
-                         <ServiceBranchImageFilters  :showBranchSelect="false" class="mt-[40px]" />
+  <!-- <div class="flex flex-col md:flex-row justify-between md:items-center gap-[20px]"> -->
+    <BaseCard with-action @action-click="navigateToServices">
+      <template #default>
+        <BaseSlider :items="subCategories" :slide-per-row="5" :slide-per-row-mobile="3" class="w-full">
+          <template #default="{ item }">
+            <div>
+              <div class="overflow-hidden relative h-[142px] rounded-[23px]">
+                <div class="absolute h-[105px] bottom-0 w-full rounded-[30px] bg-[linear-gradient(to_bottom,_#E8D5CC,_#E8BBAC)]"></div>
+                <img class="mx-auto h-full object-cover inset-0 relative" :src="item.image" />
+              </div>
+              <h2 class="text-center text-white mt-3 font-medium text-lg cursor-pointer hover:underline"
+                @click="goToSubCategory(item)">{{ item.name }}</h2>
+            </div>
+          </template>
+        </BaseSlider>
+      </template>
+    </BaseCard>
+  <!-- </div> -->
+</div>
+
+
+
+        <!-- <ServiceBranchImageFilters  :showBranchSelect="false" class="mt-[40px]" /> -->
 
         </div>
       </div>
@@ -132,306 +164,92 @@
 </template>
 <script lang="ts" setup>
 import Container from '~/components/base/Container.vue'
-import { useHome } from '@/stores/home'
-import { onMounted } from 'vue'
-import {COMPONENTS} from "~/data/constants";
-
 import HomeSkeleton from '@/components/skeletons/HomeSkeleton.vue'
-
+import SelectableSlider from '~/components/base/SelectableSlider.vue'
+import { useHome } from '@/stores/home'
+import { useMenu } from '~/stores/menu'
+import { useApp } from '~/stores/app'
+import { COMPONENTS } from '~/data/constants'
+import { ref, onMounted, computed } from 'vue'
 
 const open = ref(false)
-const homeStore = useHome()
 defineShortcuts({
-    o: () => open.value = !open.value
-});
-
-const menuStore = useMenu();
-const appModule = useApp();
-
-
-const homeSections = computed(() => homeStore?.settingsData?.data?.template_settings?.home ?? []);
-
-const slider = computed(() => {
-  return (homeSections.value ?? []).find((el) => el.type == 'slider');
-});
-
-const widgetComponents = computed(() => {
-  return (homeSections.value ?? []).filter((el) => el.type == 'widget');
+  o: () => open.value = !open.value
 })
 
+const homeStore = useHome()
+const menuStore = useMenu()
+const menuModule = useMenu()
+const appModule = useApp()
+
+// ========= Home Page Sections ==========
+const homeSections = computed(() => homeStore?.settingsData?.data?.template_settings?.home ?? [])
+const slider = computed(() => (homeSections.value ?? []).find(el => el.type == 'slider'))
+const widgetComponents = computed(() => (homeSections.value ?? []).filter(el => el.type == 'widget'))
+
+// ========= Menu Filters ==========
+const Maincategories = computed(() => menuStore.getMenus || [])
+const subCategories = computed(() => menuStore.getSubCategories || [])
+const branches = computed(() => menuStore.getBranches || [])
+
+const filters = ref({
+  branch: null
+})
+
+const onChangeMenu = function (key: string, _: any) {
+  if (key == 'menu_id') {
+    menuStore.setDefaultCategory()
+    menuStore.setDefaultSubCategory()
+  }
+  menuStore.fetchServices()
+}
+
+
+
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+
+
+// ========= Fetch Initial Data ==========
 onMounted(async () => {
-     homeStore.initializeHome()
-     menuStore.fetchMenus();
+  homeStore.initializeHome()
+  menuStore.fetchMenus()
+
+  if (!menuStore.menus.data || menuStore.menus.data.length === 0) {
+    await menuStore.initMenu()
+  } else {
+    if (!menuStore.category_id) menuStore.setDefaultCategory()
+    if (!menuStore.sub_category_id) menuStore.setDefaultSubCategory()
+
+    const branchesData = branches.value
+    if (branchesData && branchesData.length > 0 && !filters.value.branch) {
+      filters.value.branch = branchesData[0].id
+    }
+
+    menuStore.fetchServices()
+  }
 })
- 
-const slides = [
-    {
-        "title": "Hair Extensions",
-        "image_url": "/assets/img/imgg1.png",
-        "sub_title": "2500 SAR",
-        "clickable": false,
-        "url": null,
-        "id": 27,
-        "to": "image"
-    },
 
-    {
-        "title": "Mini Keratin Treatment",
-        "image_url": "/assets/img/imgg2.png",
-        "sub_title": "1500 SAR",
-        "clickable": false,
-        "url": null,
-        "id": 27,
-        "to": "image"
-    },
-
-    {
-        "title": "Hair Extensions",
-        "image_url": "/assets/img/imgg1.png",
-        "sub_title": "2500 SAR",
-        "clickable": false,
-        "url": null,
-        "id": 27,
-        "to": "image"
-    },
-    {
-        "title": "Hair Extensions",
-        "image_url": "/assets/img/imgg2.png",
-        "sub_title": "2500 SAR",
-        "clickable": false,
-        "url": null,
-        "id": 27,
-        "to": "image"
-    },
-
-    {
-        "title": "Mini Keratin Treatment",
-        "image_url": "/assets/img/imgg1.png",
-        "sub_title": "1500 SAR",
-        "clickable": false,
-        "url": null,
-        "id": 27,
-        "to": "image"
-    },
-
-    {
-        "title": "Hair Extensions",
-        "image_url": "/assets/img/imgg2.png",
-        "sub_title": "2500 SAR",
-        "clickable": false,
-        "url": null,
-        "id": 27,
-        "to": "image"
-    },
-
-
-]
-
-const slides2 = [
-    {
-        "title": "Hair Extensions",
-        "image_url": "/assets/img/imgg3.png",
-        "sub_title": "2500 SAR",
-        "clickable": false,
-        "url": null,
-        "id": 27,
-        "to": "image"
-    },
-
-    {
-        "title": "Mini Keratin Treatment",
-        "image_url": "/assets/img/imgg4.png",
-        "sub_title": "1500 SAR",
-        "clickable": false,
-        "url": null,
-        "id": 27,
-        "to": "image"
-    },
-
-    {
-        "title": "Hair Extensions",
-        "image_url": "/assets/img/imgg5.png",
-        "sub_title": "2500 SAR",
-        "clickable": false,
-        "url": null,
-        "id": 27,
-        "to": "image"
-    },
-    {
-        "title": "Hair Extensions",
-        "image_url": "/assets/img/imgg6.png",
-        "sub_title": "2500 SAR",
-        "clickable": false,
-        "url": null,
-        "id": 27,
-        "to": "image"
-    },
-
-    {
-        "title": "Mini Keratin Treatment",
-        "image_url": "/assets/img/imgg3.png",
-        "sub_title": "1500 SAR",
-        "clickable": false,
-        "url": null,
-        "id": 27,
-        "to": "image"
-    },
-
-    {
-        "title": "Hair Extensions",
-        "image_url": "/assets/img/imgg4.png",
-        "sub_title": "2500 SAR",
-        "clickable": false,
-        "url": null,
-        "id": 27,
-        "to": "image"
-    },
-
-
-]
-
-
-
-
-const slides3 = [
-    {
-        "title": "Hair Extensions",
-        "image_url": "/assets/img/spa.svg",
-        "sub_title": "2500 SAR",
-        "clickable": false,
-        "url": null,
-        "id": 27,
-        "to": "image"
-    },
-
-    {
-        "title": "Mini Keratin Treatment",
-        "image_url": "/assets/img/spa.svg",
-        "sub_title": "1500 SAR",
-        "clickable": false,
-        "url": null,
-        "id": 27,
-        "to": "image"
-    },
-
-    {
-        "title": "Hair Extensions",
-        "image_url": "/assets/img/spa.svg",
-        "sub_title": "2500 SAR",
-        "clickable": false,
-        "url": null,
-        "id": 27,
-        "to": "image"
-    },
-    {
-        "title": "Hair Extensions",
-        "image_url": "/assets/img/spa.svg",
-        "sub_title": "2500 SAR",
-        "clickable": false,
-        "url": null,
-        "id": 27,
-        "to": "image"
-    },
-
-    {
-        "title": "Mini Keratin Treatment",
-        "image_url": "/assets/img/spa.svg",
-        "sub_title": "1500 SAR",
-        "clickable": false,
-        "url": null,
-        "id": 27,
-        "to": "image"
-    },
-
-    {
-        "title": "Hair Extensions",
-        "image_url": "/assets/img/spa.svg",
-        "sub_title": "2500 SAR",
-        "clickable": false,
-        "url": null,
-        "id": 27,
-        "to": "image"
-    },
-
-
-]
-
-
-
-const slides4 = [
-    {
-        "title": "Hair Extensions",
-        "image_url": "/assets/img/imgg7.png",
-        "sub_title": "2500 SAR",
-        "clickable": false,
-        "url": null,
-        "id": 27,
-        "to": "image"
-    },
-
-    {
-        "title": "Mini Keratin Treatment",
-        "image_url": "/assets/img/imgg8.png",
-        "sub_title": "1500 SAR",
-        "clickable": false,
-        "url": null,
-        "id": 27,
-        "to": "image"
-    },
-
-    {
-        "title": "Hair Extensions",
-        "image_url": "/assets/img/imgg9.png",
-        "sub_title": "2500 SAR",
-        "clickable": false,
-        "url": null,
-        "id": 27,
-        "to": "image"
-    },
-    {
-        "title": "Hair Extensions",
-        "image_url": "/assets/img/imgg10.png",
-        "sub_title": "2500 SAR",
-        "clickable": false,
-        "url": null,
-        "id": 27,
-        "to": "image"
-    },
-
-    {
-        "title": "Mini Keratin Treatment",
-        "image_url": "/assets/img/imgg7.png",
-        "sub_title": "1500 SAR",
-        "clickable": false,
-        "url": null,
-        "id": 27,
-        "to": "image"
-    },
-
-    {
-        "title": "Hair Extensions",
-        "image_url": "/assets/img/imgg8.png",
-        "sub_title": "2500 SAR",
-        "clickable": false,
-        "url": null,
-        "id": 27,
-        "to": "image"
-    },
-
-
-]
+// ========= Navigation + Dialog ==========
 const navigateToServices = function () {
-  navigateTo({
-    path: "/services",
-  })
+  navigateTo({ path: '/services' })
 }
 
 const showService = function (item) {
-  appModule.setDialogShow(true);
-  appModule.setDialogComponent(COMPONENTS.SERVICE_SHOW);
+  appModule.setDialogShow(true)
+  appModule.setDialogComponent(COMPONENTS.SERVICE_SHOW)
   menuStore.fetchService(item)
 }
+
+// ========= Old Slides Data (not used dynamically) ==========
+const slides = [/* ... */]
+const slides2 = [/* ... */]
+const slides3 = [/* ... */]
+const slides4 = [/* ... */]
 </script>
+
 <style>
 .dots-style button {
     width: 8px;
