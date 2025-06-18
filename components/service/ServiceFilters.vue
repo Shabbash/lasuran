@@ -2,13 +2,24 @@
   <div class="space-y-[20px]">
     <div>
       <SelectableSlider
+        v-model="menuModule.menu_id"
+        :items="Maincategories"
+        notTransition="1"
+        @update:modelValue="onChangeMenu('menu_id', $event)"
+        class="main-category" />
+
+
+    </div>
+
+        <!-- <div> -->
+      <!-- <SelectableSlider
         v-model="menuModule.category_id"
         :items="categories"
         @update:modelValue="onChange('category_id', $event)"
         class="main-category" />
 
 
-    </div>
+    </div> -->
 
     <div class="flex flex-col md:flex-row justify-between md:items-center gap-[20px]">
       <USelectMenu
@@ -45,9 +56,14 @@ const menuModule = useMenu();
 
 
 // Create computed properties for the menu data
+const Maincategories = computed(() => {
+  return menuModule.getMenus || [];
+});
+
 const categories = computed(() => {
   return menuModule.getCategories || [];
 });
+
 
 const subCategories = computed(() => {
   return menuModule.getSubCategories || [];
@@ -73,6 +89,15 @@ const filters = ref({
 const onChange = function (key: string, _: any) {
   // The newValue is already bound to the v-model, so we don't need to set it manually
   if (key == 'category_id') menuModule.setDefaultSubCategory();
+  menuModule.fetchServices();
+}
+
+const onChangeMenu = function (key: string, _: any) {
+  // The newValue is already bound to the v-model, so we don't need to set it manually
+  if (key == 'menu_id') {
+    menuModule.setDefaultCategory();
+    menuModule.setDefaultSubCategory();
+  }
   menuModule.fetchServices();
 }
 
