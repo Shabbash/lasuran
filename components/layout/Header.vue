@@ -25,9 +25,15 @@
                             Branches</NuxtLink>
                     </li>
                     <li>
-                        <NuxtLink to="/contact-us"
+                        <NuxtLink to="/gift-cards"
                             class="font-medium py-[11px] px-[35px] text-[17px]text-[#EBE4DF] capitalize">
-                            Contact Us</NuxtLink>
+                            Gift Cards</NuxtLink>
+                    </li>
+
+                    <li>
+                        <NuxtLink to="/shop"
+                            class="font-medium py-[11px] px-[35px] text-[17px]text-[#EBE4DF] capitalize">
+                            Shop</NuxtLink>
                     </li>
                 </ul>
 

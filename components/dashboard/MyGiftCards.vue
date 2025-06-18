@@ -60,8 +60,7 @@
           </div>
         </div>
 
-        <BaseButton
-          @click="viewInvoice"
+        <BaseButton @click="viewInvoice"
           class="bg-[#6B8B9B] hover:bg-[#6B8B9B]/70 mt-[27px] text-[#EBE4DF] text-[15px] font-[400] rounded-full w-full py-[12px]">
           View Invoice
         </BaseButton>
@@ -70,25 +69,23 @@
   </div>
 
 
-  <Dialog v-model:show="modalOpen" :modalMaxWidth="'max-w-[539px]'">
+  <Dialog v-model:show="modalOpen" :modalMaxWidth="'max-w-[467px]'">
     <template #body>
-      <div class="bg-decore-modal mx-auto rounded-[30px] overflow-hidden shadow-lg bg-[#EBE4DF] text-[#5F2C3E]" v-if="selectedCard">
-        <div class="p-[34px]">
-          <h2>Gift Card: {{ selectedCard.total }} {{ selectedCard.currency }}</h2>
-          <div class="relative rounded-[14px] overflow-hidden bg-[#e9c9ad]">
-            <img
-              class="w-full"
-              :src="selectedCard.items?.[0]?.card_image || '/assets/img/my-gift-card.svg'"
-              alt="Gift Card Image"
-            />
+      <div class="bg-decore-modal mx-auto rounded-[30px] overflow-hidden shadow-lg bg-[#EBE4DF] text-[#5F2C3E]"
+        v-if="selectedCard">
+        <div class="px-[53px] py-[34px]">
+          <h2 class="text-center mb-[43px] text-[#A0576F] text-[18.29px] font-bold leading-normal">Gift Card: {{
+            selectedCard.total }} {{ selectedCard.currency }}</h2>
+          <div class="relative rounded-[14px] overflow-hidden bg-[#e9c9ad] h-[127px]">
+            <img class="w-full h-full object-cover"
+              :src="selectedCard.items?.[0]?.card_image || '/assets/img/my-gift-card.svg'" alt="Gift Card Image" />
             <div class="absolute inset-0 px-[15px] py-[15px] flex flex-col justify-between">
               <!-- Header: لوجو + الحالة -->
               <div class="flex justify-between">
                 <div class="max-w-[70px]">
                   <img class="w-full" src="/assets/img/card-laz.svg" alt="Logo" />
                 </div>
-                <div
-                  class="h-[23px] px-[20px] flex items-center justify-center rounded-[100px] text-[13px]"
+                <div class="h-[23px] px-[20px] flex items-center justify-center rounded-[100px] text-[13px]"
                   :class="getStatusClass(selectedCard.items?.[0]?.status)">
                   <span>{{ selectedCard.items?.[0]?.status || 'Active' }}</span>
                 </div>
@@ -96,22 +93,106 @@
 
               <!-- Footer: رقم البطاقة + التاريخ + المبلغ -->
               <div>
-                <div class="flex flex-col items-end pe-[20px]">
+                <!-- <div class="flex flex-col items-end pe-[20px]">
                   <p class="text-white text-[21.94px] font-normal tracking-[0.52em] text-end">
                     {{ selectedCard.items?.[0]?.serial_number || 'N/A' }}
                   </p>
                   <p class="text-white text-[13.96px] font-bold opacity-70 text-end">
                     {{ selectedCard.items?.[0]?.expiry_date || 'N/A' }}
                   </p>
-                </div>
+                </div> -->
                 <div>
                   <p class="text-white text-[12.97px] font-medium">GIFT CARD</p>
-                  <p class="text-white text-[18.53px] font-bold">{{ selectedCard.items?.[0]?.remaining_amount || selectedCard.total }} {{ selectedCard.currency }}</p>
+                  <p class="text-white text-[18.53px] font-bold">{{ selectedCard.items?.[0]?.remaining_amount ||
+                    selectedCard.total }} {{ selectedCard.currency }}</p>
                 </div>
               </div>
             </div>
           </div>
+
+
+          <div class="px-[18px] py-[20px] rounded-[16px] bg-[#A0576F] mt-[10px]">
+            <p class="text-[#EBE4DF] font-medium text-[16px] leading-normal">
+              Gift Card Description
+            </p>
+            <p class="text-[#C6C6C7] font-normal text-[14px]">
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+              dolore magna aliqua. Ut enim ad ate velit esse cillum dolore eu fugiat nulla pariatur.
+            </p>
+          </div>
+
+          <div class="px-[18px] py-[20px] rounded-[16px] bg-[#A0576F] mt-[10px]">
+            <p class="text-[#EBE4DF] font-medium text-[17px] leading-normal mb-[20px]">
+              Gift Card Details
+            </p>
+            <div>
+              <div
+                class="flex justify-between pb-[11px] mb-[11px] border-b border-b-[#AD7084] last:border-b-0 last:mb-0 last:pb-0">
+                <p class="text-[#C6C6C7] font-[350] text-[13px] leading-normal">Serial Number</p>
+              </div>
+
+              <div
+                class="flex justify-between pb-[11px] mb-[11px] border-b border-b-[#AD7084] last:border-b-0 last:mb-0 last:pb-0">
+                <p class="text-[#C6C6C7] font-[350] text-[13px] leading-normal">Expiry Date</p>
+                <p class="text-[#C6C6C7] font-[350] text-[13px] leading-normal">Oct, 20th, 2024</p>
+              </div>
+
+              <div
+                class="flex justify-between pb-[11px] mb-[11px] border-b border-b-[#AD7084] last:border-b-0 last:mb-0 last:pb-0">
+                <p class="text-[#C6C6C7] font-[350] text-[13px] leading-normal">Purchase No</p>
+                <p class="text-[#C6C6C7] font-[350] text-[13px] leading-normal">#97325-00000000156</p>
+              </div>
+
+              <div
+                class="flex justify-between pb-[11px] mb-[11px] border-b border-b-[#AD7084] last:border-b-0 last:mb-0 last:pb-0">
+                <p class="text-[#C6C6C7] font-[350] text-[13px] leading-normal">Redeemed Amount</p>
+                <p class="text-[#C6C6C7] font-[350] text-[13px] leading-normal">500 SAR</p>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="text-center">
+            <div class="qr mx-auto w-[160px] h-[165px] my-[22px]">
+              <img class="w-full" src="/assets/img/qr.png" alt="">
+            </div>
+
+            <button class="px-6 py-1.5 bg-[#6B8B9B] text-white rounded-full text-sm font-medium transition-colors">
+              Redeem History
+            </button>
+          </div>
+
+          <div class="mt-[34px]">
+            <h3 class="text-[#A0576F] text-[18px] font-medium leading-normal mb-[23px]">Payment Summary</h3>
+            <div class="space-y-[12px]">
+              <div
+                class="flex justify-between pb-[12px] border-b border-b-[#B2B0B0]">
+                <p class="text-[#5B605C] text-[14px] font-[350] leading-normal">Subtotal</p>
+                <p class="text-[#5B605C] text-[14px] font-[350] leading-normal">00.00 SAR</p>
+              </div>
+
+              <div
+                class="flex justify-between pb-[12px] border-b border-b-[#B2B0B0]">
+                <p class="text-[#5B605C] text-[14px] font-[350] leading-normal">VAT amount 15%*</p>
+                <p class="text-[#5B605C] text-[14px] font-[350] leading-normal">00.00 SAR</p>
+              </div>
+
+              <div
+                class="flex justify-between pb-[12px] border-b border-b-[#B2B0B0]">
+                <p class="text-[#5B605C] text-[14px] font-[350] leading-normal">Discount</p>
+                <p class="text-[#5B605C] text-[14px] font-[350] leading-normal">00.00 SAR</p>
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="mt-[63px] flex justify-between">
+              
+          </div>
+
         </div>
+
       </div>
     </template>
   </Dialog>
