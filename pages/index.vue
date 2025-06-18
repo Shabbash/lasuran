@@ -119,29 +119,9 @@
 
         <div class="w-full md:mt-[30px] slide-5">
 
-          <BaseCard title="Categories" with-action @action-click="navigateToServices">
-            <template #default>
-              <BaseSlider :items="menuStore.getFlatMapCategories" :slide-per-row="5" :slide-per-row-mobile="3">
-                <template #default="{ item }">
-                  <div class="">
-                    <div class=" overflow-hidden relative h-[142px] rounded-[23px]">
-                      <div
-                          class="absolute h-[105px] bottom-0 w-full rounded-[30px] bg-[linear-gradient(to_bottom,_#E8D5CC,_#E8BBAC)]">
-                      </div>
-                      <img class="mx-auto h-full object-cover inset-0 relative"
-                           :src="item.image" />
-                    </div>
-                    <h2 class="text-center text-white mt-3 font-medium text-lg">{{ item.name }}
-                    </h2>
-                  </div>
+         
 
-                </template>
-              </BaseSlider>
-            </template>
-
-          </BaseCard>
-
-          <!--                <ServiceFilters v-model="filters" :showBranchSelect="false" class="mt-[40px]" />-->
+                         <ServiceBranchImageFilters  :showBranchSelect="false" class="mt-[40px]" />
 
         </div>
       </div>
