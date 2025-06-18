@@ -12,6 +12,20 @@ const props = defineProps({
 })
 
 const cards = computed(() => props.card?.items || [])
+
+// Get status class for gift card status
+const getStatusClass = (status) => {
+  switch (status) {
+    case 'Not Used':
+      return 'bg-[#CDEAB7] text-[#57A06A]'
+    case 'Used':
+      return 'bg-[#FFE4E1] text-[#D32F2F]'
+    case 'Expired':
+      return 'bg-[#FFF3CD] text-[#856404]'
+    default:
+      return 'bg-[#CDEAB7] text-[#57A06A]'
+  }
+}
 </script>
 
 <template>
@@ -30,15 +44,16 @@ const cards = computed(() => props.card?.items || [])
     >
       <SwiperSlide v-for="(voucher, index) in cards" :key="index">
         <div class="relative rounded-[14px] overflow-hidden cursor-pointer transition hover:scale-[1.01]" @click="$emit('card-click', voucher)">
-          <img class="w-full" :src="props.card?.card_image" alt="Gift Card Image" />
+          <img class="w-full" :src="voucher.card_image || '/assets/img/my-gift-card.svg'" alt="Gift Card Image" />
           <div class="absolute inset-0 px-[15px] py-[15px] flex flex-col justify-between">
             <div class="flex justify-between">
               <div class="max-w-[70px]">
                 <img class="w-full" src="/assets/img/card-laz.svg" alt="" />
               </div>
               <div
-                class="h-[23px] px-[20px] bg-[#CDEAB7] flex items-center justify-center rounded-[100px] text-[#57A06A] text-[13px]">
-                <span>{{ voucher.status || 'New' }}</span>
+                class="h-[23px] px-[20px] flex items-center justify-center rounded-[100px] text-[13px]"
+                :class="getStatusClass(voucher.status)">
+                <span>{{ voucher.status || 'Active' }}</span>
               </div>
             </div>
             <div>
@@ -52,7 +67,7 @@ const cards = computed(() => props.card?.items || [])
               </div>
               <div>
                 <p class="text-white text-[12.97px] font-medium">GIFT CARD</p>
-                <p class="text-white text-[18.53px] font-bold">{{ props.card?.price }} SAR</p>
+                <p class="text-white text-[18.53px] font-bold">{{ voucher.remaining_amount || voucher.price }} {{ voucher.currency || 'SAR' }}</p>
               </div>
             </div>
           </div>

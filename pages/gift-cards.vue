@@ -235,6 +235,165 @@ const totalPrice = computed(() => {
   return isNaN(price) ? 0 : price * qty
 })
 
+// Extract merchant reference from payment URL
+const extractMerchantReference = (paymentData: any): string | null => {
+  try {
+    if (paymentData?.payment?.purchase_token_url?.url) {
+      const url = paymentData.payment.purchase_token_url.url
+      const urlParams = new URLSearchParams(url.split('?')[1])
+      return urlParams.get('merchant_reference')
+    }
+
+    // Fallback: try to get from order number
+    if (paymentData?.order?.order_number) {
+      return paymentData.order.order_number
+    }
+
+    return null
+  } catch (error) {
+    console.error('Error extracting merchant reference:', error)
+    return null
+  }
+}
+
+// Payment status checking
+const checkPaymentStatus = async (orderData: any): Promise<boolean> => {
+  try {
+    console.log('Checking payment status for order:', orderData)
+
+    // Extract merchant reference from the checkout response
+    const merchantReference = extractMerchantReference(orderData)
+    console.log('Merchant reference:', merchantReference)
+
+    if (!merchantReference) {
+      console.error('No merchant reference found in order data')
+      return false
+    }
+
+    // Use the payment status check API endpoint with merchant reference
+    const { data: response, error: apiError } = await useApi('payments/check-payment-status', {
+      method: 'POST',
+      body: {
+        merchant_reference: merchantReference
+      }
+    })
+
+    if (!apiError.value && response.value?.status) {
+      const paymentData = response.value.data
+      console.log('Payment status response:', paymentData)
+
+      // Check for success based on the actual API response structure
+      if (paymentData.success === true) {
+        // Payment successful
+        closeCardModal()
+
+        // Show success toast with confirmation message if available
+        const successMessage = response.value.message || 'Gift card purchased successfully! 🎉'
+        toast.add({
+          title: successMessage,
+          color: 'success'
+        })
+
+        // Redirect to dashboard gift cards tab
+        navigateTo('/dashboard?tab=gift-cards')
+
+        return true // Payment completed
+      } else if (paymentData.success === false) {
+        // Payment failed
+        closeCardModal()
+        const errorMessage = response.value.message || 'Payment failed. Please try again.'
+        toast.add({
+          title: errorMessage,
+          color: 'error'
+        })
+        return true // Stop checking (failed is final)
+      } else {
+        // Payment pending or other status
+        return false // Continue checking
+      }
+    } else {
+      // Error checking payment status - continue checking
+      console.error('Error checking payment status:', apiError.value)
+      return false // Continue checking
+    }
+  } catch (error) {
+    console.error('Error in checkPaymentStatus:', error)
+    return false // Continue checking
+  }
+}
+
+// Final payment status check when window closes manually
+const finalPaymentStatusCheck = async (orderData: any) => {
+  try {
+    console.log('Final payment status check...')
+
+    // Extract merchant reference from the checkout response
+    const merchantReference = extractMerchantReference(orderData)
+    console.log('Final check - Merchant reference:', merchantReference)
+
+    if (!merchantReference) {
+      console.error('No merchant reference found for final check')
+      closeCardModal()
+      toast.add({
+        title: 'Payment window closed. Please check your orders for payment status.',
+        color: 'info'
+      })
+      return
+    }
+
+    const { data: response, error: apiError } = await useApi('payments/check-payment-status', {
+      method: 'POST',
+      body: {
+        merchant_reference: merchantReference
+      }
+    })
+
+    if (!apiError.value && response.value?.status) {
+      const paymentData = response.value.data
+
+      if (paymentData.success === true) {
+        closeCardModal()
+        const successMessage = response.value.message || 'Gift card purchased successfully! 🎉'
+        toast.add({
+          title: successMessage,
+          color: 'success'
+        })
+
+        // Redirect to dashboard gift cards tab
+        navigateTo('/dashboard?tab=gift-cards')
+      } else if (paymentData.success === false) {
+        closeCardModal()
+        const errorMessage = response.value.message || 'Payment failed. Please try again.'
+        toast.add({
+          title: errorMessage,
+          color: 'error'
+        })
+      } else {
+        closeCardModal()
+        toast.add({
+          title: 'Payment is being processed. You will be notified once completed.',
+          color: 'info'
+        })
+      }
+    } else {
+      closeCardModal()
+      toast.add({
+        title: 'Payment window closed. Please check your orders for payment status.',
+        color: 'info'
+      })
+    }
+  } catch (error) {
+    closeCardModal()
+    toast.add({
+      title: 'Payment window closed. Please check your orders for payment status.',
+      color: 'info'
+    })
+  }
+}
+
+// Use application's standard toast system
+const toast = useToast()
+
 // Direct checkout for gift cards
 const isCheckingOut = ref(false)
 const paymentMethods = ref<any[]>([])
@@ -332,23 +491,62 @@ const checkoutGiftCard = async () => {
           )
 
           if (paymentWindow) {
-            // Monitor payment window
-            const checkClosed = setInterval(() => {
+            // Start checking payment status immediately and every 1 minute
+            console.log('Starting payment status monitoring...')
+
+            const paymentStatusInterval = setInterval(async () => {
+              console.log('Checking payment status...')
+              const isPaymentComplete = await checkPaymentStatus(apiData.data)
+
+              // If payment is successful, stop checking and close window
+              if (isPaymentComplete) {
+                clearInterval(paymentStatusInterval)
+                clearInterval(windowClosedInterval)
+                if (!paymentWindow.closed) {
+                  paymentWindow.close()
+                }
+              }
+            }, 5000) // Check every 1 minute (60000ms)
+
+            // Also monitor if user manually closes the payment window
+            const windowClosedInterval = setInterval(() => {
               if (paymentWindow.closed) {
-                clearInterval(checkClosed)
-                console.log('Payment window closed')
-                // You can add payment status check here
-                closeCardModal()
+                clearInterval(windowClosedInterval)
+                clearInterval(paymentStatusInterval)
+                console.log('Payment window closed manually')
+
+                // Do a final payment status check
+                finalPaymentStatusCheck(apiData.data)
               }
             }, 1000)
+
+            // Do an immediate first check after 10 seconds
+            setTimeout(async () => {
+              console.log('Initial payment status check...')
+              const isPaymentComplete = await checkPaymentStatus(apiData.data)
+
+              if (isPaymentComplete) {
+                clearInterval(paymentStatusInterval)
+                clearInterval(windowClosedInterval)
+                if (!paymentWindow.closed) {
+                  paymentWindow.close()
+                }
+              }
+            }, 10000) // First check after 10 seconds
           }
         } else {
           // No payment needed or already processed
           console.log('Gift card order completed without payment window')
           closeCardModal()
 
-          // Show success message
-          alert('Gift card purchased successfully!')
+          // Show success toast
+          toast.add({
+            title: 'Gift card purchased successfully! 🎉',
+            color: 'success'
+          })
+
+          // Redirect to dashboard gift cards tab
+          navigateTo('/dashboard?tab=gift-cards')
         }
       }
     } else {
@@ -359,7 +557,10 @@ const checkoutGiftCard = async () => {
 
     // Show user-friendly error message
     const errorMessage = error.message || 'An unexpected error occurred during checkout'
-    alert(`Checkout failed: ${errorMessage}`)
+    toast.add({
+      title: `Checkout failed: ${errorMessage}`,
+      color: 'error'
+    })
 
     // Keep modal open so user can try again
   } finally {

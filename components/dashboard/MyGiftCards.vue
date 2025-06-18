@@ -61,6 +61,7 @@
         </div>
 
         <BaseButton
+          @click="viewInvoice"
           class="bg-[#6B8B9B] hover:bg-[#6B8B9B]/70 mt-[27px] text-[#EBE4DF] text-[15px] font-[400] rounded-full w-full py-[12px]">
           View Invoice
         </BaseButton>
@@ -71,11 +72,15 @@
 
   <Dialog v-model:show="modalOpen" :modalMaxWidth="'max-w-[539px]'">
     <template #body>
-      <div class="bg-decore-modal mx-auto rounded-[30px] overflow-hidden shadow-lg bg-[#EBE4DF] text-[#5F2C3E]">
+      <div class="bg-decore-modal mx-auto rounded-[30px] overflow-hidden shadow-lg bg-[#EBE4DF] text-[#5F2C3E]" v-if="selectedCard">
         <div class="p-[34px]">
-          <h2>Gift Card: 500 SAR</h2>
+          <h2>Gift Card: {{ selectedCard.total }} {{ selectedCard.currency }}</h2>
           <div class="relative rounded-[14px] overflow-hidden bg-[#e9c9ad]">
-            <img class="w-full" src="/assets/img/my-gift-card.svg" alt="Gift Card Image" />
+            <img
+              class="w-full"
+              :src="selectedCard.items?.[0]?.card_image || '/assets/img/my-gift-card.svg'"
+              alt="Gift Card Image"
+            />
             <div class="absolute inset-0 px-[15px] py-[15px] flex flex-col justify-between">
               <!-- Header: لوجو + الحالة -->
               <div class="flex justify-between">
@@ -83,8 +88,9 @@
                   <img class="w-full" src="/assets/img/card-laz.svg" alt="Logo" />
                 </div>
                 <div
-                  class="h-[23px] px-[20px] bg-[#CDEAB7] flex items-center justify-center rounded-[100px] text-[#57A06A] text-[13px]">
-                  <span>Active</span>
+                  class="h-[23px] px-[20px] flex items-center justify-center rounded-[100px] text-[13px]"
+                  :class="getStatusClass(selectedCard.items?.[0]?.status)">
+                  <span>{{ selectedCard.items?.[0]?.status || 'Active' }}</span>
                 </div>
               </div>
 
@@ -92,15 +98,15 @@
               <div>
                 <div class="flex flex-col items-end pe-[20px]">
                   <p class="text-white text-[21.94px] font-normal tracking-[0.52em] text-end">
-                    GC-123456
+                    {{ selectedCard.items?.[0]?.serial_number || 'N/A' }}
                   </p>
                   <p class="text-white text-[13.96px] font-bold opacity-70 text-end">
-                    2025-12-31
+                    {{ selectedCard.items?.[0]?.expiry_date || 'N/A' }}
                   </p>
                 </div>
                 <div>
                   <p class="text-white text-[12.97px] font-medium">GIFT CARD</p>
-                  <p class="text-white text-[18.53px] font-bold">200.00 SAR</p>
+                  <p class="text-white text-[18.53px] font-bold">{{ selectedCard.items?.[0]?.remaining_amount || selectedCard.total }} {{ selectedCard.currency }}</p>
                 </div>
               </div>
             </div>
@@ -118,7 +124,7 @@ import { useRouter } from 'vue-router'
 import { useApi } from '~/composables/useApi'
 import GiftCardSwiper from '~/components/giftcards/GiftCardSwiper.vue'
 import Dialog from '~/components/base/Dialog.vue'
-const modalOpen = ref(true)
+const modalOpen = ref(false)
 const selectedCard = ref(null)
 
 const openCardModal = (card) => {
@@ -134,15 +140,44 @@ const goToBooking = () => {
   router.push('/gift-cards')
 }
 
+// Get status class for gift card status
+const getStatusClass = (status) => {
+  switch (status) {
+    case 'Not Used':
+      return 'bg-[#CDEAB7] text-[#57A06A]'
+    case 'Used':
+      return 'bg-[#FFE4E1] text-[#D32F2F]'
+    case 'Expired':
+      return 'bg-[#FFF3CD] text-[#856404]'
+    default:
+      return 'bg-[#CDEAB7] text-[#57A06A]'
+  }
+}
+
+// View invoice function
+const viewInvoice = () => {
+  if (giftCards.value[activeCardIndex.value]?.invoice_link) {
+    window.open(giftCards.value[activeCardIndex.value].invoice_link, '_blank')
+  }
+}
+
 const fetchGiftCards = async () => {
-  await useApi('v1/vouchers/list_orders', { method: 'GET' }, {
-    onSuccess(data) {
-      giftCards.value = data.data?.voucher_groups || []
-    },
-    onError(err) {
-      console.error('Error fetching gift cards', err)
+  try {
+    const { data: response, error } = await useApi('vouchers/list_orders', {
+      method: 'GET'
+    })
+
+    if (!error.value && response.value?.status) {
+      giftCards.value = response.value.data?.voucher_groups || []
+      console.log('Gift cards loaded:', giftCards.value)
+    } else {
+      console.error('Error fetching gift cards:', error.value)
+      giftCards.value = []
     }
-  })
+  } catch (err) {
+    console.error('Error in fetchGiftCards:', err)
+    giftCards.value = []
+  }
 }
 
 onMounted(fetchGiftCards)
