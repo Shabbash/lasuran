@@ -7,6 +7,12 @@ const config: Config = {
     './pages/**/*.{vue,js,ts}',
     './app.vue',
   ],
+
+   safelist: [
+    'max-w-[539px]',
+    'max-w-[638px]', // إن كنت تستخدمها أيضاً
+    'max-w-[800px]'  // أو أي مقاسات أخرى
+  ],
   theme: {
     extend: {
       fontFamily: {
