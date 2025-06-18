@@ -2,7 +2,7 @@
   <Container>
     <ServiceFilters v-model="filters" />
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-[30px]" v-if="!menuModule?.services.loading">
-      <BaseCard v-for="service in menuModule.services.data as Service[] " :key="service.id">
+      <BaseCard v-for="service in menuModule.services.data as Service[]" :key="service.id">
         <template #default>
           <div @click="openModal(service)"
             class="pt-[14px] pb-[20px] px-[11px] rounded-[16px] overflow-hidden bg-[#EBE4DF] cursor-pointer hover:shadow-lg transition">
@@ -22,12 +22,12 @@
         </template>
       </BaseCard>
     </div>
-    
+
     <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-[30px]">
       <ServiceCardSkeleton v-for="i in 8" :key="i" />
     </div>
 
-    <Dialog v-model:open="modalOpen">
+    <Dialog v-model:open="modalOpen" :modalMaxWidth="'max-w-[539px]'">
       <template #body>
         <div v-if="selectedService"
           class="bg-decore-modal mx-auto rounded-[30px] overflow-hidden shadow-lg bg-[#EBE4DF] text-[#5F2C3E]">
@@ -78,11 +78,18 @@
               :class="selectedExtension === '' ? 'bg-[#a0576f69]' : 'bg-[#A0576F]'">
               <span>{{ selectedExtension === '' ? '' : selectedService.price + ' SAR - ' }}Continue</span>
             </button>
+
+
+
+
+
           </div>
 
         </div>
       </template>
     </Dialog>
+    
+
   </Container>
 </template>
 
@@ -96,6 +103,7 @@ import type { TabsItem, RadioGroupItem, RadioGroupValue } from '@nuxt/ui'
 import { CalendarDate } from '@internationalized/date'
 import { COMPONENTS } from "~/data/constants";
 
+import PriceIcon from '@/components/icons/PriceIcon.vue'
 
 
 // Define service type

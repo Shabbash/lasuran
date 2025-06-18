@@ -1,15 +1,17 @@
 <template>
-  <div v-if="!isLoading" class="bg-decore-modal mx-auto rounded-[30px] overflow-hidden shadow-lg bg-[#EBE4DF] text-[#5F2C3E]">
+  <div v-if="!isLoading"
+    class="bg-decore-modal mx-auto rounded-[30px] overflow-hidden shadow-lg bg-[#EBE4DF] text-[#5F2C3E]">
     <!-- service details start -->
 
-    <img class="w-full h-[200px] object-cover rounded-[30px]" :src="selectedService.inner_image  ?? selectedService.image" :alt="defaultService.name" />
+    <img class="w-full h-[200px] object-cover rounded-[30px]"
+      :src="selectedService.inner_image ?? selectedService.image" :alt="defaultService.name" />
 
     <div class="mx-[20px] mt-[20px] mb-[40px] relative">
       <div class="flex justify-between items-center mb-2">
         <h2 class="font-bold text-[30px] text-[#A0576F] leading-[100%]">{{ defaultService.name }}</h2>
         <span class="font-bold text-[19px] text-[#A0576F] leading-[100%]">
-                {{ selectedExtension === '' && selectedService.price <= 0 ? 'Price Upon Selection' : selectedService.price + ' SAR' }}
-              </span>
+          {{ selectedExtension === '' && selectedService.price <= 0 ? 'Price Upon Selection' : selectedService.price
+            + ' SAR' }} </span>
       </div>
 
       <div class="flex items-center text-[14px] text-[#A0576F] font-[500] mb-[10px]">
@@ -39,16 +41,31 @@
         </div>
       </div> -->
 
-      <BaseButton @click="addToCart" :loading="cartModule.isAddLoading" class="bg-[#A0576F] text-[#EBE4DF] rounded-[100px] w-full py-[16px] justify-center text-[20px] font-normal leading-[100%] tracking-[0] border border-[#A0576F] hover:bg-[#913E5D] transition cursor-pointer mt-[30px]  disabled:bg-[#A0576F]">
+      <!-- <BaseButton @click="addToCart" :loading="cartModule.isAddLoading" class="bg-[#A0576F] text-[#EBE4DF] rounded-[100px] w-full py-[16px] justify-center text-[20px] font-normal leading-[100%] tracking-[0] border border-[#A0576F] hover:bg-[#913E5D] transition cursor-pointer mt-[30px]  disabled:bg-[#A0576F]">
         <span>{{ selectedExtension === '' ? '' : selectedService.price + ' SAR - ' }}{{ isEditing ? 'Update' : 'Continue' }}</span>
+      </BaseButton> -->
+
+      <BaseButton @click="addToCart" :loading="cartModule.isAddLoading" :disabled="cartModule.isAddLoading"
+        class="flex items-center gap-[10px] w-full text-white rounded-full font-[400] text-[16px] justify-center disabled:bg-[#A0576F] hover:bg-[#913E5D] transition cursor-pointer mt-[30px]"
+        :class="cartModule.isAddLoading ? 'bg-[#a0576f69]' : 'bg-[#A0576F]'">
+        <PriceIcon />
+        <span>
+          
+          {{ selectedExtension === '' && selectedService.price <= 0 ? 'Price Upon Selection' : selectedService.price
+            + ' SAR' }} - 
+            {{ isEditing ? 'Update' : 'Continue' }} </span>
       </BaseButton>
-<!--      <button-->
-<!--          @click="addToCart"-->
-<!--          :disabled="selectedExtension === ''"-->
-<!--          class="cart-btn flex align-center gap-[24px] w-full text-white py-3 rounded-full font-[600] text-[16px] justify-center mt-[35px]"-->
-<!--          :class="selectedExtension === '' ? 'bg-[#a0576f69]' : 'bg-[#A0576F]'">-->
-<!--        <span>{{ selectedExtension === '' ? '' : selectedService.price + ' SAR - ' }}Continue</span>-->
-<!--      </button>-->
+
+
+
+
+      <!--      <button-->
+      <!--          @click="addToCart"-->
+      <!--          :disabled="selectedExtension === ''"-->
+      <!--          class="cart-btn flex align-center gap-[24px] w-full text-white py-3 rounded-full font-[600] text-[16px] justify-center mt-[35px]"-->
+      <!--          :class="selectedExtension === '' ? 'bg-[#a0576f69]' : 'bg-[#A0576F]'">-->
+      <!--        <span>{{ selectedExtension === '' ? '' : selectedService.price + ' SAR - ' }}Continue</span>-->
+      <!--      </button>-->
     </div>
 
   </div>
@@ -62,7 +79,8 @@
 import { CalendarDate } from "@internationalized/date";
 import CustomRadio from "~/components/base/CustomRadio.vue";
 import ServiceDetailSkeleton from "~/components/skeletons/ServiceDetailSkeleton.vue";
-import {COMPONENTS} from "~/data/constants";
+import { COMPONENTS } from "~/data/constants";
+import PriceIcon from '@/components/icons/PriceIcon.vue'
 
 // Define service type
 interface Service {
@@ -288,8 +306,4 @@ onMounted(() => {
 })
 </script>
 
-<style scoped>
-
-
-
-</style>
+<style scoped></style>
