@@ -6,7 +6,7 @@
     <slot :item="item">
       <UBadge @click="selectItem(item)"
         :class="{ 'font-medium rounded-full bg-[#E6CDC7A3] text-[#A0576F] px-[19px] py-0 h-[32px] md:h-[56px] cursor-pointer': true, 'active text-[#EBE4DF] bg-[#A0576F]': (getItem(item, 'value') == selectedValue) }">
-        {{ getItem(item) }}
+        {{ notTransition == "1" ? getItem(item).en : getItem(item) }}
       </UBadge>
     </slot>
   </UCarousel>
@@ -25,6 +25,10 @@ const props = defineProps({
   labelKey: {
     type: String,
     default: 'name'
+  },
+  notTransition: {
+    type: String,
+    default: '0'
   }
 });
 
