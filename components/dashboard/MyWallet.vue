@@ -16,8 +16,8 @@
       <div class="flex-1">
         <FlipCard>
           <template #front>
-            <div class="relative">
-              <img class="w-full" :src="customerClass.front_image || '/public/assets/img/card.png'" alt="" />
+            <div class="relative h-full rounded-[12px] overflow-hidden">
+              <img class="w-full h-full object-cover" :src="customerClass.front_image || '/public/assets/img/card.png'" alt="" />
               <div class="absolute inset-0 px-[16px] py-[20px] flex flex-col justify-between">
                 <div>
                   <div class="flex justify-between mb-[12px]">
@@ -54,8 +54,8 @@
           </template>
 
           <template #back>
-            <div class="relative">
-              <img class="w-full" :src="customerClass.back_image || '/public/assets/img/card.png'" alt="" />
+            <div class="relative h-full rounded-[12px] overflow-hidden">
+              <img class="w-full h-full object-cover" :src="customerClass.back_image || '/public/assets/img/card.png'" alt="" />
               <div class="absolute inset-0 px-[16px] py-[50px] flex flex-col justify-between">
                 <div class="absolute inset-[17px] start-auto">
                   <InfoFilledIcon />
