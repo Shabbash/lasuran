@@ -57,7 +57,7 @@
                 </UButton>
                 <CalendarIcon3/>
                 <template #content>
-                  <UCalendar v-model="calendarDate" />
+                  <UCalendar v-model="formData.date_of_birth" />
                 </template>
               </UPopover>
               <input placeholder="April - 18th - 2000" :value="formattedDateOfBirth" readonly
@@ -195,20 +195,20 @@ watch(() => profileStore.profile, (newProfile) => {
 }, { immediate: true });
 
 
-const formatDate = (date: CalendarDate): string => {
-  const monthNames = [
-    '', 'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
-  ];
+// const formatDate = (date: CalendarDate): string => {
+//   const monthNames = [
+//     '', 'January', 'February', 'March', 'April', 'May', 'June',
+//     'July', 'August', 'September', 'October', 'November', 'December'
+//   ];
 
-  const getOrdinal = (n: number) => {
-    const s = ["th", "st", "nd", "rd"];
-    const v = n % 100;
-    return n + (s[(v - 20) % 10] || s[v] || s[0]);
-  };
+//   const getOrdinal = (n: number) => {
+//     const s = ["th", "st", "nd", "rd"];
+//     const v = n % 100;
+//     return n + (s[(v - 20) % 10] || s[v] || s[0]);
+//   };
 
-  return `${monthNames[date.month]} - ${getOrdinal(date.day)} - ${date.year}`;
-};
+//   return `${monthNames[date.month]} - ${getOrdinal(date.day)} - ${date.year}`;
+// };
 
 
 watch(calendarDate, (val) => {
@@ -221,22 +221,22 @@ watch(calendarDate, (val) => {
 });
 
 
-const formattedDateOfBirth = computed(() => {
-  if (!calendarDate.value) return '';
+// const formattedDateOfBirth = computed(() => {
+//   if (!calendarDate.value) return '';
 
-  const monthNames = [
-    '', 'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
-  ];
+//   const monthNames = [
+//     '', 'January', 'February', 'March', 'April', 'May', 'June',
+//     'July', 'August', 'September', 'October', 'November', 'December'
+//   ];
 
-  const getOrdinal = (n: number) => {
-    const s = ["th", "st", "nd", "rd"];
-    const v = n % 100;
-    return n + (s[(v - 20) % 10] || s[v] || s[0]);
-  };
+//   const getOrdinal = (n: number) => {
+//     const s = ["th", "st", "nd", "rd"];
+//     const v = n % 100;
+//     return n + (s[(v - 20) % 10] || s[v] || s[0]);
+//   };
 
-  return `${monthNames[calendarDate.value.month]} - ${getOrdinal(calendarDate.value.day)} - ${calendarDate.value.year}`;
-});
+//   return `${monthNames[calendarDate.value.month]} - ${getOrdinal(calendarDate.value.day)} - ${calendarDate.value.year}`;
+// });
 
 
 // Format phone number
