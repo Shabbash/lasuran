@@ -57,10 +57,10 @@
                 </UButton>
                 <CalendarIcon3/>
                 <template #content>
-                  <UCalendar v-model="formData.date_of_birth" />
+                  <UCalendar v-model="calendarDate" />
                 </template>
               </UPopover>
-              <input placeholder="April - 18th - 2000" :value="formattedDateOfBirth" readonly
+              <input placeholder="April - 18th - 2000" :value="formData.date_of_birth" readonly
                 class="flex-1 outline-none bg-transparent text-[#BBCACF] placeholder:text-[#D3C9C5] text-[14px] h-[50px]"
                 type="text" />
 
