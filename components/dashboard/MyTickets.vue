@@ -1,20 +1,25 @@
 <template>
-  <div class="min-h-screen px-6 py-10 bg-[#A0576F] text-[#C6C6C7] font-sans text-sm">
+  <div class="min-h-screen px-[5px] md:px-6 py-10 bg-[#A0576F] text-[#C6C6C7] font-sans text-sm">
     <!-- Header -->
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-[20px] mb-7 border-b border-[#AD7084] bg-[#EBE4DF] rounded-full ps-[30px]">
-      <h1 class="text-[#A0576F] font-medium text-[18.733px] not-italic leading-normal tracking-[0.749px]">My Tickets</h1>
-      <div class="flex space-x-2">
-        <button v-for="filter in filters" :key="filter.id" @click="onFilterChange(filter.id)"
-          :class="[
-            'px-4 py-1.5 text-sm font-medium rounded-full transition-colors',
-            activeFilter === filter.id ? 'bg-[#A0576F] text-white' : 'text-[#A0576F] hover:bg-[#d6c5cb]'
-          ]">
+    <div
+      class="flex flex-col gap-4 md:flex-row justify-between md:items-center items-start mb-7 border-b border-[#AD7084] bg-[#EBE4DF] rounded-[12px] md:rounded-[40px] py-[20px] px-[10px] md:p-0 md:ps-[30px]">
+      <h1 class="text-[#A0576F] font-medium text-[18.733px] not-italic leading-normal tracking-[0.749px]">
+        My Tickets
+      </h1>
+
+      <div class="flex flex-wrap gap-2">
+        <button v-for="filter in filters" :key="filter.id" @click="onFilterChange(filter.id)" :class="[
+          'px-4 py-1.5 text-sm font-medium rounded-full transition-colors',
+          activeFilter === filter.id ? 'bg-[#A0576F] text-white' : 'text-[#A0576F] hover:bg-[#d6c5cb]'
+        ]">
           {{ filter.label }}
         </button>
       </div>
+
       <BaseButton label="Open a New Ticket" @click="navigateToNewTicket"
-        class="bg-[#6B8B9B] hover:bg-[#6B8B9B]/90 text-white rounded-full px-[22px] py-[12px] text-sm font-medium w-auto inline-block" />
+        class="bg-[#6B8B9B] hover:bg-[#6B8B9B]/90 text-white rounded-full px-[22px] py-[12px] text-sm font-medium w-auto" />
     </div>
+
 
     <!-- Main Grid -->
 
@@ -67,65 +72,58 @@
 
 
 
-<!-- Tickets List -->
-<div class="h-[720px]">
-  <div v-if="isLoading" class="flex justify-center items-center py-10">
-    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
-  </div>
+      <!-- Tickets List -->
+      <div class="h-[170px] md:h-[720px]">
+        <div v-if="isLoading" class="flex justify-center items-center py-10">
+          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+        </div>
 
-  <div v-else-if="tickets.length === 0" class="text-center py-10">
-    <p class="text-[#EBE4DF] text-lg mb-4">No tickets found</p>
-    <BaseButton label="Create New Ticket" @click="navigateToNewTicket"
-      class="bg-[#6B8B9B] hover:bg-[#6B8B9B]/90 text-white rounded-full px-[22px] py-[12px] text-sm font-medium" />
-  </div>
+        <div v-else-if="tickets.length === 0" class="text-center py-10">
+          <p class="text-[#EBE4DF] text-lg mb-4">No tickets found</p>
+          <BaseButton label="Create New Ticket" @click="navigateToNewTicket"
+            class="bg-[#6B8B9B] hover:bg-[#6B8B9B]/90 text-white rounded-full px-[22px] py-[12px] text-sm font-medium" />
+        </div>
 
-<Swiper
-  :modules="[Mousewheel]"
-  direction="vertical"
-  :slidesPerView="4"
-  :mousewheel="{ forceToAxis: true, releaseOnEdges: true }"
-  @activeIndexChange="onActiveTicketChange"
-  class="h-full"
->
-  <SwiperSlide
-    v-for="(ticket, index) in tickets"
-    :key="ticket.id"
-  >
-    <div
-      @click="selectTicketByIndex(index)"
-      :class="[
-        'cursor-pointer p-[20px] rounded-[12px] border transition',
-        activeTicketIndex === index
-          ? 'bg-[#EBE4DF] text-[#5B605C] border-[#D8D8D8]'
-          : 'bg-[#A0576F] text-[#C6C6C7] border-[#AD7084]'
-      ]"
-    >
-        <div class="flex justify-between items-center mb-3">
-          <p :class="ticket.status === 'open' ? 'text-[#A0576F] text-[17px] font-medium' : 'text-[#EBE4DF] text-[17px] font-medium'">
-            Ticket No. {{ ticket.number }}
-          </p>
-          <span :class="['px-3 py-1 text-xs rounded-full', getStatusStyle(ticket.status)]">
-            {{ capitalize(ticket.status) }}
-          </span>
-        </div>
-        <div class="flex justify-between text-[13px] font-[350] border-b pb-2 mb-2"
-          :class="ticket.status === 'open' ? 'border-[#D8D8D8]' : 'border-[#AD7084]'">
-          <span>Type</span>
-          <span>{{ ticket.type }}</span>
-        </div>
-        <div class="flex justify-between text-[13px] font-[350] border-b pb-2 mb-2"
-          :class="ticket.status === 'open' ? 'border-[#D8D8D8]' : 'border-[#AD7084]'">
-          <span>Date</span>
-          <span>{{ ticket.date }}</span>
-        </div>
-        <div class="flex justify-between text-[13px] font-[350]">
-          <span>Time</span>
-          <span>{{ ticket.time }}</span>
-        </div>
+        <Swiper :modules="[Mousewheel]" direction="vertical" :breakpoints="{
+    0: { slidesPerView: 1 },      // mobile
+    768: { slidesPerView: 4 }     // tablets and up
+  }"
+          :mousewheel="{ forceToAxis: true, releaseOnEdges: true }" @activeIndexChange="onActiveTicketChange"
+          class="h-full">
+          <SwiperSlide v-for="(ticket, index) in tickets" :key="ticket.id">
+            <div @click="selectTicketByIndex(index)" :class="[
+              'cursor-pointer p-[20px] rounded-[12px] border transition',
+              activeTicketIndex === index
+                ? 'bg-[#EBE4DF] text-[#5B605C] border-[#D8D8D8]'
+                : 'bg-[#A0576F] text-[#C6C6C7] border-[#AD7084]'
+            ]">
+              <div class="flex justify-between items-center mb-3">
+                <p
+                  :class="ticket.status === 'open' ? 'text-[#A0576F] text-[17px] font-medium' : 'text-[#EBE4DF] text-[17px] font-medium'">
+                  Ticket No. {{ ticket.number }}
+                </p>
+                <span :class="['px-3 py-1 text-xs rounded-full', getStatusStyle(ticket.status)]">
+                  {{ capitalize(ticket.status) }}
+                </span>
+              </div>
+              <div class="flex justify-between text-[13px] font-[350] border-b pb-2 mb-2"
+                :class="ticket.status === 'open' ? 'border-[#D8D8D8]' : 'border-[#AD7084]'">
+                <span>Type</span>
+                <span>{{ ticket.type }}</span>
+              </div>
+              <div class="flex justify-between text-[13px] font-[350] border-b pb-2 mb-2"
+                :class="ticket.status === 'open' ? 'border-[#D8D8D8]' : 'border-[#AD7084]'">
+                <span>Date</span>
+                <span>{{ ticket.date }}</span>
+              </div>
+              <div class="flex justify-between text-[13px] font-[350]">
+                <span>Time</span>
+                <span>{{ ticket.time }}</span>
+              </div>
+            </div>
+          </SwiperSlide>
+        </Swiper>
       </div>
-    </SwiperSlide>
-  </Swiper>
-</div>
 
       <!-- Ticket Details -->
       <div class="space-y-6 flex flex-col h-full">

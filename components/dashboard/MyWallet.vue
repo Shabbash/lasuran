@@ -143,7 +143,7 @@
   <!-- Modal -->
   <Dialog v-model:open="modalOpen" :modalMaxWidth="'max-w-[490px]'">
     <template #body>
-      <div class="px-[67px] py-[30px] relative">
+      <div class="px-[20px] md:px-[67px] py-[30px] relative">
         <h2 class="text-[#A0576F] text-center text-[23px] font-bold leading-normal mb-[30px]">Points Scheme</h2>
         <div class="px-[10px] py-[20px] rounded-[16px] bg-[#A0576F] flex flex-col justify-between gap-[25px]">
           <p class="text-[#EBE4DF] text-center text-[16px] font-[350]">

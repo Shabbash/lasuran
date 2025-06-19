@@ -1,7 +1,7 @@
 <template>
   <div class="chat-box flex flex-col justify-between flex-1">
     <!-- Messages List -->
-    <div  class="space-y-4 h-[430px] overflow-y-auto pe-[10px]">
+    <div  class="space-y-4 h-[230px] md:h-[430px] overflow-y-auto pe-[10px]">
       <div v-for="(msg, index) in messages" :key="index">
         <!-- Inbound Message -->
         <div v-if="msg.direction === 'inbound'" class="flex gap-[15px]">

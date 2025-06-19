@@ -36,12 +36,15 @@
 
 
 <!-- Gift Cards List -->
-<div class="h-[770px]">
+<div class="h-[210px] md:h-[770px]">
   <Swiper
     :modules="[Mousewheel]"
     direction="vertical"
     :mousewheel="{ forceToAxis: true, releaseOnEdges: true }"
-    :slidesPerView="4"
+     :breakpoints="{
+    0: { slidesPerView: 1 },      // mobile
+    768: { slidesPerView: 4 }     // tablets and up
+  }"
     :spaceBetween="20"
     class="h-full"
     @activeIndexChange="onActiveCardChange"
@@ -111,7 +114,7 @@
     <template #body>
       <div class="bg-decore-modal mx-auto rounded-[30px] overflow-hidden shadow-lg bg-[#EBE4DF] text-[#5F2C3E]"
         v-if="selectedCard">
-        <div class="px-[53px] py-[34px] relative">
+        <div class="px-[20px] md:px-[53px] py-[34px] relative">
           <h2 class="text-center mb-[43px] text-[#A0576F] text-[18.29px] font-bold leading-normal">Gift Card: {{
             selectedCard.total }} {{ selectedCard.currency }}</h2>
           <div class="relative rounded-[14px] overflow-hidden bg-[#e9c9ad] h-[127px]">
