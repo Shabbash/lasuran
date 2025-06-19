@@ -214,14 +214,14 @@
       </div>
     </template>
   </Dialog>
-  <Dialog v-model:show="showRedeemModal" :modalMaxWidth="'max-w-[467px]'">
+  <Dialog v-model:show="showRedeemModal" :modalMaxWidth="'max-w-[356px]'">
     <template #body>
       <div class="bg-decore-modal">
         <div class="relative px-[18px] py-[30px]">
           <h2 class="mb-[30px] text-[#A0576F] text-center font-medium text-[21px] not-italic leading-normal">Redeem
             History</h2>
 
-          <div class="flex border-b border-b-[#0014471A] last:border-b-0">
+          <div class="flex border-b border-b-[#0014471A] pb-[10px] gap-[10px] mb-[35px]">
             <div class="">
               <img src="/assets/img/earned.svg" alt="">
             </div>
@@ -232,7 +232,7 @@
             </div>
           </div>
 
-          <div class="flex border-b border-b-[#0014471A] last:border-b-0">
+          <div class="flex border-b border-b-[#0014471A] pb-[10px] gap-[10px] mb-[35px]">
             <div class="">
               <img src="/assets/img/earned.svg" alt="">
             </div>
@@ -262,7 +262,7 @@ import QrIcon from '@/components/icons/QrIcon.vue'
 import AppleWalletIcon from '@/components/icons/AppleWalletIcon.vue'
 
 
-const showRedeemModal = ref(true)
+const showRedeemModal = ref(false)
 
 const openRedeemHistory = () => {
   modalOpen.value = false
