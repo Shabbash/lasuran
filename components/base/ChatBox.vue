@@ -1,7 +1,7 @@
 <template>
   <div class="chat-box flex flex-col justify-between flex-1">
     <!-- Messages List -->
-    <div class="space-y-4">
+    <div  class="space-y-4 h-[430px] overflow-y-auto pe-[10px]">
       <div v-for="(msg, index) in messages" :key="index">
         <!-- Inbound Message -->
         <div v-if="msg.direction === 'inbound'" class="flex gap-[15px]">
@@ -37,12 +37,12 @@
           type="text"
           placeholder="Type a message"
           class="ps-[23px] w-full h-full text-sm outline-none border border-[#D8D8D8] bg-white text-[#959595] font-light text-[14px] leading-normal" />
-        <button class="absolute h-full end-0 px-[19px]" @click="attach">
+        <button class="absolute h-full end-0 px-[19px] cursor-pointer" @click="attach">
           <AttachIcon />
         </button>
       </div>
       <button
-        class="w-[48px] h-[50px] rounded-[13px] bg-[#EBE4DF] flex items-center justify-center text-white"
+        class="w-[48px] h-[50px] rounded-[13px] bg-[#EBE4DF] flex items-center justify-center text-white cursor-pointer"
         @click="send">
         <SendIcon />
       </button>

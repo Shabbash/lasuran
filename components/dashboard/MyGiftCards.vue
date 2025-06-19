@@ -9,11 +9,11 @@
         Buy a new card
       </button>
     </div>
-
+<GiftCardSkeleton v-if="isLoading" />
     <!-- Main Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div v-else  class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <!-- Gift Cards List -->
-      <div>
+      <!-- <div>
         <div v-for="(group, index) in giftCards" :key="group.id"
           class="gift-card p-[20px] border rounded-[12px] text-[13px] font-[350] mb-[20px] last:mb-0 cursor-pointer"
           :class="{ active: activeCardIndex === index }" @click="activeCardIndex = index">
@@ -31,7 +31,45 @@
             <span>{{ group.items?.[0]?.expiry_date || '—' }}</span>
           </div>
         </div>
+      </div> -->
+
+
+
+<!-- Gift Cards List -->
+<div class="h-[770px]">
+  <Swiper
+    :modules="[Mousewheel]"
+    direction="vertical"
+    :mousewheel="{ forceToAxis: true, releaseOnEdges: true }"
+    :slidesPerView="4"
+    :spaceBetween="20"
+    class="h-full"
+    @activeIndexChange="onActiveCardChange"
+
+  >
+    <SwiperSlide v-for="(group, index) in giftCards" :key="group.id">
+      <div
+        class="gift-card p-[20px] border rounded-[12px] text-[13px] font-[350] cursor-pointer"
+        :class="{ active: activeCardIndex === index }"
+        @click="activeCardIndex = index"
+      >
+        <p class="text-[17px] font-medium mb-[20px]">Gift Card: {{ group.total }} {{ group.currency }}</p>
+        <div class="flex justify-between mb-[11px] pb-[11px] border-b">
+          <span>Number of cards:</span>
+          <span>{{ group.items?.length ?? 1 }}</span>
+        </div>
+        <div class="flex justify-between mb-[11px] pb-[11px] border-b">
+          <span>Purchase No:</span>
+          <span>{{ group.order_number }}</span>
+        </div>
+        <div class="flex justify-between">
+          <span>Expiry Date</span>
+          <span>{{ group.items?.[0]?.expiry_date || '—' }}</span>
+        </div>
       </div>
+    </SwiperSlide>
+  </Swiper>
+</div>
 
       <!-- Swiper + Payment Details -->
       <div>
@@ -162,7 +200,7 @@
               Redeem History
             </button> -->
 
-            <BaseButton @click="openRedeemHistory"
+            <BaseButton @click="handleRedeemHistoryOpen"
               class="bg-[#6B8B9B] hover:bg-[#6B8B9B]/70 mt-[27px] text-[#EBE4DF] text-[15px] font-[400] rounded-full w-full py-[12px]">
               Redeem History
             </BaseButton>
@@ -251,7 +289,6 @@
 
 
 </template>
-
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
@@ -261,31 +298,68 @@ import Dialog from '~/components/base/Dialog.vue'
 import QrIcon from '@/components/icons/QrIcon.vue'
 import AppleWalletIcon from '@/components/icons/AppleWalletIcon.vue'
 
+import GiftCardSkeleton from '~/components/skeletons/MyGiftCardSkeleton.vue'
+const isLoading = ref(true)
 
+onMounted(async () => {
+  await fetchGiftCards()
+  isLoading.value = false
+})
+
+
+import { Swiper, SwiperSlide } from 'swiper/vue'
+import { Mousewheel } from 'swiper/modules'
+import 'swiper/css'
+
+// Dialog States
 const showRedeemModal = ref(false)
+const modalOpen = ref(false)
+const selectedCard = ref(null)
 
-const openRedeemHistory = () => {
+// Router
+const router = useRouter()
+
+// Gift Card Data
+const giftCards = ref([])
+const activeCardIndex = ref(0)
+
+// Navigate to buy gift card
+const goToBooking = () => {
+  router.push('/gift-cards')
+}
+
+// Open Redeem History Dialog
+const handleRedeemHistoryOpen = () => {
   modalOpen.value = false
   showRedeemModal.value = true
 }
 
-const modalOpen = ref(false)
-const selectedCard = ref(null)
+// Handle View Invoice
+const viewInvoice = () => {
+  const card = selectedCard.value
+  if (card?.invoice_link) {
+    window.open(card.invoice_link, '_blank')
+  }
+}
 
+// Handle Select (from click or swiper)
+const selectCard = (index) => {
+  activeCardIndex.value = index
+  selectedCard.value = giftCards.value[index] || null
+}
+
+// Update active card on swiper scroll
+const onActiveCardChange = (swiper) => {
+  selectCard(swiper.activeIndex)
+}
+
+// Open Modal with selected card
 const openCardModal = (card) => {
   selectedCard.value = card
   modalOpen.value = true
 }
 
-const router = useRouter()
-const giftCards = ref([])
-const activeCardIndex = ref(0)
-
-const goToBooking = () => {
-  router.push('/gift-cards')
-}
-
-// Get status class for gift card status
+// Card Status Badge
 const getStatusClass = (status) => {
   switch (status) {
     case 'Not Used':
@@ -299,13 +373,7 @@ const getStatusClass = (status) => {
   }
 }
 
-// View invoice function
-const viewInvoice = () => {
-  if (giftCards.value[activeCardIndex.value]?.invoice_link) {
-    window.open(giftCards.value[activeCardIndex.value].invoice_link, '_blank')
-  }
-}
-
+// Load Gift Cards
 const fetchGiftCards = async () => {
   try {
     const { data: response, error } = await useApi('vouchers/list_orders', {
@@ -314,7 +382,11 @@ const fetchGiftCards = async () => {
 
     if (!error.value && response.value?.status) {
       giftCards.value = response.value.data?.voucher_groups || []
-      console.log('Gift cards loaded:', giftCards.value)
+
+      // Select first card as default
+      if (giftCards.value.length > 0) {
+        selectCard(0)
+      }
     } else {
       console.error('Error fetching gift cards:', error.value)
       giftCards.value = []

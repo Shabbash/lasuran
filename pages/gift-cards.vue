@@ -1,6 +1,6 @@
 <template>
   <Container>
-    <Banner :opacity="false" :bannerContent="bannerContent" />
+    <Banner :loading="isLoading" :opacity="false" :bannerContent="bannerContent" />
 
     <div>
       <h2 class="text-white mb-[16px] text-[19px] font-normal">Gift Cards</h2>
@@ -9,9 +9,8 @@
       </p>
 
       <!-- Loading State -->
-      <div v-if="isLoading" class="flex justify-center items-center py-12">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
-      </div>
+      <GiftCardSkeleton v-if="isLoading" />
+
 
       <!-- Error State -->
       <div v-else-if="error" class="text-center py-12">
@@ -137,6 +136,9 @@ import Dialog from '@/components/base/Dialog.vue'
 import BaseCounter from '@/components/base/Counter.vue'
 import BaseButton from '@/components/base/Button.vue'
 import PriceIcon from '@/components/icons/PriceIcon.vue'
+
+import GiftCardSkeleton from '~/components/skeletons/GiftCardSkeleton.vue'
+
 // Reactive state
 const modalOpen = ref(false)
 const selectedCard = ref<any>(null)

@@ -1,9 +1,8 @@
 <template>
   <Container>
     <!-- Loading State -->
-    <div v-if="productsStore.isLoading" class="flex justify-center items-center py-20">
-      <div class="text-white text-lg">Loading...</div>
-    </div>
+    <ShopSkeleton v-if="productsStore.isLoading" />
+
 
     <!-- Error State -->
     <div v-else-if="productsStore.error" class="flex justify-center items-center py-20">
@@ -189,6 +188,7 @@ import BaseCounter from '@/components/base/Counter.vue'
 import SelectableSlider from '@/components/base/SelectableSlider.vue'
 import OutlineHeartIcon from '@/components/icons/OutlineHeartIcon.vue'
 import OutlineStarIcon2 from '@/components/icons/OutlineStarIcon2.vue'
+import ShopSkeleton from '@/components/skeletons/ShopSkeleton.vue'
 import ShopIcon from '@/components/icons/ShopIcon.vue'
 import { useCart } from '@/stores/cart'
 import { useProducts } from '@/stores/products'
@@ -206,10 +206,6 @@ onMounted(async () => {
 
     console.log('Shop initialized, products loaded:', productsStore.products.length)
 })
-
-
-
-
 
 
 

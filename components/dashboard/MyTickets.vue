@@ -17,9 +17,12 @@
     </div>
 
     <!-- Main Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+    <TicketSkeleton v-if="isLoading" />
+
+    <div else class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <!-- Tickets List -->
-      <div class="space-y-5">
+      <!-- <div class="space-y-5">
         <div v-if="isLoading" class="flex justify-center items-center py-10">
           <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
         </div>
@@ -60,7 +63,69 @@
             <span>{{ ticket.time }}</span>
           </div>
         </div>
+      </div> -->
+
+
+
+<!-- Tickets List -->
+<div class="h-[720px]">
+  <div v-if="isLoading" class="flex justify-center items-center py-10">
+    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+  </div>
+
+  <div v-else-if="tickets.length === 0" class="text-center py-10">
+    <p class="text-[#EBE4DF] text-lg mb-4">No tickets found</p>
+    <BaseButton label="Create New Ticket" @click="navigateToNewTicket"
+      class="bg-[#6B8B9B] hover:bg-[#6B8B9B]/90 text-white rounded-full px-[22px] py-[12px] text-sm font-medium" />
+  </div>
+
+<Swiper
+  :modules="[Mousewheel]"
+  direction="vertical"
+  :slidesPerView="4"
+  :mousewheel="{ forceToAxis: true, releaseOnEdges: true }"
+  @activeIndexChange="onActiveTicketChange"
+  class="h-full"
+>
+  <SwiperSlide
+    v-for="(ticket, index) in tickets"
+    :key="ticket.id"
+  >
+    <div
+      @click="selectTicketByIndex(index)"
+      :class="[
+        'cursor-pointer p-[20px] rounded-[12px] border transition',
+        activeTicketIndex === index
+          ? 'bg-[#EBE4DF] text-[#5B605C] border-[#D8D8D8]'
+          : 'bg-[#A0576F] text-[#C6C6C7] border-[#AD7084]'
+      ]"
+    >
+        <div class="flex justify-between items-center mb-3">
+          <p :class="ticket.status === 'open' ? 'text-[#A0576F] text-[17px] font-medium' : 'text-[#EBE4DF] text-[17px] font-medium'">
+            Ticket No. {{ ticket.number }}
+          </p>
+          <span :class="['px-3 py-1 text-xs rounded-full', getStatusStyle(ticket.status)]">
+            {{ capitalize(ticket.status) }}
+          </span>
+        </div>
+        <div class="flex justify-between text-[13px] font-[350] border-b pb-2 mb-2"
+          :class="ticket.status === 'open' ? 'border-[#D8D8D8]' : 'border-[#AD7084]'">
+          <span>Type</span>
+          <span>{{ ticket.type }}</span>
+        </div>
+        <div class="flex justify-between text-[13px] font-[350] border-b pb-2 mb-2"
+          :class="ticket.status === 'open' ? 'border-[#D8D8D8]' : 'border-[#AD7084]'">
+          <span>Date</span>
+          <span>{{ ticket.date }}</span>
+        </div>
+        <div class="flex justify-between text-[13px] font-[350]">
+          <span>Time</span>
+          <span>{{ ticket.time }}</span>
+        </div>
       </div>
+    </SwiperSlide>
+  </Swiper>
+</div>
 
       <!-- Ticket Details -->
       <div class="space-y-6 flex flex-col h-full">
@@ -88,10 +153,17 @@
 </template>
 <script setup>
 import { ref, onMounted } from 'vue'
-import BaseButton from '@/components/base/Button.vue'
-import ChatBox from '@/components/base/ChatBox.vue'
 import { useApi } from '~/composables/useApi'
 import { useToast } from '#imports'
+
+import { Swiper, SwiperSlide } from 'swiper/vue'
+import { Mousewheel } from 'swiper/modules'
+import 'swiper/css'
+
+import ChatBox from '@/components/base/ChatBox.vue'
+import BaseButton from '@/components/base/Button.vue'
+import TicketSkeleton from '@/components/skeletons/TicketSkeleton.vue'
+const isLoading = ref(true)
 
 const filters = [
   { id: 'all', label: 'ALL', type: null },
@@ -103,12 +175,53 @@ const filters = [
 const activeFilter = ref('all')
 const tickets = ref([])
 const selectedTicket = ref(null)
-const isLoading = ref(false)
+const activeTicketIndex = ref(0)
+
+// const isLoading = ref(false)
 const isLoadingReplies = ref(false)
 const lastFetchTime = ref(0)
 const FETCH_COOLDOWN = 2000
 
-// Load tickets from API
+const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1)
+const getStatusStyle = (status) => {
+  switch (status) {
+    case 'open': return 'bg-[#6B8B9B] text-white'
+    case 'responded': return 'bg-[#D8A26F] text-white'
+    case 'closed': return 'bg-[#C44E4E] text-white'
+    default: return 'bg-gray-400 text-white'
+  }
+}
+
+const extractDate = (str) => str?.split(' - ')[0]?.replace(/^\w+,\s*/, '') || ''
+const extractTime = (str) => str?.split(' - ')[1] || ''
+
+const mapStatus = (val) => {
+  switch (val) {
+    case 1: return 'open'
+    case 2: return 'responded'
+    case 3: return 'closed'
+    default: return 'open'
+  }
+}
+
+// تحديث selectedTicket حسب السلايد
+const onActiveTicketChange = (swiper) => {
+  selectTicketByIndex(swiper.activeIndex)
+}
+
+// التحديد اليدوي (اختياري)
+const selectTicketByIndex = (index) => {
+  activeTicketIndex.value = index
+  selectedTicket.value = tickets.value[index] || null
+  fetchTicketDetails(selectedTicket.value?.id)
+}
+
+const onFilterChange = (id) => {
+  activeFilter.value = id
+  const type = filters.find(f => f.id === id)?.type ?? null
+  fetchTickets(type)
+}
+
 const fetchTickets = async (filterType = null) => {
   isLoading.value = true
   try {
@@ -116,7 +229,6 @@ const fetchTickets = async (filterType = null) => {
     if (filterType !== null) {
       params.type = filterType
     }
-console.log('Fetching tickets with type:', filterType)
 
     const { data } = await useApi('customer-service/feedbacks', {
       method: 'GET',
@@ -136,8 +248,9 @@ console.log('Fetching tickets with type:', filterType)
         attachments: ticket.attachments || []
       }))
 
+      // أول بطاقة هي المختارة
       if (tickets.value.length > 0) {
-        selectedTicket.value = tickets.value[0]
+        selectTicketByIndex(0)
       }
     }
   } catch (error) {
@@ -147,66 +260,8 @@ console.log('Fetching tickets with type:', filterType)
   }
 }
 
-const mapStatus = (val) => {
-  switch (val) {
-    case 1: return 'open'
-    case 2: return 'responded'
-    case 3: return 'closed'
-    default: return 'open'
-  }
-}
-
-const transformReplies = (replies) => {
-  const messages = []
-  replies?.forEach(group => {
-    group.messages?.forEach(msg => {
-      messages.push(transformSingleMessage(msg))
-    })
-  })
-  return messages
-}
-
-const transformSingleMessage = (message) => ({
-  id: message.id,
-  from: message.sender_name || message.from || 'Unknown',
-  text: message.message || message.text,
-  time: extractTime(message.date_time || message.time),
-  direction: message.sender_type === 'support' ? 'inbound' : 'outbound',
-  sender_type: message.sender_type,
-  sender_image: message.sender_image,
-  attachments: message.attachments || []
-})
-
-const transformRepliesFromEndpoint = (data) => {
-  if (!data) return []
-  if (Array.isArray(data)) return data.map(transformSingleMessage)
-  if (data.replies) return transformReplies(data.replies)
-  if (data.messages) return data.messages.map(transformSingleMessage)
-  if (data.data) return data.data.map(transformSingleMessage)
-  return []
-}
-
-const extractDate = (str) => str?.split(' - ')[0]?.replace(/^\w+,\s*/, '') || ''
-const extractTime = (str) => str?.split(' - ')[1] || ''
-
-const onFilterChange = (id) => {
-  activeFilter.value = id
-  const type = filters.find(f => f.id === id)?.type ?? null
-  fetchTickets(type)
-}
-
-const selectTicket = (ticket) => {
-  if (selectedTicket.value?.id === ticket.id) return
-  selectedTicket.value = ticket
-
-  const now = Date.now()
-  if (!ticket.messages?.length || now - lastFetchTime.value > FETCH_COOLDOWN) {
-    fetchTicketDetails(ticket.id)
-  }
-}
-
 const fetchTicketDetails = async (id) => {
-  if (isLoadingReplies.value) return
+  if (isLoadingReplies.value || !id) return
 
   const now = Date.now()
   if (now - lastFetchTime.value < FETCH_COOLDOWN) return
@@ -288,15 +343,34 @@ const handleSendMessage = async (msg) => {
   }
 }
 
-const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1)
+const transformSingleMessage = (message) => ({
+  id: message.id,
+  from: message.sender_name || message.from || 'Unknown',
+  text: message.message || message.text,
+  time: extractTime(message.date_time || message.time),
+  direction: message.sender_type === 'support' ? 'inbound' : 'outbound',
+  sender_type: message.sender_type,
+  sender_image: message.sender_image,
+  attachments: message.attachments || []
+})
 
-const getStatusStyle = (status) => {
-  switch (status) {
-    case 'open': return 'bg-[#6B8B9B] text-white'
-    case 'responded': return 'bg-[#D8A26F] text-white'
-    case 'closed': return 'bg-[#C44E4E] text-white'
-    default: return 'bg-gray-400 text-white'
-  }
+const transformReplies = (replies) => {
+  const messages = []
+  replies?.forEach(group => {
+    group.messages?.forEach(msg => {
+      messages.push(transformSingleMessage(msg))
+    })
+  })
+  return messages
+}
+
+const transformRepliesFromEndpoint = (data) => {
+  if (!data) return []
+  if (Array.isArray(data)) return data.map(transformSingleMessage)
+  if (data.replies) return transformReplies(data.replies)
+  if (data.messages) return data.messages.map(transformSingleMessage)
+  if (data.data) return data.data.map(transformSingleMessage)
+  return []
 }
 
 const navigateToNewTicket = () => {
