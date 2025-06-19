@@ -127,7 +127,8 @@ export const useHome = defineStore("home", {
                 url: null,
                 to: item.to || 'food'
             })) || [];
-        }
+        },
+
     },
 
     actions: {

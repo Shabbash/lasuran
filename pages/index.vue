@@ -210,12 +210,15 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter();
 
-function goToSubCategory(item) {
+function goToSubCategory(item : any) {
+  console.log('goToSubCategory', item);
+
+  menuModule.sub_category_id = item.id;
   router.push({
     path: '/services',
-    query: {
-      sub_category_id: item.id
-    }
+    // query: {
+    //   sub_category_id: item.id
+    // }
   });
 }
 
