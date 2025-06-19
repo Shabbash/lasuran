@@ -225,7 +225,7 @@ const fetchTickets = async (filterType = null) => {
   try {
     const params = {}
     if (filterType !== null) {
-      params.type = filterType
+      params.status = filterType
     }
 
     const { data } = await useApi('customer-service/feedbacks', {
