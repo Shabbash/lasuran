@@ -46,6 +46,7 @@
                   <div class="absolute inset-0 flex flex-col justify-between h-full">
                     <div>
                       <img class="mx-auto h-full object-cover inset-0 relative" :src="item.image_url" />
+                      
                     </div>
                     <div class="pb-[17px] px-[15px] flex items-end justify-between">
                       <div class="flex flex-col justify-between gap-[8px]">

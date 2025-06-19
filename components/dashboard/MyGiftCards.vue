@@ -73,7 +73,7 @@
     <template #body>
       <div class="bg-decore-modal mx-auto rounded-[30px] overflow-hidden shadow-lg bg-[#EBE4DF] text-[#5F2C3E]"
         v-if="selectedCard">
-        <div class="px-[53px] py-[34px]">
+        <div class="px-[53px] py-[34px] relative">
           <h2 class="text-center mb-[43px] text-[#A0576F] text-[18.29px] font-bold leading-normal">Gift Card: {{
             selectedCard.total }} {{ selectedCard.currency }}</h2>
           <div class="relative rounded-[14px] overflow-hidden bg-[#e9c9ad] h-[127px]">
@@ -157,28 +157,34 @@
               <img class="w-full" src="/assets/img/qr.png" alt="">
             </div>
 
-            <button class="px-6 py-1.5 bg-[#6B8B9B] text-white rounded-full text-sm font-medium transition-colors">
+            <!-- <button
+              class="px-6 py-1.5 bg-[#6B8B9B] text-white rounded-full text-sm font-medium transition-colors cursor-pointer">
               Redeem History
-            </button>
+            </button> -->
+
+            <BaseButton @click="openRedeemHistory"
+              class="bg-[#6B8B9B] hover:bg-[#6B8B9B]/70 mt-[27px] text-[#EBE4DF] text-[15px] font-[400] rounded-full w-full py-[12px]">
+              Redeem History
+            </BaseButton>
+
+
+
           </div>
 
           <div class="mt-[34px]">
             <h3 class="text-[#A0576F] text-[18px] font-medium leading-normal mb-[23px]">Payment Summary</h3>
             <div class="space-y-[12px]">
-              <div
-                class="flex justify-between pb-[12px] border-b border-b-[#B2B0B0]">
+              <div class="flex justify-between pb-[12px] border-b border-b-[#B2B0B0]">
                 <p class="text-[#5B605C] text-[14px] font-[350] leading-normal">Subtotal</p>
                 <p class="text-[#5B605C] text-[14px] font-[350] leading-normal">00.00 SAR</p>
               </div>
 
-              <div
-                class="flex justify-between pb-[12px] border-b border-b-[#B2B0B0]">
+              <div class="flex justify-between pb-[12px] border-b border-b-[#B2B0B0]">
                 <p class="text-[#5B605C] text-[14px] font-[350] leading-normal">VAT amount 15%*</p>
                 <p class="text-[#5B605C] text-[14px] font-[350] leading-normal">00.00 SAR</p>
               </div>
 
-              <div
-                class="flex justify-between pb-[12px] border-b border-b-[#B2B0B0]">
+              <div class="flex justify-between pb-[12px] border-b border-b-[#B2B0B0]">
                 <p class="text-[#5B605C] text-[14px] font-[350] leading-normal">Discount</p>
                 <p class="text-[#5B605C] text-[14px] font-[350] leading-normal">00.00 SAR</p>
               </div>
@@ -187,8 +193,20 @@
 
           </div>
 
-          <div class="mt-[63px] flex justify-between">
-              
+          <div class="mt-[63px] flex justify-between gap-[9px]">
+            <BaseButton
+              class="bg-[#A0576F] border-0 flex align-center gap-[10px] w-full text-white h-[50px] rounded-full font-[400] text-[16px] justify-center mt-[35px] disabled:bg-[#A0576F] hover:bg-[#913E5D]">
+              <QrIcon />
+              <span>Download QR</span>
+            </BaseButton>
+
+
+            <BaseButton
+              class="bg-[#A8904A] border-0 flex align-center text-start gap-[10px] w-full text-white h-[50px] rounded-full font-[400] text-[16px] justify-center mt-[35px] disabled:bg-[#a8904ad6] hover:bg-[#a8904ad6]">
+              <AppleWalletIcon />
+              <span>Add to<br>Apple Wallet</span>
+            </BaseButton>
+
           </div>
 
         </div>
@@ -196,6 +214,41 @@
       </div>
     </template>
   </Dialog>
+  <Dialog v-model:show="showRedeemModal" :modalMaxWidth="'max-w-[467px]'">
+    <template #body>
+      <div class="bg-decore-modal">
+        <div class="relative px-[18px] py-[30px]">
+          <h2 class="mb-[30px] text-[#A0576F] text-center font-medium text-[21px] not-italic leading-normal">Redeem
+            History</h2>
+
+          <div class="flex border-b border-b-[#0014471A] last:border-b-0">
+            <div class="">
+              <img src="/assets/img/earned.svg" alt="">
+            </div>
+            <div class="">
+              <p class="text-[#5B605C] font-[350] text-[14px] mb-[2px]">14 AUG, 2024</p>
+              <p class="text-[#5B605C] font-[350] text-[14px] mb-[2px]">Order No.: ORN-#134 </p>
+              <p class="text-[#6B8B9B] font-medium text-[15px]">Redeemed Amount: 140 SAR</p>
+            </div>
+          </div>
+
+          <div class="flex border-b border-b-[#0014471A] last:border-b-0">
+            <div class="">
+              <img src="/assets/img/earned.svg" alt="">
+            </div>
+            <div class="">
+              <p class="text-[#5B605C] font-[350] text-[14px] mb-[2px]">14 AUG, 2024</p>
+              <p class="text-[#5B605C] font-[350] text-[14px] mb-[2px]">Order No.: ORN-#134 </p>
+              <p class="text-[#6B8B9B] font-medium text-[15px]">Redeemed Amount: 140 SAR</p>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+    </template>
+  </Dialog>
+
+
 
 </template>
 
@@ -205,6 +258,17 @@ import { useRouter } from 'vue-router'
 import { useApi } from '~/composables/useApi'
 import GiftCardSwiper from '~/components/giftcards/GiftCardSwiper.vue'
 import Dialog from '~/components/base/Dialog.vue'
+import QrIcon from '@/components/icons/QrIcon.vue'
+import AppleWalletIcon from '@/components/icons/AppleWalletIcon.vue'
+
+
+const showRedeemModal = ref(true)
+
+const openRedeemHistory = () => {
+  modalOpen.value = false
+  showRedeemModal.value = true
+}
+
 const modalOpen = ref(false)
 const selectedCard = ref(null)
 
