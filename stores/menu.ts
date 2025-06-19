@@ -113,6 +113,7 @@ export const useMenu = defineStore("menu", {
                       this.$state.branch_id = data.data.branch_id;
                       this.$state.is_custom_menu = data.data.is_custom_menu;
                       this.$state.category_query_type = data.data.category_query_type;
+                      if(!this.$state.category_id || !this.$state.sub_category_id )
                       this.setDefaultMenu();
                       console.log(data.data.menus);
                   },

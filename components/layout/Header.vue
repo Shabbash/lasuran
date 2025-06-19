@@ -51,17 +51,18 @@
                     <!-- Calendar Icon -->
                     <NuxtLink to="/cart" class="relative cursor-pointer" v-if="authModule.isAuthenticated">
                         <img src="/public/assets/img/calendar.svg" alt="flag" class="w-[27px] h-[27px] rounded-sm" />
-                        <span
+                        <span  v-if="cartModule.getProductsCount > 0"
                             class="absolute bg-[#DA3C3C] text-white w-[17px] h-[17px] flex items-center justify-center rounded-full text-[11px] font-normal -top-1 -end-1">
                             {{ cartModule.getProductsCount }}
                         </span>
                     </NuxtLink>
 
                     <!-- Notifications Icon -->
-                    <div class="relative cursor-pointer" v-if="authModule.isAuthenticated">
+                    <div class="relative cursor-pointer" v-if="authModule.isAuthenticated" @click="navigateToNotifications">
                         <img src="/public/assets/img/Huge-icon.svg" alt="flag" class="w-[27px] h-[27px] rounded-sm" />
-                        <span
-                            class="absolute bg-[#DA3C3C] text-white w-[17px] h-[17px] flex items-center justify-center rounded-full text-[11px] font-normal -top-1 -end-1">3</span>
+                        <span v-if="homeModule.unreadNotifications > 0" class="absolute bg-[#DA3C3C] text-white w-[17px] h-[17px] flex items-center justify-center rounded-full text-[11px] font-normal -top-1 -end-1">
+                          {{ homeModule.unreadNotifications}}
+                        </span>
                     </div>
 
 
@@ -85,16 +86,17 @@
                 <div class="flex gap-[20px]">
                     <NuxtLink to="/cart" class="relative cursor-pointer" v-if="authModule.isAuthenticated">
                         <img src="/public/assets/img/calendar.svg" alt="flag" class="w-[27px] h-[27px] rounded-sm" />
-                        <span
+                        <span v-if="cartModule.getProductsCount > 0"
                             class="absolute bg-[#DA3C3C] text-white w-[17px] h-[17px] flex items-center justify-center rounded-full text-[11px] font-normal -top-1 -end-1">
                             {{ cartModule.getProductsCount }}
                         </span>
                     </NuxtLink>
 
-                    <div class="relative cursor-pointer" v-if="authModule.isAuthenticated">
+                    <div class="relative cursor-pointer" v-if="authModule.isAuthenticated" @click="navigateToNotifications">
                         <img src="/public/assets/img/Huge-icon.svg" alt="flag" class="w-[27px] h-[27px] rounded-sm" />
-                        <span
-                            class="absolute bg-[#DA3C3C] text-white w-[17px] h-[17px] flex items-center justify-center rounded-full text-[11px] font-normal -top-1 -end-1">3</span>
+                        <span v-if="homeModule.unreadNotifications > 0" class="absolute bg-[#DA3C3C] text-white w-[17px] h-[17px] flex items-center justify-center rounded-full text-[11px] font-normal -top-1 -end-1">
+                          {{homeModule.unreadNotifications}}
+                        </span>
                     </div>
                 </div>
             </div>
@@ -261,18 +263,20 @@
                                 <NuxtLink to="/cart" class="relative cursor-pointer" v-if="authModule.isAuthenticated">
                                     <img src="/public/assets/img/calendar.svg" alt="flag"
                                         class="w-[27px] h-[27px] rounded-sm" />
-                                    <span
+                                    <span v-if="cartModule.getProductsCount > 0"
                                         class="absolute bg-[#DA3C3C] text-white w-[17px] h-[17px] flex items-center justify-center rounded-full text-[11px] font-normal -top-1 -end-1">
                                         {{ cartModule.getProductsCount }}
                                     </span>
                                 </NuxtLink>
 
                                 <!-- Notifications Icon -->
-                                <div class="relative cursor-pointer" v-if="authModule.isAuthenticated">
+                                <div class="relative cursor-pointer" v-if="authModule.isAuthenticated" @click="navigateToNotifications">
                                     <img src="/public/assets/img/Huge-icon.svg" alt="flag"
                                         class="w-[27px] h-[27px] rounded-sm" />
-                                    <span
-                                        class="absolute bg-[#DA3C3C] text-white w-[17px] h-[17px] flex items-center justify-center rounded-full text-[11px] font-normal -top-1 -end-1">3</span>
+                                    <span v-if="homeModule.unreadNotifications > 0"
+                                        class="absolute bg-[#DA3C3C] text-white w-[17px] h-[17px] flex items-center justify-center rounded-full text-[11px] font-normal -top-1 -end-1">
+                                      {{homeModule.unreadNotifications }}
+                                    </span>
                                 </div>
 
 
@@ -299,6 +303,7 @@ import { useCart } from '~/stores/cart'
 const authModule = useAuth();
 
 const cartModule = useCart()
+const homeModule = useHome();
 
 
 import { ref } from 'vue'
@@ -314,6 +319,12 @@ watch(() => route.fullPath, () => {
   isOpen.value = false
 })
 
+
+const navigateToNotifications = function () {
+  navigateTo({
+    path: '/notifications'
+  })
+}
 </script>
 
 <style>
