@@ -156,9 +156,7 @@
             <p class="text-[#EBE4DF] font-medium text-[16px] leading-normal">
               Gift Card Description
             </p>
-            <p class="text-[#C6C6C7] font-normal text-[14px]">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-              dolore magna aliqua. Ut enim ad ate velit esse cillum dolore eu fugiat nulla pariatur.
+            <p class="text-[#C6C6C7] font-normal text-[14px]" v-html="selectedCard.items?.[0]?.description || selectedCard.description || 'No description available for this gift card.' ">
             </p>
           </div>
 
@@ -170,24 +168,31 @@
               <div
                 class="flex justify-between pb-[11px] mb-[11px] border-b border-b-[#AD7084] last:border-b-0 last:mb-0 last:pb-0">
                 <p class="text-[#C6C6C7] font-[350] text-[13px] leading-normal">Serial Number</p>
+                <p class="text-[#C6C6C7] font-[350] text-[13px] leading-normal">{{ selectedCard.items?.[0]?.serial_number || 'N/A' }}</p>
               </div>
 
               <div
                 class="flex justify-between pb-[11px] mb-[11px] border-b border-b-[#AD7084] last:border-b-0 last:mb-0 last:pb-0">
                 <p class="text-[#C6C6C7] font-[350] text-[13px] leading-normal">Expiry Date</p>
-                <p class="text-[#C6C6C7] font-[350] text-[13px] leading-normal">Oct, 20th, 2024</p>
+                <p class="text-[#C6C6C7] font-[350] text-[13px] leading-normal">{{ selectedCard.items?.[0]?.expiry_date || 'N/A' }}</p>
               </div>
 
               <div
                 class="flex justify-between pb-[11px] mb-[11px] border-b border-b-[#AD7084] last:border-b-0 last:mb-0 last:pb-0">
                 <p class="text-[#C6C6C7] font-[350] text-[13px] leading-normal">Purchase No</p>
-                <p class="text-[#C6C6C7] font-[350] text-[13px] leading-normal">#97325-00000000156</p>
+                <p class="text-[#C6C6C7] font-[350] text-[13px] leading-normal">{{ selectedCard.order_number || 'N/A' }}</p>
               </div>
 
               <div
                 class="flex justify-between pb-[11px] mb-[11px] border-b border-b-[#AD7084] last:border-b-0 last:mb-0 last:pb-0">
                 <p class="text-[#C6C6C7] font-[350] text-[13px] leading-normal">Redeemed Amount</p>
-                <p class="text-[#C6C6C7] font-[350] text-[13px] leading-normal">500 SAR</p>
+                <p class="text-[#C6C6C7] font-[350] text-[13px] leading-normal">{{ getRedeemedAmount() }} {{ selectedCard.currency }}</p>
+              </div>
+
+              <div v-if="selectedCard.items?.[0]?.remaining_amount"
+                class="flex justify-between pb-[11px] mb-[11px] border-b border-b-[#AD7084] last:border-b-0 last:mb-0 last:pb-0">
+                <p class="text-[#C6C6C7] font-[350] text-[13px] leading-normal">Remaining Amount</p>
+                <p class="text-[#C6C6C7] font-[350] text-[13px] leading-normal">{{ selectedCard.items?.[0]?.remaining_amount }} {{ selectedCard.currency }}</p>
               </div>
 
             </div>
@@ -195,7 +200,7 @@
 
           <div class="text-center">
             <div class="qr mx-auto w-[160px] h-[165px] my-[22px]">
-              <img class="w-full" src="/assets/img/qr.png" alt="">
+              <img class="w-full" :src="selectedCard.items?.[0]?.qr_code || '/assets/img/qr.png'" alt="Gift Card QR Code">
             </div>
 
             <!-- <button
@@ -217,17 +222,22 @@
             <div class="space-y-[12px]">
               <div class="flex justify-between pb-[12px] border-b border-b-[#B2B0B0]">
                 <p class="text-[#5B605C] text-[14px] font-[350] leading-normal">Subtotal</p>
-                <p class="text-[#5B605C] text-[14px] font-[350] leading-normal">00.00 SAR</p>
+                <p class="text-[#5B605C] text-[14px] font-[350] leading-normal">{{ selectedCard.sub_total || '0.00' }} {{ selectedCard.currency }}</p>
               </div>
 
               <div class="flex justify-between pb-[12px] border-b border-b-[#B2B0B0]">
-                <p class="text-[#5B605C] text-[14px] font-[350] leading-normal">VAT amount 15%*</p>
-                <p class="text-[#5B605C] text-[14px] font-[350] leading-normal">00.00 SAR</p>
+                <p class="text-[#5B605C] text-[14px] font-[350] leading-normal">VAT amount {{ selectedCard.tax_rate || '15' }}%*</p>
+                <p class="text-[#5B605C] text-[14px] font-[350] leading-normal">{{ selectedCard.tax || '0.00' }} {{ selectedCard.currency }}</p>
               </div>
 
               <div class="flex justify-between pb-[12px] border-b border-b-[#B2B0B0]">
                 <p class="text-[#5B605C] text-[14px] font-[350] leading-normal">Discount</p>
-                <p class="text-[#5B605C] text-[14px] font-[350] leading-normal">00.00 SAR</p>
+                <p class="text-[#5B605C] text-[14px] font-[350] leading-normal">{{ selectedCard.discounts || '0.00' }} {{ selectedCard.currency }}</p>
+              </div>
+
+              <div class="flex justify-between pb-[12px] border-b border-b-[#B2B0B0]">
+                <p class="text-[#5B605C] text-[14px] font-[500] leading-normal">Total</p>
+                <p class="text-[#5B605C] text-[14px] font-[500] leading-normal">{{ selectedCard.total || '0.00' }} {{ selectedCard.currency }}</p>
               </div>
 
             </div>
@@ -262,26 +272,24 @@
           <h2 class="mb-[30px] text-[#A0576F] text-center font-medium text-[21px] not-italic leading-normal">Redeem
             History</h2>
 
-          <div class="flex border-b border-b-[#0014471A] pb-[10px] gap-[10px] mb-[35px]">
-            <div class="">
-              <img src="/assets/img/earned.svg" alt="">
-            </div>
-            <div class="">
-              <p class="text-[#5B605C] font-[350] text-[14px] mb-[2px]">14 AUG, 2024</p>
-              <p class="text-[#5B605C] font-[350] text-[14px] mb-[2px]">Order No.: ORN-#134 </p>
-              <p class="text-[#6B8B9B] font-medium text-[15px]">Redeemed Amount: 140 SAR</p>
+          <!-- Dynamic Redeem History -->
+          <div v-if="getRedeemHistory().length > 0">
+            <div v-for="(history, index) in getRedeemHistory()" :key="index"
+                 class="flex border-b border-b-[#0014471A] pb-[10px] gap-[10px] mb-[35px]">
+              <div class="">
+                <img src="/assets/img/earned.svg" alt="">
+              </div>
+              <div class="">
+                <p class="text-[#5B605C] font-[350] text-[14px] mb-[2px]">{{ history.date || 'N/A' }}</p>
+                <p class="text-[#5B605C] font-[350] text-[14px] mb-[2px]">Order No.: {{ history.order_number || 'N/A' }}</p>
+                <p class="text-[#6B8B9B] font-medium text-[15px]">Redeemed Amount: {{ history.amount || '0' }} {{ selectedCard?.currency || 'SAR' }}</p>
+              </div>
             </div>
           </div>
 
-          <div class="flex border-b border-b-[#0014471A] pb-[10px] gap-[10px] mb-[35px]">
-            <div class="">
-              <img src="/assets/img/earned.svg" alt="">
-            </div>
-            <div class="">
-              <p class="text-[#5B605C] font-[350] text-[14px] mb-[2px]">14 AUG, 2024</p>
-              <p class="text-[#5B605C] font-[350] text-[14px] mb-[2px]">Order No.: ORN-#134 </p>
-              <p class="text-[#6B8B9B] font-medium text-[15px]">Redeemed Amount: 140 SAR</p>
-            </div>
+          <!-- Empty State -->
+          <div v-else class="text-center py-8">
+            <p class="text-[#5B605C] font-[350] text-[14px]">No redeem history available</p>
           </div>
           
         </div>
@@ -374,6 +382,27 @@ const getStatusClass = (status) => {
     default:
       return 'bg-[#CDEAB7] text-[#57A06A]'
   }
+}
+
+// Calculate redeemed amount
+const getRedeemedAmount = () => {
+  if (!selectedCard.value) return '0.00'
+
+  const total = parseFloat(selectedCard.value.total || 0)
+  const remaining = parseFloat(selectedCard.value.items?.[0]?.remaining_amount || 0)
+  const redeemed = total - remaining
+
+  return redeemed > 0 ? redeemed.toFixed(2) : '0.00'
+}
+
+// Get redeem history for selected card
+const getRedeemHistory = () => {
+  if (!selectedCard.value) return []
+
+  // Check if the card has redeem history data
+  return selectedCard.value.items?.[0]?.redeem_history ||
+         selectedCard.value.redeem_history ||
+         []
 }
 
 // Load Gift Cards
