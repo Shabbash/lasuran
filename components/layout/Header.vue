@@ -39,7 +39,7 @@
 
                 <!-- Actions / Icons -->
                 <div
-                    class="flex items-center gap-[30px] text-white font-medium py-[11px] px-[35px] text-[17px]capitalize">
+                    class="flex items-center gap-[30px] text-white font-medium py-[11px] px-[35px] text-[17px] capitalize">
                     <!-- Language -->
                     <div class="flex items-center gap-1 text-sm cursor-pointer">
                         <img src="/public/assets/img/sa-flag.svg" alt="flag" class="w-[29px] h-[20px] rounded-sm" />

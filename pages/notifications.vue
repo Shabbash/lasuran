@@ -1,73 +1,74 @@
 <template>
   <Container>
-    <div class="bg-[#A0576F1A] min-h-screen py-10 px-4 lg:px-0">
-      <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">Notifications</h1>
+    <div class="bg-[#A0576F1A] py-10 px-4 min-h-screen">
+      <!-- Title -->
+      <h2 class="text-[#A0576F] text-[21px] font-medium leading-normal mb-[26px]">Notifications</h2>
 
-      <div class="max-w-3xl mx-auto space-y-4">
-        <!-- Loading Skeleton -->
-        <template v-if="loading">
-          <div
-              v-for="n in 2"
-              :key="n"
-              class="animate-pulse bg-white rounded-xl shadow-md p-5"
-          >
-            <div class="flex justify-between items-center mb-2">
-              <div class="flex items-center gap-2">
-                <div class="h-4 w-6 bg-gray-300 rounded"></div>
-                <div class="h-4 w-32 bg-gray-300 rounded"></div>
-              </div>
-              <div class="h-4 w-24 bg-gray-300 rounded"></div>
-            </div>
-            <div class="h-4 w-2/3 bg-gray-300 rounded"></div>
-          </div>
-        </template>
+      <!-- Loading State -->
+      <div v-if="loading" class="space-y-4 max-w-[600px] mx-auto">
+        <div v-for="n in 3" :key="n" class="animate-pulse bg-[#EBE4DF] rounded-[30px] p-[24px]">
+          <div class="h-4 w-1/2 bg-gray-300 rounded mb-3"></div>
+          <div class="h-4 w-1/3 bg-gray-300 rounded"></div>
+        </div>
+      </div>
 
-        <!-- Notifications -->
-        <template v-else>
-          <div
-              v-for="(notification, i) in notifications"
-              :key="i"
-              class="bg-white rounded-xl shadow-md p-5 flex flex-col gap-2"
-              @click="showNotification(notification)"
-          >
-            <div class="flex justify-between items-center">
-              <div class="flex items-center gap-2 font-semibold text-gray-800">
-                <Icon name="lucide:bell" class="text-pink-500 w-5 h-5" />
-                {{ notification.title }}
-              </div>
-              <div class="text-sm text-gray-500">{{ notification.date }} {{ notification.time }}</div>
-            </div>
-            <p class="text-sm text-gray-600">{{ notification.sub_title }}</p>
+      <!-- Notification List -->
+      <div v-else-if="notifications?.length > 0" class="space-y-4 max-w-[600px] mx-auto">
+        <div
+          v-for="(notification, i) in notifications"
+          :key="i"
+          class="bg-[#EBE4DF] rounded-[30px] p-[24px] cursor-pointer hover:shadow transition"
+          @click="showNotification(notification)"
+        >
+          <div class="flex justify-between items-center mb-1">
+            <h3 class="flex items-center gap-[10px] text-[#5F2C3E] text-[15px] font-medium">
+              <Icon name="lucide:bell" class="text-[#A0576F] w-[18px] h-[18px]" />
+              {{ notification.title }}
+            </h3>
+            <span class="text-[#90928F] text-[13px]">{{ notification.date }} {{ notification.time }}</span>
           </div>
-        </template>
+          <p class="text-[#5B605C] text-[14px] font-[350] leading-[1.6] mt-1">
+            {{ notification.sub_title }}
+          </p>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div v-else class="text-center mt-12 text-[#A0576F] text-[16px]">
+        No notifications available.
       </div>
     </div>
 
-    <BaseDialog v-model:show="isDialogDisplayed">
+    <!-- Dialog -->
+    <Dialog v-model:show="isDialogDisplayed" :modalMaxWidth="'max-w-[539px]'">
       <template #body>
-        <div class="bg-white rounded-xl shadow-md p-5 flex flex-col gap-2 py-4" style="padding: 80px 30px;">
-          <div class="flex justify-between items-center">
-            <div class="flex items-center gap-2 font-semibold text-gray-800">
-              <Icon name="lucide:bell" class="text-pink-500 w-5 h-5" />
+        <div class="bg-[#EBE4DF] text-[#5F2C3E] rounded-[30px] p-[30px]">
+          <div class="flex justify-between items-center mb-[15px]">
+            <h3 class="flex items-center gap-[10px] text-[#5F2C3E] text-[18px] font-medium">
+              <Icon name="lucide:bell" class="text-[#A0576F] w-[20px] h-[20px]" />
               {{ selectedNotification?.title }}
-            </div>
-            <div class="text-sm text-gray-500">{{ selectedNotification?.date }} {{ selectedNotification?.time }}</div>
+            </h3>
+            <span class="text-[#90928F] text-[13px]">{{ selectedNotification?.date }} {{ selectedNotification?.time }}</span>
           </div>
-          <p class="text-sm text-gray-600">{{ selectedNotification?.sub_title }}</p>
+          <p class="text-[14px] leading-[1.6] font-[350]">
+            {{ selectedNotification?.sub_title }}
+          </p>
         </div>
       </template>
-    </BaseDialog>
+    </Dialog>
   </Container>
 </template>
 
-
 <script setup lang="ts">
+const { data: notifications, pending: loading } = useApi('notifications', {
+  transform: (data) => data?.data?.notifications,
+});
 
-const { data : notifications , pending : loading } = useApi('notifications', { transform : (data) => data?.data?.notifications });
 const isDialogDisplayed = ref(false);
 const selectedNotification = ref(null);
-const showNotification = function (notification:any) {
-  isDialogDisplayed.value = true;
+
+const showNotification = (notification: any) => {
   selectedNotification.value = notification;
-}
+  isDialogDisplayed.value = true;
+};
 </script>
