@@ -157,7 +157,18 @@
                                         <span class="text-[15px] font-[350] leading-none">Branches</span>
                                     </NuxtLink>
 
+                                    <NuxtLink to="/gift-cards"
+                                        class="flex items-center gap-2 px-4 py-[6px] rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
+                                        <img src="/assets/img/menu-icons/Group.svg" alt="" class="w-[20px] h-[20px]" />
+                                        <span class="text-[15px] font-[350] leading-none">Gift Cards</span>
+                                    </NuxtLink>
 
+                                    
+                                    <NuxtLink to="/shop"
+                                        class="flex items-center gap-2 px-4 py-[6px] rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
+                                        <img src="/assets/img/menu-icons/Group.svg" alt="" class="w-[20px] h-[20px]" />
+                                        <span class="text-[15px] font-[350] leading-none">Shop</span>
+                                    </NuxtLink>
 
                                     <NuxtLink to="/profile?tab=profile" v-if="authModule.isAuthenticated"
                                         class="flex items-center gap-2 px-4 py-[6px] rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
@@ -223,13 +234,6 @@
                                         <span class="text-[15px] font-[350] leading-none">Privacy Policy</span>
                                     </NuxtLink>
 
-
-
-                                    <NuxtLink to="/contact-us"
-                                        class="flex items-center gap-2 px-4 py-[6px] rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
-                                        <img src="/assets/img/menu-icons/Group.svg" alt="" class="w-[20px] h-[20px]" />
-                                        <span class="text-[15px] font-[350] leading-none">Contact Us</span>
-                                    </NuxtLink>
 
                                     <NuxtLink to="/"
                                         class="flex items-center gap-2 px-4 py-[6px] rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
