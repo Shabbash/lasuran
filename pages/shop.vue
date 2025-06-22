@@ -160,13 +160,23 @@
     </Dialog>
 
     <!-- Service Type Conflict Modal -->
-    <ServiceTypeConflictModal
+    <!-- <ServiceTypeConflictModal
       v-model:open="showServiceTypeModal"
       :current-service-type="getCurrentCartServiceType()"
       :new-service-type="SERVICE_TYPES.ONLINE"
       @clear-cart="handleClearCart"
       @cancel="handleCancelConflict"
-    />
+    /> -->
+
+    <ServiceTypeConflictModal
+  v-model:open="showServiceTypeModal"
+  :current-service-type="currentServiceType"
+  :new-service-type="newServiceType"
+  @clear-cart="handleClearCart"
+  @cancel="handleCancelConflict"
+/>
+
+
   </Container>
 </template>
 
@@ -199,7 +209,7 @@ import OutlineHeartIcon from '@/components/icons/OutlineHeartIcon.vue'
 import OutlineStarIcon2 from '@/components/icons/OutlineStarIcon2.vue'
 import ShopSkeleton from '@/components/skeletons/ShopSkeleton.vue'
 import ShopIcon from '@/components/icons/ShopIcon.vue'
-import ServiceTypeConflictModal from '@/components/modals/ServiceTypeConflictModal.vue'
+import ServiceTypeConflictModal from '~/components/cart/ServiceTypeConflictModal.vue'
 import { useCart } from '@/stores/cart'
 import { useProducts } from '@/stores/products'
 import { useApp } from '@/stores/app'
@@ -249,6 +259,8 @@ function closeProductModal() {
 const showServiceTypeModal = ref(false)
 const pendingCartItem = ref(null)
 
+const currentServiceType = computed(() => getCurrentCartServiceType())
+const newServiceType = ref(SERVICE_TYPES.ONLINE)
 
 
 const quantity = ref(1)
@@ -401,6 +413,7 @@ const getCurrentCartServiceType = () => {
   if (cartProducts.length === 0) return null;
   return cartProducts[0]?.service_type || null;
 }
+
 
 onMounted(() => {
   console.log('Shop page mounted, initializing...');
