@@ -40,7 +40,7 @@
                   <div class="flex justify-between">
                     <span class="text-white text-[16px] font-bold leading-normal">{{ customerClass.total_points || '0'
                       }} Points</span>
-                    <span class="text-white text-[16px] font-bold leading-normal">{{ cashbackBalance }} SAR</span>
+                    <span class="text-white text-[16px] font-bold leading-normal"><span class="sar-icon">&#xe900;</span> {{ cashbackBalance }}</span>
                   </div>
                   <div class="mt-[3px] mb-[7px]">
                     <UProgress v-model="progressValue" :ui="{ slots: { indicator: 'bg-green-500 h-full rounded' } }" />
@@ -65,8 +65,7 @@
                   <InfoFilledIcon />
                 </div>
                 <p class="text-white text-[16px] font-bold leading-normal">Points Scheme</p>
-                <p class="text-white text-[16px] font-[500] leading-normal">Spend {{ pointSchema.value || '1' }} SAR
-                  Earn {{ pointSchema.points || '1 Point' }}</p>
+                <p class="text-white text-[16px] font-[500] leading-normal">Spend <span class="sar-icon">&#xe900;</span> {{ pointSchema.value || '1' }} Earn {{ pointSchema.points || '1 Point' }}</p>
                 <p class="text-white text-[16px] font-[500] leading-normal">Redeem {{ pointSchema.point_redeemed ||
                   '100' }} Points Get {{ pointSchema.value_spending || '1 Point' }}</p>
               </div>

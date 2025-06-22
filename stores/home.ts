@@ -120,7 +120,7 @@ export const useHome = defineStore("home", {
                 id: item.id,
                 title: item.title,
                 image_url: item.image_url || '/assets/img/default-service.png',
-                sub_title: `${item.price} SAR`,
+                sub_title: `<span class="sar-icon">&#xe900;</span> ${item.price}`,
                 price: item.price,
                 branch: item.sub_title,
                 clickable: true,

@@ -9,9 +9,8 @@
     <div class="mx-[20px] mt-[20px] mb-[40px] relative">
       <div class="flex justify-between items-center mb-2">
         <h2 class="font-bold text-[30px] text-[#A0576F] leading-[100%]">{{ defaultService.name }}</h2>
-        <span class="font-bold text-[19px] text-[#A0576F] leading-[100%]">
-          {{ selectedExtension === '' && selectedService.price <= 0 ? 'Price Upon Selection' : selectedService.price
-            + ' SAR' }} </span>
+        <span class="font-bold text-[19px] text-[#A0576F] leading-[100%]" v-html="selectedExtension === '' && selectedService.price <= 0 ? 'Price Upon Selection' : formatSAR(selectedService.price)"></span>
+
       </div>
 
       <div class="flex items-center text-[14px] text-[#A0576F] font-[500] mb-[10px]">
@@ -49,11 +48,8 @@
         class="flex items-center gap-[10px] w-full text-white rounded-full font-[400] text-[16px] justify-center disabled:bg-[#A0576F] hover:bg-[#913E5D] transition cursor-pointer mt-[30px]"
         :class="cartModule.isAddLoading ? 'bg-[#a0576f69]' : 'bg-[#A0576F]'">
         <PriceIcon />
-        <span>
-          
-          {{ selectedExtension === '' && selectedService.price <= 0 ? 'Price Upon Selection' : selectedService.price
-            + ' SAR' }} - 
-            {{ isEditing ? 'Update' : 'Continue' }} </span>
+        <span v-html="priceWithIcon"></span>
+
       </BaseButton>
 
 
@@ -81,6 +77,17 @@ import CustomRadio from "~/components/base/CustomRadio.vue";
 import ServiceDetailSkeleton from "~/components/skeletons/ServiceDetailSkeleton.vue";
 import { COMPONENTS } from "~/data/constants";
 import PriceIcon from '@/components/icons/PriceIcon.vue'
+import { formatSAR } from '~/utils/formatCurrency'
+
+const priceWithIcon = computed(() => {
+  if (selectedExtension.value === '' && (selectedService.value.price == null || selectedService.value.price <= 0)) {
+    return 'Price Upon Selection';
+  }
+  const price = selectedService.value.price ?? 0;
+  return `${formatSAR(price)} - ${isEditing.value ? 'Update' : 'Continue'}`;
+});
+
+
 
 // Define service type
 interface Service {

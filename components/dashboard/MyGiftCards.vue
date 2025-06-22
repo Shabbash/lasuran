@@ -282,7 +282,7 @@
               <div class="">
                 <p class="text-[#5B605C] font-[350] text-[14px] mb-[2px]">{{ history.date || 'N/A' }}</p>
                 <p class="text-[#5B605C] font-[350] text-[14px] mb-[2px]">Order No.: {{ history.order_number || 'N/A' }}</p>
-                <p class="text-[#6B8B9B] font-medium text-[15px]">Redeemed Amount: {{ history.amount || '0' }} {{ selectedCard?.currency || 'SAR' }}</p>
+                <p class="text-[#6B8B9B] font-medium text-[15px]">Redeemed Amount: {{ history.amount || '0' }} {{ selectedCard?.currency || '<span class="sar-icon">&#xe900;</span>' }}</p>
               </div>
             </div>
           </div>

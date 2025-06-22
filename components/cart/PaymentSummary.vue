@@ -5,19 +5,19 @@
     <div class="space-y-[16px] text-[#5B605C]text-[14px] font-medium">
       <div class="flex justify-between">
         <span>Subtotal ({{ servicesCount }} Services)</span>
-        <span class="font-bold">{{ subtotal.toFixed(2) }} SAR</span>
+        <span class="font-bold"><span class="sar-icon">&#xe900;</span> {{ subtotal.toFixed(2) }}</span>
       </div>
       <div class="flex justify-between">
         <span>VAT (15%)</span>
-        <span class="font-bold">{{ vat.toFixed(2) }} SAR</span>
+        <span class="font-bold"><span class="sar-icon">&#xe900;</span> {{ vat.toFixed(2) }}</span>
       </div>
       <div class="flex justify-between">
         <span>Services cost</span>
-        <span class="font-bold">{{ serviceCost.toFixed(2) }} SAR</span>
+        <span class="font-bold"><span class="sar-icon">&#xe900;</span> {{ serviceCost.toFixed(2) }}</span>
       </div>
       <div class="flex justify-between">
         <span>Discount</span>
-        <span class="font-bold">{{ discount.toFixed(2) }} SAR</span>
+        <span class="font-bold"><span class="sar-icon">&#xe900;</span> {{ discount.toFixed(2) }}</span>
       </div>
     </div>
 
@@ -47,7 +47,7 @@
         <span>Accept terms and conditions</span>
       </div>
       <BaseButton :loading="isProcessing" @click="proceedToCheckout" class="cart-btn flex align-center gap-[24px] w-full text-white py-3 rounded-full font-[600] text-[16px] justify-center bg-[#A0576F] hover:bg-[#913E5D] mt-[35px] disabled:bg-[#A0576F]" :disabled="!accepted || servicesCount === 0">
-        {{ total.toFixed(2) }} SAR - Checkout
+        <span class="sar-icon">&#xe900;</span> {{ total.toFixed(2) }} - Checkout
       </BaseButton>
 
     </div>

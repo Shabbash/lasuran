@@ -157,35 +157,35 @@
                 <div class="flex justify-between pb-[12px] border-b border-b-[#B2B0B0]">
                   <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">Subtotal ({{ selectedBooking.guests }}
                     Persons)</p>
-                  <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">{{
-                    selectedBooking._originalData?.total || '00.00' }} SAR</p>
+                  <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">
+                   <span class="sar-icon">&#xe900;</span> {{selectedBooking._originalData?.total || '00.00' }}</p>
                 </div>
                 <div class="flex justify-between pb-[12px] border-b border-b-[#B2B0B0]">
                   <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">VAT Amount (15%)</p>
-                  <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">00.00 SAR</p>
+                  <p class="text-[#5B605C] text-[12px] font-[350] leading-normal"><span class="sar-icon">&#xe900;</span> 00.00</p>
                 </div>
                 <div class="flex justify-between pb-[12px] border-b border-b-[#B2B0B0]">
                   <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">Service Cost</p>
-                  <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">{{
-                    selectedBooking._originalData?.order_service_fee_price || '00.00' }} SAR</p>
+                  <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">
+                    <span class="sar-icon">&#xe900;</span> {{selectedBooking._originalData?.order_service_fee_price || '00.00' }}</p>
                 </div>
                 <div class="flex justify-between pb-[12px] border-b border-b-[#B2B0B0]">
                   <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">Discount</p>
-                  <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">{{
-                    selectedBooking._originalData?.promo_discount || '00.00' }} SAR</p>
+                  <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">
+                    <span class="sar-icon">&#xe900;</span> {{selectedBooking._originalData?.promo_discount || '00.00' }}</p>
                 </div>
                 <div class="flex justify-between pb-[12px] border-b border-b-[#B2B0B0]">
                   <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">Bookmarked points (-100 Pts.)</p>
-                  <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">{{
-                    selectedBooking._originalData?.redeem_points_price || '00.00' }} SAR</p>
+                  <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">
+                    <span class="sar-icon">&#xe900;</span> {{selectedBooking._originalData?.redeem_points_price || '00.00' }}</p>
                 </div>
               </div>
 
               <div class="mt-[28px]">
                 <div class="flex justify-between">
                   <p class="text-[#A0576F] text-[21px] font-bold leading-normal">Total</p>
-                  <p class="text-[#A0576F] text-[21px] font-bold leading-normal">{{ selectedBooking._originalData?.total
-                    || '00.00' }} SAR</p>
+                  <p class="text-[#A0576F] text-[21px] font-bold leading-normal">
+                    <span class="sar-icon">&#xe900;</span> {{ selectedBooking._originalData?.total || '00.00' }}</p>
                 </div>
               </div>
             </div>

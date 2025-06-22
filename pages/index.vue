@@ -37,7 +37,7 @@
                         }}</h2>
                       <h3
                           class="text-[#A0566E] text-[12px] font-normal leading-normal tracking-[-0.241px]">
-                        {{ item.price }} SAR</h3>
+                        <span class="sar-icon">&#xe900;</span> {{ item.price }}</h3>
                     </div>
                   </div>
 

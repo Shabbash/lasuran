@@ -22,7 +22,7 @@
       <div class="flex flex-1 justify-end">
         <p class="flex-2 text-[#EBE4DF] text-[14px] font-normal leading-normal hidden md:block">{{ item.duration }}</p>
         
-        <p class="flex-1 text-[#EBE4DF] text-[14px] font-normal leading-normal hidden md:block">{{ item.price }} SAR</p>
+        <p class="flex-1 text-[#EBE4DF] text-[14px] font-normal leading-normal hidden md:block"><span class="sar-icon">&#xe900;</span> {{ item.price }}</p>
         <div class="md:flex-1">
           <button class="cursor-pointer"
           @click="$emit('edit', item)">
@@ -45,7 +45,7 @@
       leave-to-class="opacity-0 -translate-y-2">
       <div v-if="item.expanded" class="mt-[6px] mb-[28px] md:px-[93px] space-y-[5px] md:space-y-[25px]">
 
-        <p class="flex-1 text-[#EBE4DF] text-[14px] font-normal leading-normal md:hidden">{{ item.price }} SAR</p>
+        <p class="flex-1 text-[#EBE4DF] text-[14px] font-normal leading-normal md:hidden"><span class="sar-icon">&#xe900;</span> {{ item.price }}</p>
 
         <p class="text-[#EBE4DF] text-[14px] font-[350] leading-normal md:hidden">{{ item.duration }}</p>
 

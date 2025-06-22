@@ -148,7 +148,7 @@
               class="cart-btn flex align-center gap-[10px] w-full text-white py-3 rounded-full font-[400] text-[16px] justify-center mt-[35px] disabled:bg-[#A0576F] hover:bg-[#913E5D]"
               :class="selectedProduct ? 'bg-[#A0576F]' : 'bg-[#a0576f69]'">
               <ShopIcon/>
-              <span>Total: {{ totalPrice }} SAR</span>
+              <span>Total: <span class="sar-icon">&#xe900;</span> {{ totalPrice }}</span>
 
 
             </BaseButton>

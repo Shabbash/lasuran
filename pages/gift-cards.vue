@@ -34,7 +34,7 @@
               <div>
                 <h2 class="text-white text-[15px] font-bold leading-normal">{{ card.title || 'Gift Card' }}</h2>
                 <h3 class="text-white text-[40px] font-bold leading-normal">
-                  {{ card.price || 0 }} <span class="text-[20px]">SAR</span>
+                  <span class="sar-icon">&#xe900;</span> {{ card.price || 0 }} <span class="text-[20px]"</span>
                 </h3>
               </div>
               <p class="text-white text-[11px] font-bold leading-normal">
@@ -76,7 +76,7 @@
                   <div>
                     <h2 class="text-white text-[15px] font-bold leading-normal">{{ selectedCard?.title || 'Gift Card' }}</h2>
                     <h3 class="text-white text-[40px] font-bold leading-normal">
-                      {{ selectedCard?.price || 0 }} <span class="text-[20px]">SAR</span>
+                      <span class="sar-icon">&#xe900;</span> {{ selectedCard?.price || 0 }} 
                     </h3>
                   </div>
                   <p class="text-white text-[11px] font-bold leading-normal">
@@ -91,7 +91,7 @@
 
             <div class="flex justify-between items-center mt-[40px] mb-[15px]">
               <h2 class="text-[30px] font-bold text-[#A0576F] leading-normal">{{ selectedCard?.title || 'Gift Card' }}</h2>
-              <p class="text-[19px] font-bold text-[#A0576F] leading-normal">{{ selectedCard?.price || 0 }} SAR</p>
+              <p class="text-[19px] font-bold text-[#A0576F] leading-normal"><span class="sar-icon">&#xe900;</span> {{ selectedCard?.price || 0 }}</p>
             </div>
 
             <div class="text-[#5B605C] mb-[16px] text-[14px] font-[350] leading-[23.128px]"
@@ -110,7 +110,7 @@
                 :class="selectedCard ? 'bg-[#A0576F]' : 'bg-[#a0576f69]'">
 
                 <PriceIcon />
-                <span>Buy Now: {{ totalPrice }} SAR</span>
+                <span>Buy Now: <span class="sar-icon">&#xe900;</span> {{ totalPrice }}</span>
 
 
               </BaseButton>
