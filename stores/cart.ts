@@ -35,6 +35,7 @@ export const useCart = defineStore("cart", {
             paymentAttempts: 20,
             paymentWindow: null as any,
             paymentInterval: null as any,
+            cartServiceType: null as any
         }
     },
     getters: {
@@ -70,7 +71,14 @@ export const useCart = defineStore("cart", {
         },
         isOrderLoading(state) {
             return state.order.loading;
+        },
+        // Get the service type of current cart items
+        getCurrentServiceType(state) {
+            if (state.products.length === 0) return null;
+            // Assume all items in cart have the same service type
+            return state.cartServiceType || null;
         }
+
     },
     actions: {
         setPaymentMethod(paymentMethod: any) {
@@ -107,6 +115,7 @@ export const useCart = defineStore("cart", {
                         this.$state.title = data.data.cart_title || "";
                         this.$state.sub_title = data.data.cart_title_sub_message || "";
                         this.$state.message = data.data.message || "";
+                        this.$state.cartServiceType = data.data.service_type || null;
 
                         // Update pricing information
                         this.$state.subtotal = data.data.sub_total || 0;
@@ -153,7 +162,7 @@ export const useCart = defineStore("cart", {
                     }
                 });
         },
-        addOrUpdateServiceInCart(service: any, branchId = null) {
+        addOrUpdateServiceInCart(service: any, branchId = null, serviceType = null) {
             const menuModule = useMenu();
             this.$state.isAddLoading = true;
 
@@ -258,6 +267,31 @@ export const useCart = defineStore("cart", {
                         }
                     });
             }
+        },
+        // Clear entire cart
+        clearCart() {
+            this.$state.isEmptying = true;
+            return useApi(`cart/clear`, {
+                method: "DELETE"
+            },
+                {
+                    onSuccess: (data: any) => {
+                        // Clear cart state
+                        this.$state.products = [];
+                        this.$state.subtotal = 0;
+                        this.$state.vat = 0;
+                        this.$state.discount = 0;
+                        this.$state.service_cost = 0;
+                        this.$state.total = 0;
+                        this.$state.isEmptying = false;
+
+                        console.log('Cart cleared successfully');
+                    },
+                    onError: (err: any) => {
+                        this.$state.isEmptying = false;
+                        console.error("Error clearing cart:", err);
+                    }
+                });
         },
         removeProduct(cartProductId: number | string) {
             console.log('Removing cart item:', cartProductId);
@@ -424,6 +458,6 @@ export const useCart = defineStore("cart", {
     persist: {
         storage: localStorage,
         // Exclude loading states from persistence to prevent stuck loading spinners
-        paths: ['products', 'loyalty_points', 'payment_methods', 'working_times', 'title', 'sub_title', 'message', 'subtotal', 'vat', 'discount', 'service_cost', 'total', 'payment_method_id', 'order.data', 'payment', 'confirmation_message', 'saved_cards']
+        paths: ['products', 'loyalty_points', 'payment_methods', 'working_times', 'title', 'sub_title', 'message', 'subtotal', 'vat', 'discount', 'service_cost', 'total', 'payment_method_id', 'order.data', 'payment', 'confirmation_message', 'saved_cards', 'cartServiceType']
     },
 });

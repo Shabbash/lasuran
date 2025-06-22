@@ -158,6 +158,15 @@
         </div>
       </template>
     </Dialog>
+
+    <!-- Service Type Conflict Modal -->
+    <ServiceTypeConflictModal
+      v-model:open="showServiceTypeModal"
+      :current-service-type="getCurrentCartServiceType()"
+      :new-service-type="SERVICE_TYPES.ONLINE"
+      @clear-cart="handleClearCart"
+      @cancel="handleCancelConflict"
+    />
   </Container>
 </template>
 
@@ -190,12 +199,17 @@ import OutlineHeartIcon from '@/components/icons/OutlineHeartIcon.vue'
 import OutlineStarIcon2 from '@/components/icons/OutlineStarIcon2.vue'
 import ShopSkeleton from '@/components/skeletons/ShopSkeleton.vue'
 import ShopIcon from '@/components/icons/ShopIcon.vue'
+import ServiceTypeConflictModal from '@/components/modals/ServiceTypeConflictModal.vue'
 import { useCart } from '@/stores/cart'
 import { useProducts } from '@/stores/products'
+import { useApp } from '@/stores/app'
 import { onMounted, ref, computed, nextTick } from 'vue'
+import { SERVICE_TYPES } from '~/data/constants'
+  const { setServiceType , getServiceType  } = useApp();
 
 const cartModule = useCart()
 const productsStore = useProducts()
+const appModule = useApp()
 
 // Initialize shop data on component mount
 onMounted(async () => {
@@ -230,6 +244,10 @@ function closeProductModal() {
   quantity.value = 1;
   selectedSize.value = '30ml';
 }
+
+// Service type conflict modal
+const showServiceTypeModal = ref(false)
+const pendingCartItem = ref(null)
 
 
 
@@ -300,6 +318,31 @@ const totalPrice = computed(() => {
 const addToCart = async () => {
   if (!selectedProduct.value) return;
 
+  // Check for service type conflict
+  const newServiceType = SERVICE_TYPES.ONLINE;
+
+  // If cart is not empty, check if any product has different service_type
+  if (cartModule.getProductsCount > 0) {
+    const cartProducts = cartModule.getProducts;
+    const hasConflict = cartProducts.getCurrentServiceType !== newServiceType;
+    if (hasConflict) {
+      const currentServiceType = cartProducts.getCurrentServiceType
+
+
+    // Store the pending cart item
+    pendingCartItem.value = {
+      id: selectedProduct.value.id,
+      quantity: quantity.value,
+      size: selectedSize.value,
+      price: selectedSizePrice.value
+    };
+
+      // Show conflict modal
+      showServiceTypeModal.value = true;
+      return;
+    }
+  }
+
   // Prepare product data for cart - use the same structure as services
   const productForCart = {
     id: selectedProduct.value.id,
@@ -311,8 +354,8 @@ const addToCart = async () => {
   try {
     console.log('Adding product to cart:', productForCart);
 
-    // Use the same method as services - it handles both products and services
-    await cartModule.addOrUpdateServiceInCart(productForCart);
+    // Pass service type as parameter - it will be sent as header
+    await cartModule.addOrUpdateServiceInCart(productForCart, null, SERVICE_TYPES.ONLINE);
 
     // Close modal and reset form on success
     closeProductModal();
@@ -325,6 +368,45 @@ const addToCart = async () => {
   }
 }
 
+
+// Handle service type conflict modal actions
+const handleClearCart = async () => {
+  try {
+    await cartModule.clearCart();
+
+    // After clearing cart, add the pending item
+    if (pendingCartItem.value) {
+      await cartModule.addOrUpdateServiceInCart(pendingCartItem.value, null, SERVICE_TYPES.ONLINE);
+      pendingCartItem.value = null;
+    }
+
+    // Close modals
+    showServiceTypeModal.value = false;
+    closeProductModal();
+
+    console.log('Cart cleared and new item added successfully!');
+  } catch (error) {
+    console.error('Error clearing cart:', error);
+  }
+}
+
+const handleCancelConflict = () => {
+  showServiceTypeModal.value = false;
+  pendingCartItem.value = null;
+}
+
+// Get current service type from cart products
+const getCurrentCartServiceType = () => {
+  const cartProducts = cartModule.getProducts;
+  if (cartProducts.length === 0) return null;
+  return cartProducts[0]?.service_type || null;
+}
+
+onMounted(() => {
+  console.log('Shop page mounted, initializing...');
+  setServiceType(SERVICE_TYPES.ONLINE);
+
+});
 
 
 </script>

@@ -102,7 +102,8 @@ import ServiceCardSkeleton from '~/components/skeletons/ServiceCardSkeleton.vue'
 import type { TabsItem, RadioGroupItem, RadioGroupValue } from '@nuxt/ui'
 import { CalendarDate } from '@internationalized/date'
 import { COMPONENTS } from "~/data/constants";
-
+import { SERVICE_TYPES } from '~/data/constants'
+  const { setServiceType , getServiceType  } = useApp();
 import PriceIcon from '@/components/icons/PriceIcon.vue'
 
 
@@ -120,6 +121,8 @@ interface Service {
 
 const menuModule = useMenu();
 // getProducts
+  setServiceType(SERVICE_TYPES.RESERVATION);
+
 menuModule.initMenu();
 
 
@@ -159,6 +162,10 @@ import { useRoute } from 'vue-router';
 
 
 // --------------111 start --------------------//
+
+
+
+
 const services = [
   {
     id: 1,
@@ -290,6 +297,14 @@ const filters = ref({
 
 });
 // --------------calender end -----//
+
+
+
+onMounted(() => {
+  console.log('Shop page mounted, initializing...');
+  setServiceType(SERVICE_TYPES.RESERVATION);
+  
+});
 
 </script>
 
