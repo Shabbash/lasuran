@@ -1,13 +1,12 @@
 <template>
   <WalletSkeleton v-if="isLoading" />
 
-  <div
-    v-else
-    class="py-[34px] px-[15px] md:px-[30px] h-full flex flex-col border border-[#AD7084] border-solid rounded-[20px]"
-  >
+  <div v-else
+    class="py-[34px] px-[15px] md:px-[30px] h-full flex flex-col border border-[#AD7084] border-solid rounded-[20px]">
     <div class="mb-[20px] flex flex-col md:flex-row gap-[10px] justify-between items-center">
       <h2 class="text-[#EBE4DF] text-[20px] font-extrabold leading-normal">{{ customerName }}</h2>
-      <p class="px-[12px] h-[30px] flex items-center justify-center gap-[6px] rounded-[100px] bg-[#EBE4DF] text-[#373A42] text-[14px] font-[350] leading-normal">
+      <p
+        class="px-[12px] h-[30px] flex items-center justify-center gap-[6px] rounded-[100px] bg-[#EBE4DF] text-[#373A42] text-[14px] font-[350] leading-normal">
         Available Points<span class="text-[#A0576F] font-bold">{{ availablePoints }} pts</span>
       </p>
     </div>
@@ -17,36 +16,40 @@
         <FlipCard>
           <template #front>
             <div class="relative h-full rounded-[12px] overflow-hidden">
-              <img class="w-full h-full object-cover" :src="customerClass.front_image || '/public/assets/img/card.png'" alt="" />
+              <img class="w-full h-full object-cover" :src="customerClass.front_image || '/public/assets/img/card.png'"
+                alt="" />
               <div class="absolute inset-0 px-[16px] py-[20px] flex flex-col justify-between">
                 <div>
                   <div class="flex justify-between mb-[12px]">
-                    <p class="text-white text-end text-[16px] font-bold leading-normal">{{ customerClass.class_level || 'Regular' }}</p>
+                    <p class="text-white text-end text-[16px] font-bold leading-normal">{{ customerClass.class_level ||
+                      'Regular' }}</p>
                     <InfoFilledIcon />
                   </div>
                   <div class="flex justify-between w-[70%] md:w-[57%]">
                     <span class="text-white text-[16px] font-normal leading-normal">Redeemed Points</span>
-                    <span class="text-white text-[16px] font-bold leading-normal">{{ customerClass.redeemed_points || '0' }} Pts</span>
+                    <span class="text-white text-[16px] font-bold leading-normal">{{ customerClass.redeemed_points ||
+                      '0' }} Pts</span>
                   </div>
                   <div class="flex justify-between w-[70%] md:w-[57%]">
                     <span class="text-white text-[16px] font-normal leading-normal">Expired Points</span>
-                    <span class="text-white text-[16px] font-bold leading-normal">{{ customerClass.expired_points || '0' }} Pts</span>
+                    <span class="text-white text-[16px] font-bold leading-normal">{{ customerClass.expired_points || '0'
+                      }} Pts</span>
                   </div>
                 </div>
                 <div>
                   <div class="flex justify-between">
-                    <span class="text-white text-[16px] font-bold leading-normal">{{ customerClass.total_points || '0' }} Points</span>
+                    <span class="text-white text-[16px] font-bold leading-normal">{{ customerClass.total_points || '0'
+                      }} Points</span>
                     <span class="text-white text-[16px] font-bold leading-normal">{{ cashbackBalance }} SAR</span>
                   </div>
                   <div class="mt-[3px] mb-[7px]">
-                    <UProgress
-                      v-model="progressValue"
-                      :ui="{ slots: { indicator: 'bg-green-500 h-full rounded' } }"
-                    />
+                    <UProgress v-model="progressValue" :ui="{ slots: { indicator: 'bg-green-500 h-full rounded' } }" />
                   </div>
                   <div class="flex justify-between">
-                    <span class="text-white text-[16px] font-normal leading-normal">{{ customerClass.remaining_to_next_tier || '0' }} points till your next level</span>
-                    <span class="text-white text-[16px] font-normal leading-normal">{{ customerClass.class_level || 'Level 1' }}</span>
+                    <span class="text-white text-[16px] font-normal leading-normal">{{
+                      customerClass.remaining_to_next_tier || '0' }} points till your next level</span>
+                    <span class="text-white text-[16px] font-normal leading-normal">{{ customerClass.class_level ||
+                      'Level 1' }}</span>
                   </div>
                 </div>
               </div>
@@ -55,23 +58,24 @@
 
           <template #back>
             <div class="relative h-full rounded-[12px] overflow-hidden">
-              <img class="w-full h-full object-cover" :src="customerClass.back_image || '/public/assets/img/card.png'" alt="" />
+              <img class="w-full h-full object-cover" :src="customerClass.back_image || '/public/assets/img/card.png'"
+                alt="" />
               <div class="absolute inset-0 px-[16px] py-[50px] flex flex-col justify-between">
                 <div class="absolute inset-[17px] start-auto">
                   <InfoFilledIcon />
                 </div>
                 <p class="text-white text-[16px] font-bold leading-normal">Points Scheme</p>
-                <p class="text-white text-[16px] font-[500] leading-normal">Spend {{ pointSchema.value || '1' }} SAR Earn {{ pointSchema.points || '1 Point' }}</p>
-                <p class="text-white text-[16px] font-[500] leading-normal">Redeem {{ pointSchema.point_redeemed || '100' }} Points Get {{ pointSchema.value_spending || '1 Point' }}</p>
+                <p class="text-white text-[16px] font-[500] leading-normal">Spend {{ pointSchema.value || '1' }} SAR
+                  Earn {{ pointSchema.points || '1 Point' }}</p>
+                <p class="text-white text-[16px] font-[500] leading-normal">Redeem {{ pointSchema.point_redeemed ||
+                  '100' }} Points Get {{ pointSchema.value_spending || '1 Point' }}</p>
               </div>
             </div>
           </template>
         </FlipCard>
 
-        <UButton
-          @click="modalOpen = true"
-          class="rounded-[100px] border border-[#EBE4DF] bg-transparent hover:bg-[#913E5D] disabled:bg-transparent aria-disabled:bg-transparent text-[#EBE4DF] text-[15px] font-[400] leading-normal w-full h-[60px] justify-center mt-[30px]"
-        >
+        <UButton @click="modalOpen = true"
+          class="rounded-[100px] border border-[#EBE4DF] bg-transparent hover:bg-[#913E5D] disabled:bg-transparent aria-disabled:bg-transparent text-[#EBE4DF] text-[15px] font-[400] leading-normal w-full h-[60px] justify-center mt-[30px]">
           <InfoFilledIcon />
           <span>Explore the Loyalty Program</span>
         </UButton>
@@ -83,15 +87,11 @@
             'flex items-center gap-[10px] border rounded-[13px] px-[23px] bg-transparent',
             pointsValidationError ? 'border-red-400' : 'border-[#EBE4DF]'
           ]">
-            <input
-              v-model="transferPoints"
-              :placeholder="`Minimum ${transferSchema.min_point_to_transfer || '10'} points.`"
-              id="transfer-points"
+            <input v-model="transferPoints"
+              :placeholder="`Minimum ${transferSchema.min_point_to_transfer || '10'} points.`" id="transfer-points"
               class="flex-1 outline-none bg-transparent text-[#BBCACF] placeholder:text-[#D3C9C5] text-[14px] h-[50px]"
-              type="number"
-              :min="transferSchema.min_point_to_transfer || '10'"
-              :max="transferSchema.max_point_to_transfer || '1000'"
-            />
+              type="number" :min="transferSchema.min_point_to_transfer || '10'"
+              :max="transferSchema.max_point_to_transfer || '1000'" />
           </div>
           <p v-if="pointsValidationError" class="text-red-400 text-[12px] font-[350] leading-normal mt-[6px]">
             {{ pointsValidationError }}
@@ -112,25 +112,17 @@
               <span class="text-[#BBCACF] font-medium text-[14px]">+966</span>
             </div>
             <div class="mx-[18px] border-l border-[#BBCACF]"></div>
-            <input
-              v-model="transferMobile"
-              type="text"
-              placeholder="50 XXXX XXXX"
+            <input v-model="transferMobile" type="text" placeholder="50 XXXX XXXX"
               class="flex-1 outline-none bg-transparent text-[#BBCACF] placeholder:text-[#D3C9C5] text-[14px]"
-              maxlength="9"
-            />
+              maxlength="9" />
           </div>
           <p v-if="mobileValidationError" class="text-red-400 text-[12px] font-[350] leading-normal mt-[6px]">
             {{ mobileValidationError }}
           </p>
         </div>
 
-        <BaseButton
-          label="Transfer"
-          @click="handleTransferPoints"
-          :disabled="!canTransfer || isTransferring"
-          class="flex h-[50px] w-full justify-center items-center self-stretch rounded-[100px] bg-[#EBE4DF] text-[#A0576F] text-[16px] font-normal leading-normal mt-[30px] disabled:bg-[#EBE4DF] disabled:opacity-50"
-        >
+        <BaseButton label="Transfer" @click="handleTransferPoints" :disabled="!canTransfer || isTransferring"
+          class="flex h-[50px] w-full justify-center items-center self-stretch rounded-[100px] bg-[#EBE4DF] text-[#A0576F] text-[16px] font-normal leading-normal mt-[30px] disabled:bg-[#EBE4DF] disabled:opacity-50">
           <div v-if="isTransferring" class="animate-spin rounded-full h-4 w-4 border-b-2 border-[#A0576F] mr-2"></div>
           {{ isTransferring ? 'Transferring...' : 'Transfer' }}
         </BaseButton>
@@ -157,20 +149,31 @@
               <div class="flex-1">
                 <p class="text-[#EBE4DF] text-[14px] font-[350] leading-normal mb-[5px]">{{ transaction.date }}</p>
                 <div class="flex gap-[5px] items-center mb-1">
-                  <img :src="transaction.icon" :alt="transaction.type" class="w-4 h-4" onerror="this.style.display='none'" />
-                  <span class="text-[#EBE4DF] text-[14px] font-[350] leading-normal">{{ transaction.sub_title || transaction.type }}</span>
+                  <img :src="transaction.icon" :alt="transaction.type" class="w-4 h-4"
+                    onerror="this.style.display='none'" />
+                  <span class="text-[#EBE4DF] text-[14px] font-[350] leading-normal">{{ transaction.sub_title ||
+                    transaction.type }}</span>
                 </div>
-                <p v-if="transaction.note" class="text-[#C6C6C7] text-[12px] font-[300] leading-normal">{{ transaction.note }}</p>
-                <p v-if="transaction.order_number" class="text-[#C6C6C7] text-[12px] font-[300] leading-normal">Order: {{ transaction.order_number }}</p>
+                <p v-if="transaction.note" class="text-[#C6C6C7] text-[12px] font-[300] leading-normal">{{
+                  transaction.note }}</p>
+                <p v-if="transaction.order_number" class="text-[#C6C6C7] text-[12px] font-[300] leading-normal">Order:
+                  {{ transaction.order_number }}</p>
               </div>
               <div class="text-right">
                 <p :class="[
                   'text-end text-[14px] font-[500] leading-normal mb-1',
                   getTransactionColor(transaction.type_status?.class || transaction.type)
                 ]">{{ transaction.points }}</p>
-                <p v-if="transaction.expired_at" class="text-[#EBE4DF] text-[12px] font-[350] leading-normal">
+                <!-- <p v-if="transaction.expired_at" class="text-[#EBE4DF] text-[12px] font-[350] leading-normal">
+                  Available till {{ transaction.expired_at }}
+                </p> -->
+
+                <p v-if="transaction.expired_at && transaction.type_status?.class?.toLowerCase() !== 'danger'"
+                  class="text-[#EBE4DF] text-[12px] font-[350] leading-normal">
                   Available till {{ transaction.expired_at }}
                 </p>
+
+
                 <span v-if="transaction.type_status" :class="[
                   'inline-block px-2 py-1 rounded-full text-[10px] font-medium mt-1',
                   getStatusBadgeClass(transaction.type_status.class)
@@ -184,20 +187,16 @@
 
         <!-- View All Transactions Button -->
         <div v-if="hasMoreTransactions && !showAllTransactions" class="text-center mt-4">
-          <button
-            @click="showAllTransactions = true"
-            class="text-[#A0576F] text-[14px] font-medium hover:text-[#8B4A63] transition-colors"
-          >
+          <button @click="showAllTransactions = true"
+            class="text-[#A0576F] text-[14px] font-medium hover:text-[#8B4A63] transition-colors">
             View All Transactions
           </button>
         </div>
 
         <!-- Show Less Button -->
         <div v-if="showAllTransactions && hasMoreTransactions" class="text-center mt-4">
-          <button
-            @click="showAllTransactions = false"
-            class="text-[#A0576F] text-[14px] font-medium hover:text-[#8B4A63] transition-colors"
-          >
+          <button @click="showAllTransactions = false"
+            class="text-[#A0576F] text-[14px] font-medium hover:text-[#8B4A63] transition-colors">
             Show Less
           </button>
         </div>
@@ -220,14 +219,12 @@
         </div>
 
         <div class="mt-[30px] overflow-y-auto max-h-[45vh]">
-          <div
-            v-for="(level, index) in customerClasses"
-            :key="index"
-            class="border-b border-dashed border-b-[#A0576F80] pb-[8px] pt-[17px]"
-          >
+          <div v-for="(level, index) in customerClasses" :key="index"
+            class="border-b border-dashed border-b-[#A0576F80] pb-[8px] pt-[17px]">
             <div class="flex">
               <div class="flex-1">
-                <img :src="level.image || '/assets/img/point-schema.png'" :alt="level.name" class="w-12 h-12 object-contain" />
+                <img :src="level.image || '/assets/img/point-schema.png'" :alt="level.name"
+                  class="w-12 h-12 object-contain" />
               </div>
               <div class="flex-4">
                 <h4 class="text-[#A0576F] text-[16px] font-bold leading-normal">{{ level.name }}</h4>
@@ -236,7 +233,8 @@
             </div>
 
             <UCollapsible v-model:open="level.open" class="flex flex-col gap-2">
-              <UButton class="more-btn bg-transparent text-[#BBCACF] hover:text-[#A0576F] p-0 mt-[16px] hover:bg-transparent justify-center">
+              <UButton
+                class="more-btn bg-transparent text-[#BBCACF] hover:text-[#A0576F] p-0 mt-[16px] hover:bg-transparent justify-center">
                 <span>{{ level.open ? 'Show Less' : 'Read More' }}</span>
               </UButton>
               <template #content>
@@ -288,7 +286,8 @@ const customerName = computed(() => {
 })
 
 const availablePoints = computed(() => {
-  return walletData.value?.customer_class?.total_points || '0'
+  // return walletData.value?.customer_class?.total_points || '0'
+  return walletData.value?.customer_class?.total_points_value || '0'
 })
 
 const customerClass = computed(() => {
@@ -382,7 +381,9 @@ const handleTransferPoints = async () => {
   try {
     const payload = {
       points: parseInt(transferPoints.value),
-      mobile_number: transferMobile.value.trim()
+      //mobile_number: transferMobile.value.trim()
+      mobile_number: `966${transferMobile.value.trim()}`
+
     }
 
     const { data } = await useApi('wallets/transfare-points', {

@@ -1,11 +1,11 @@
 <template>
   <Container>
-    <div class="bg-[#A0576F1A] py-10 px-4 min-h-screen">
+    <div class="bg-[#A0576F1A] py-10 px-4 min-h-screen max-w-[600px] mx-auto">
       <!-- Title -->
-      <h2 class="text-[#A0576F] text-[21px] font-medium leading-normal mb-[26px]">Notifications</h2>
+      <h2 class="text-[#EBE4DF] text-[21px] font-medium leading-normal mb-[26px]">Notifications</h2>
 
       <!-- Loading State -->
-      <div v-if="loading" class="space-y-4 max-w-[600px] mx-auto">
+      <div v-if="loading" class="space-y-4 mx-auto">
         <div v-for="n in 3" :key="n" class="animate-pulse bg-[#EBE4DF] rounded-[30px] p-[24px]">
           <div class="h-4 w-1/2 bg-gray-300 rounded mb-3"></div>
           <div class="h-4 w-1/3 bg-gray-300 rounded"></div>
@@ -13,7 +13,7 @@
       </div>
 
       <!-- Notification List -->
-      <div v-else-if="notifications?.length > 0" class="space-y-4 max-w-[600px] mx-auto">
+      <div v-else-if="notifications?.length > 0" class="space-y-4 mx-auto">
         <div
           v-for="(notification, i) in notifications"
           :key="i"
@@ -34,7 +34,7 @@
       </div>
 
       <!-- Empty State -->
-      <div v-else class="text-center mt-12 text-[#A0576F] text-[16px]">
+      <div v-else class="mt-12 text-[#EBE4DF] text-[16px]">
         No notifications available.
       </div>
     </div>
@@ -60,15 +60,19 @@
 </template>
 
 <script setup lang="ts">
-const { data: notifications, pending: loading } = useApi('notifications', {
-  transform: (data) => data?.data?.notifications,
-});
+import { ref } from 'vue'
+import Container from '~/components/base/Container.vue'
 
-const isDialogDisplayed = ref(false);
-const selectedNotification = ref(null);
+// Use API instead of static
+const { data: notifications, pending: loading } = useApi('notifications', {
+  transform: (data) => data?.data?.notifications ?? [],
+})
+
+const isDialogDisplayed = ref(false)
+const selectedNotification = ref(null)
 
 const showNotification = (notification: any) => {
-  selectedNotification.value = notification;
-  isDialogDisplayed.value = true;
-};
+  selectedNotification.value = notification
+  isDialogDisplayed.value = true
+}
 </script>
