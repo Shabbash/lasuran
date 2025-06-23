@@ -9,8 +9,10 @@
     <div class="mx-[20px] mt-[20px] mb-[40px] relative">
       <div class="flex justify-between items-center mb-2">
         <h2 class="font-bold text-[30px] text-[#A0576F] leading-[100%]">{{ defaultService.name }}</h2>
-        <span class="font-bold text-[19px] text-[#A0576F] leading-[100%]"
-          v-html="selectedExtension === '' && selectedService.price <= 0 ? 'Price Upon Selection' : formatSAR(selectedService.price)"></span>
+        <span class="font-bold text-[#A0576F] leading-[100%] text-[19px]"
+          :class="selectedService.discount_value ? 'line-through' : ''"
+          v-html="formatSAR(selectedService.discount_value ? selectedService.price_before_discount : selectedService.price)">
+        </span>
 
       </div>
 

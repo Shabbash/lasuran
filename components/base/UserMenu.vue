@@ -78,13 +78,13 @@
             <span class="text-[15px] font-[350] leading-none">My Tickets</span>
           </NuxtLink>
 
-          <div @click="openTerms"
+          <div @click="openLegal('terms')"
             class="flex items-center gap-2 px-4 py-2 rounded-lg hover:opacity-70 transition cursor-pointer">
             <img src="/assets/img/menu-icons/terms.svg" alt="" class="w-[20px] h-[20px]" />
             <span class="text-[15px] font-[350] leading-none">Terms & Conditions</span>
           </div>
 
-          <div @click="openPrivacy"
+          <div @click="openLegal('privacy')"
             class="flex items-center gap-2 px-4 py-2 rounded-lg hover:opacity-70 transition cursor-pointer">
             <img src="/assets/img/menu-icons/Layer_1.svg" alt="" class="w-[20px] h-[20px]" />
             <span class="text-[15px] font-[350] leading-none">Privacy Policy</span>
@@ -100,27 +100,10 @@
     </template>
   </UPopover>
 
-  <!-- Terms Modal -->
-  <Dialog v-model:show="showTermsModal" :modalMaxWidth="'max-w-[800px]'">
-    <template #body>
-      <div class="w-[90vw] h-[90vh] max-w-[800px] bg-[#EBE4DF] rounded-[30px] overflow-hidden pt-[40px] ps-[20px]">
-        <iframe v-if="pagesUrls?.terms_and_condition_url" :src="pagesUrls.terms_and_condition_url"
-          class="w-full h-full border-none rounded-[30px]"></iframe>
-      </div>
-    </template>
-  </Dialog>
+<LegalDialog v-model:show="showLegalModal" :url="legalUrl" />
 
-  <!-- Privacy Modal -->
-  <Dialog v-model:show="showPrivacyModal" :modalMaxWidth="'max-w-[800px]'">
-    <template #body>
-      <div class="w-[90vw] h-[90vh] max-w-[800px] bg-[#EBE4DF] rounded-[30px] overflow-hidden pt-[40px] ps-[20px]">
-        <iframe v-if="pagesUrls?.privacy_policy_url" :src="pagesUrls.privacy_policy_url"
-          class="w-full h-full border-none rounded-[30px]"></iframe>
-      </div>
-    </template>
-  </Dialog>
+
 </template>
-
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useProfile } from '~/stores/profile'
@@ -128,17 +111,20 @@ import { useApp } from '~/stores/app'
 import { useAuth } from '~/stores/auth'
 import { COMPONENTS } from '~/data/constants'
 import { useApi } from '~/composables/useApi'
-import Dialog from '~/components/base/Dialog.vue'
+import LegalDialog from '~/components/base/LegalDialog.vue'
 
 const profileStore = useProfile()
 const authModule = useAuth()
 const { setDialogComponent, setDialogShow } = useApp()
 
 const isOpen = ref(false)
-const showTermsModal = ref(false)
-const showPrivacyModal = ref(false)
-const pagesUrls = ref<Record<string, string>>({})
 
+// ✅ استبدل المودالين بواحد فقط
+const showLegalModal = ref(false)
+const legalUrl = ref('')
+
+// ✅ تحميل روابط الصفحات
+const pagesUrls = ref<Record<string, string>>({})
 onMounted(() => {
   useApi('settings/pages-url', {
     key: 'pages-url',
@@ -150,35 +136,38 @@ onMounted(() => {
   })
 })
 
+// ✅ فتح المودال الموحد حسب النوع
+const openLegal = (type: 'terms' | 'privacy') => {
+  legalUrl.value = type === 'terms'
+    ? pagesUrls.value?.terms_and_condition_url
+    : pagesUrls.value?.privacy_policy_url
+
+  closePopover()
+  setTimeout(() => {
+    showLegalModal.value = true
+  }, 150)
+}
+
 const closePopover = () => {
   isOpen.value = false
 }
 
-const openTerms = () => {
-  closePopover()
-  setTimeout(() => {
-    showTermsModal.value = true
-  }, 150)
-}
-
-const openPrivacy = () => {
-  closePopover()
-  setTimeout(() => {
-    showPrivacyModal.value = true
-  }, 150)
-}
-
+// ✅ فتح التسجيل
 const handleLogin = () => {
   setDialogComponent(COMPONENTS.AUTH_WIZARD, {
     modalMaxWidth: 'max-w-[638px]'
-  });
+  })
   authModule.setStepComponent(COMPONENTS.SEND_OTP_STEP)
   setDialogShow(true)
   closePopover()
 }
 
+// ✅ تسجيل الخروج
 const logout = () => {
   authModule.logout()
+  profileStore.clearProfile()
+  localStorage.removeItem('pinia-profile')
   closePopover()
 }
 </script>
+

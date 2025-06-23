@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import type { AuthState } from '~/types/auth';
 import { COMPONENTS } from "~/data/constants";
 import components from "~/components/import";
+import { useProfile } from '~/stores/profile'
 
 export const useAuth = defineStore("auth", {
     state: (): AuthState => {
@@ -32,7 +33,7 @@ export const useAuth = defineStore("auth", {
             return `${this.getUser?.first_name} ${this.getUser?.last_name}` ?? '-'
         },
         getMobileNumber(state: AuthState) {
-            return`+${this.getUser?.mobile_number}` ?? '-'
+            return `+${this.getUser?.mobile_number}` ?? '-'
         },
         getFullOtpMobileNumber(state: AuthState) {
             return `+${state.mobile_code} ${state.mobile_number}`;
@@ -66,9 +67,10 @@ export const useAuth = defineStore("auth", {
                 body: {
                     mobile_number: `${payload.mobile_code}${payload.mobile_number}`,
                     mobile_code: payload.mobile_code
-                }},
+                }
+            },
                 {
-                    onSuccess:(data) => {
+                    onSuccess: (data) => {
                         if (data.status) {
                             this.setStepComponent(COMPONENTS.VERIFY_OTP_STEP);
                         }
@@ -79,7 +81,7 @@ export const useAuth = defineStore("auth", {
                     }
                 });
         },
-        verifyOtp(payload: {otp : null}) {
+        verifyOtp(payload: { otp: null }) {
             const { setDialogShow } = useApp();
             this.$state.loading = true;
             this.$state.otp = (payload.otp ?? []).join('');
@@ -88,20 +90,24 @@ export const useAuth = defineStore("auth", {
                 body: {
                     mobile_number: `${this.$state.mobile_code}${this.$state.mobile_number}`,
                     mobile_code: this.$state.mobile_code,
-                    otp : this.$state.otp,
+                    otp: this.$state.otp,
                 },
-            },{
-                onSuccess: (data : any) => {
+            }, {
+                onSuccess: async (data: any) => {
                     this.$state.loading = false;
                     let response = data.data;
-                    console.log('verifyOtp',response);
+                    console.log('verifyOtp', response);
                     if (response.is_completed) {
                         // this.setStepComponent(COMPONENTS.SEND_OTP_STEP);
                         this.setAuth({
-                            user : response,
+                            user: response,
                             token: response.token,
                         });
+                        const profileStore = useProfile()
+                        await profileStore.fetchProfile()
                         setDialogShow(false);
+
+
                     } else {
                         this.setStepComponent(COMPONENTS.COMPLETE_PROFILE_STEP);
                     }
@@ -121,14 +127,17 @@ export const useAuth = defineStore("auth", {
             return useApi("user/register", {
                 method: "POST",
                 body: payload
-            },{
-                onSuccess: (data : any) => {
+            }, {
+                onSuccess: async (data: any) => {
                     this.$state.loading = false;
                     let response = data.data;
                     this.setAuth({
-                        user : response,
+                        user: response,
                         token: response.token,
                     });
+
+                    const profileStore = useProfile()
+                    await profileStore.fetchProfile()
                     setDialogShow(false);
                 },
                 onError: (err) => {
@@ -153,7 +162,7 @@ export const useAuth = defineStore("auth", {
             // Clear token from localStorage and cookies
             this.clearToken();
 
-        navigateTo('/');
+            navigateTo('/');
         },
         setStepComponent(step: any) {
             this.$state.step = step;

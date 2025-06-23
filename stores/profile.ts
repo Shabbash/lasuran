@@ -190,6 +190,8 @@ export const useProfile = defineStore("profile", {
             this.$state.profile = null;
             this.$state.error = null;
             this.$state.updateSuccess = false;
+            localStorage.removeItem('pinia-profile');
+
         }
     },
 

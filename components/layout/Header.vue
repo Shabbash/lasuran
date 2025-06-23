@@ -30,11 +30,11 @@
                             Gift Cards</NuxtLink>
                     </li>
 
-                    <li>
+                    <!-- <li>
                         <NuxtLink to="/shop"
                             class="font-medium py-[11px] px-[35px] text-[17px]text-[#EBE4DF] capitalize">
                             Shop</NuxtLink>
-                    </li>
+                    </li> -->
                 </ul>
 
                 <!-- Actions / Icons -->
@@ -51,17 +51,19 @@
                     <!-- Calendar Icon -->
                     <NuxtLink to="/cart" class="relative cursor-pointer" v-if="authModule.isAuthenticated">
                         <img src="/public/assets/img/calendar.svg" alt="flag" class="w-[27px] h-[27px] rounded-sm" />
-                        <span  v-if="cartModule.getProductsCount > 0"
+                        <span v-if="cartModule.getProductsCount > 0"
                             class="absolute bg-[#DA3C3C] text-white w-[17px] h-[17px] flex items-center justify-center rounded-full text-[11px] font-normal -top-1 -end-1">
                             {{ cartModule.getProductsCount }}
                         </span>
                     </NuxtLink>
 
                     <!-- Notifications Icon -->
-                    <div class="relative cursor-pointer" v-if="authModule.isAuthenticated" @click="navigateToNotifications">
+                    <div class="relative cursor-pointer" v-if="authModule.isAuthenticated"
+                        @click="navigateToNotifications">
                         <img src="/public/assets/img/Huge-icon.svg" alt="flag" class="w-[27px] h-[27px] rounded-sm" />
-                        <span v-if="homeModule.unreadNotifications > 0" class="absolute bg-[#DA3C3C] text-white w-[17px] h-[17px] flex items-center justify-center rounded-full text-[11px] font-normal -top-1 -end-1">
-                          {{ homeModule.unreadNotifications}}
+                        <span v-if="homeModule.unreadNotifications > 0"
+                            class="absolute bg-[#DA3C3C] text-white w-[17px] h-[17px] flex items-center justify-center rounded-full text-[11px] font-normal -top-1 -end-1">
+                            {{ homeModule.unreadNotifications }}
                         </span>
                     </div>
 
@@ -92,10 +94,12 @@
                         </span>
                     </NuxtLink>
 
-                    <div class="relative cursor-pointer" v-if="authModule.isAuthenticated" @click="navigateToNotifications">
+                    <div class="relative cursor-pointer" v-if="authModule.isAuthenticated"
+                        @click="navigateToNotifications">
                         <img src="/public/assets/img/Huge-icon.svg" alt="flag" class="w-[27px] h-[27px] rounded-sm" />
-                        <span v-if="homeModule.unreadNotifications > 0" class="absolute bg-[#DA3C3C] text-white w-[17px] h-[17px] flex items-center justify-center rounded-full text-[11px] font-normal -top-1 -end-1">
-                          {{homeModule.unreadNotifications}}
+                        <span v-if="homeModule.unreadNotifications > 0"
+                            class="absolute bg-[#DA3C3C] text-white w-[17px] h-[17px] flex items-center justify-center rounded-full text-[11px] font-normal -top-1 -end-1">
+                            {{ homeModule.unreadNotifications }}
                         </span>
                     </div>
                 </div>
@@ -163,12 +167,12 @@
                                         <span class="text-[15px] font-[350] leading-none">Gift Cards</span>
                                     </NuxtLink>
 
-                                    
-                                    <NuxtLink to="/shop"
+
+                                    <!-- <NuxtLink to="/shop"
                                         class="flex items-center gap-2 px-4 py-[6px] rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
                                         <img src="/assets/img/menu-icons/Group.svg" alt="" class="w-[20px] h-[20px]" />
                                         <span class="text-[15px] font-[350] leading-none">Shop</span>
-                                    </NuxtLink>
+                                    </NuxtLink> -->
 
                                     <NuxtLink to="/profile?tab=profile" v-if="authModule.isAuthenticated"
                                         class="flex items-center gap-2 px-4 py-[6px] rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
@@ -221,18 +225,18 @@
                                         <span class="text-[15px] font-[350] leading-none">My Tickets</span>
                                     </NuxtLink>
 
-                                    <NuxtLink to="/terms"
+                                    <div @click="openLegal('terms')"
                                         class="flex items-center gap-2 px-4 py-[6px] rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
                                         <img src="/assets/img/menu-icons/terms.svg" alt="" class="w-[20px] h-[20px]" />
                                         <span class="text-[15px] font-[350] leading-none">Terms & Conditions</span>
-                                    </NuxtLink>
+                                    </div>
 
-                                    <NuxtLink to="/privacy"
+                                    <div @click="openLegal('privacy')"
                                         class="flex items-center gap-2 px-4 py-[6px] rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
                                         <img src="/assets/img/menu-icons/Layer_1.svg" alt=""
                                             class="w-[20px] h-[20px]" />
                                         <span class="text-[15px] font-[350] leading-none">Privacy Policy</span>
-                                    </NuxtLink>
+                                    </div>
 
 
                                     <NuxtLink to="/"
@@ -274,12 +278,13 @@
                                 </NuxtLink>
 
                                 <!-- Notifications Icon -->
-                                <div class="relative cursor-pointer" v-if="authModule.isAuthenticated" @click="navigateToNotifications">
+                                <div class="relative cursor-pointer" v-if="authModule.isAuthenticated"
+                                    @click="navigateToNotifications">
                                     <img src="/public/assets/img/Huge-icon.svg" alt="flag"
                                         class="w-[27px] h-[27px] rounded-sm" />
                                     <span v-if="homeModule.unreadNotifications > 0"
                                         class="absolute bg-[#DA3C3C] text-white w-[17px] h-[17px] flex items-center justify-center rounded-full text-[11px] font-normal -top-1 -end-1">
-                                      {{homeModule.unreadNotifications }}
+                                        {{ homeModule.unreadNotifications }}
                                     </span>
                                 </div>
 
@@ -298,38 +303,75 @@
         </div>
 
     </div>
-</template>
 
+<LegalDialog v-model:show="showLegalModal" :url="legalUrl" />
+
+
+
+</template>
 <script setup lang="ts">
+import { ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
+
 import Container from '~/components/base/Container.vue'
 import UserMenu from '~/components/base/UserMenu.vue'
+import LegalDialog from '~/components/base/LegalDialog.vue'
+
 import { useCart } from '~/stores/cart'
-const authModule = useAuth();
-
-const cartModule = useCart()
-const homeModule = useHome();
-
-
-import { ref } from 'vue'
+import { useHome } from '~/stores/home'
 import { useAuth } from '~/stores/auth'
+import { useApi } from '~/composables/useApi'
 
-const isOpen = ref(false);
-import { useRoute } from 'vue-router'
-import { watch } from 'vue'
+// auth, cart, home modules
+const authModule = useAuth()
+const cartModule = useCart()
+const homeModule = useHome()
 
+// dialog state for legal modal
+const showLegalModal = ref(false)
+const legalUrl = ref('')
+const pagesUrls = ref<Record<string, string>>({})
+
+// fetch page URLs for iframe modals
+useApi('settings/pages-url', {
+  key: 'pages-url',
+  immediate: true
+}, {
+  onSuccess(res) {
+    pagesUrls.value = res.data
+  }
+})
+
+// mobile menu slide state
+const isOpen = ref(false)
+
+// open legal modal with dynamic URL
+const openLegal = (type: 'terms' | 'privacy') => {
+  legalUrl.value = type === 'terms'
+    ? pagesUrls.value?.terms_and_condition_url
+    : pagesUrls.value?.privacy_policy_url
+
+  isOpen.value = false
+
+  setTimeout(() => {
+    showLegalModal.value = true
+  }, 150)
+}
+
+// close slideover on route change
 const route = useRoute()
-
 watch(() => route.fullPath, () => {
   isOpen.value = false
 })
 
-
-const navigateToNotifications = function () {
+// go to notifications page
+const navigateToNotifications = () => {
   navigateTo({
     path: '/notifications'
   })
 }
 </script>
+
 
 <style>
 li .router-link-exact-active {

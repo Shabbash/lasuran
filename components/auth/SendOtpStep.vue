@@ -40,9 +40,13 @@
 
       <span class="text-[16.76px] font-normal leading-[100%] tracking-[0] text-[#5B605C]">
         I accept
-        <a href="#" class="text-[#A0576F] underline">Terms & conditions</a>
+        <button type="button" @click="openTerms" class="text-[#A0576F] underline hover:opacity-80">
+          Terms & Conditions
+        </button>
         and
-        <a href="#" class="text-[#A0576F] underline">Privacy policy</a>
+        <button type="button" @click="openPrivacy" class="text-[#A0576F] underline hover:opacity-80">
+          Privacy Policy
+        </button>
       </span>
     </div>
     <div class="w-full space-y-3">
@@ -54,61 +58,86 @@
         class="bg-transparent text-[#A0576F] border border-[#A0576F] rounded-[100px] w-full py-[16px] justify-center text-[18px] font-normal hover:bg-[#F4EAEA] transition cursor-pointer leading-[100%] tracking-[0]" />
     </div>
   </div>
-</template>
 
+  <LegalDialog v-model:show="showLegalModal" :url="legalUrl" />
+
+</template>
 <script setup lang="ts">
-import { COMPONENTS } from "~/data/constants";
-import { nextTick } from "vue";
-const authModule = useAuth();
-const { setDialogShow } = useApp();
+import { ref, nextTick } from "vue"
+import { COMPONENTS } from "~/data/constants"
+import { useAuth } from "~/stores/auth"
+import { useApp } from "~/stores/app"
+import { useToast } from "#imports"
+import LegalDialog from '~/components/base/LegalDialog.vue'
+
+// modules
+const authModule = useAuth()
+const { setDialogShow } = useApp()
+const toast = useToast()
+
+// form state
 const form = ref({
   mobile_number: '',
   mobile_code: "966",
   accept_terms: 0
-});
+})
 
-const continueAsGuest = function () {
-  authModule.setStepComponent(COMPONENTS.INTRO_STEP);
-  nextTick(() => setDialogShow(false));
+// handle continue as guest
+const continueAsGuest = () => {
+  authModule.setStepComponent(COMPONENTS.INTRO_STEP)
+  nextTick(() => setDialogShow(false))
 }
-const toast = useToast();
-const onContinueClick = function () {
+
+// handle main continue button
+const onContinueClick = () => {
   if (!form.value.mobile_number) {
-    toast.add({ title: "Please Enter Valid Mobile Number!", color: 'error' });
-    return;
+    toast.add({ title: "Please Enter Valid Mobile Number!", color: 'error' })
+    return
   }
 
   if (!form.value.accept_terms) {
-    toast.add({ title: "You must accept the Terms and Conditions before you can proceed.", color: 'error' });
-    return;
+    toast.add({ title: "You must accept the Terms and Conditions before you can proceed.", color: 'error' })
+    return
   }
 
   const cleanedForm = {
     ...form.value,
     mobile_number: form.value.mobile_number.replace(/\s/g, '')
-  };
-
-  authModule.sendOtp(cleanedForm);
-};
-
-
-
-
-const formatMobileNumber = (e: Event) => {
-  let raw = (e.target as HTMLInputElement).value;
-
-  raw = raw.replace(/\D/g, '').slice(0, 9);
-
-  let formatted = '';
-  if (raw.length <= 2) {
-    formatted = raw;
-  } else if (raw.length <= 6) {
-    formatted = `${raw.slice(0, 2)} ${raw.slice(2)}`;
-  } else {
-    formatted = `${raw.slice(0, 2)} ${raw.slice(2, 6)} ${raw.slice(6)}`;
   }
 
-  form.value.mobile_number = formatted;
-};
+  authModule.sendOtp(cleanedForm)
+}
 
+// phone formatting
+const formatMobileNumber = (e: Event) => {
+  let raw = (e.target as HTMLInputElement).value
+  raw = raw.replace(/\D/g, '').slice(0, 9)
+
+  let formatted = ''
+  if (raw.length <= 2) {
+    formatted = raw
+  } else if (raw.length <= 6) {
+    formatted = `${raw.slice(0, 2)} ${raw.slice(2)}`
+  } else {
+    formatted = `${raw.slice(0, 2)} ${raw.slice(2, 6)} ${raw.slice(6)}`
+  }
+
+  form.value.mobile_number = formatted
+}
+
+// unified LegalDialog modal
+const showLegalModal = ref(false)
+const legalUrl = ref('')
+
+// open terms
+const openTerms = () => {
+  legalUrl.value = 'https://lasuran.com/terms' // أو رابط من API لو عندك
+  showLegalModal.value = true
+}
+
+// open privacy
+const openPrivacy = () => {
+  legalUrl.value = 'https://lasuran.com/privacy' // أو رابط من API لو عندك
+  showLegalModal.value = true
+}
 </script>

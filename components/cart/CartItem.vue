@@ -26,15 +26,15 @@
         </p>
         
         <p class="flex-1 text-[#EBE4DF] text-[14px] font-normal leading-normal hidden md:block">
-          <span class="block">
+          <span class="block line-through text-[12px]">
             <span class="sar-icon">&#xe900;</span> {{ item.unit_price_before_discount }}
           </span>
           <span class="block">
             <span class="sar-icon">&#xe900;</span> {{ item.unit_price_with_tax }}
           </span>
-          <span class="block">
+          <!-- <span class="block">
             <span class="sar-icon">&#xe900;</span> {{ item.unit_discount }}
-          </span>
+          </span> -->
           
         
         </p>

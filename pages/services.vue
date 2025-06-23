@@ -32,10 +32,16 @@
 
             </div>
             <div v-if="service.discount_value"
-              class="absolute top-[26px] left-[23px] text-[#A0576F] bg-[#EBE4DF] border-[2px] border-[#A0576F] font-bold outline-[3px] outline-[#EBE4DF] px-[9px] py-[4px] rounded-full" style="transform: rotate3d(-3, 1, -3, 6deg);">
-
-              {{ service.discount_value }} %
+              class="absolute top-[26px] left-[23px] text-[#A0576F] bg-[#EBE4DF] border-[2px] border-[#A0576F] font-bold outline-[3px] outline-[#EBE4DF] px-[9px] py-[4px] rounded-full animate-pulse-slow transition-transform duration-500 ease-in-out scale-[1] hover:scale-[1.05]"
+              style="transform: rotate3d(-3, 1, -3, 6deg);">
+              <template v-if="service.discount_type === 'percentage'">
+                {{ service.discount_value }}%
+              </template>
+              <template v-else-if="service.discount_type === 'value'">
+                <span class="sar-icon">&#xe900;</span> {{ service.discount_value }}
+              </template>
             </div>
+
           </div>
         </template>
       </BaseCard>

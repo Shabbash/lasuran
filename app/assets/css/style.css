@@ -123,6 +123,22 @@
 
 }
 
+@layer utilities {
+  @keyframes pulse-slow {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.08);
+    }
+  }
+
+  .animate-pulse-slow {
+    animation: pulse-slow 1s infinite;
+  }
+}
+
+
 @media screen and (max-width:767px) {
   .bg-decore::before {
     z-index: 0;
