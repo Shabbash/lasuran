@@ -5,7 +5,7 @@
       <BaseCard v-for="service in menuModule.services.data as Service[]" :key="service.id">
         <template #default>
           <div @click="openModal(service)"
-            class="pt-[14px] pb-[20px] px-[11px] rounded-[16px] overflow-hidden bg-[#EBE4DF] cursor-pointer hover:shadow-lg transition">
+            class="pt-[14px] pb-[20px] px-[11px] rounded-[16px] overflow-hidden bg-[#EBE4DF] cursor-pointer hover:shadow-lg transition relative">
             <div class=" mb-[14px] h-[137px] rounded-[16px] overflow-hidden">
               <img :src="service.image" alt="Service Image" class="w-full h-full object-cover" />
             </div>
@@ -14,9 +14,27 @@
               <h3 class="font-medium text-[18px] leading-[100%] text-[#5B605C] mb-[7px]">
                 {{ service.name }}
               </h3>
-              <p class="text-[#A0576F] font-bold text-[14px] leading-[100%] tracking-[-2%]">
-                {{ service.price ? service.price + ' SAR' : 'Price Upon Selection' }}
-              </p>
+
+              <div class="flex justify-between">
+                <p v-if="service.discount_value"
+                  class="text-[#A0576F] font-bold text-[12px] leading-[100%] tracking-[-2%] line-through">
+
+                  <span class="sar-icon">&#xe900;</span> {{ service.price_before_discount }}
+                </p>
+
+                <p class="text-[#A0576F] font-bold text-[14px] leading-[100%] tracking-[-2%]">
+                  <span class="sar-icon">&#xe900;</span> {{ service.price }}
+                </p>
+
+
+              </div>
+
+
+            </div>
+            <div v-if="service.discount_value"
+              class="absolute top-[26px] left-[23px] text-[#A0576F] bg-[#EBE4DF] border-[2px] border-[#A0576F] font-bold outline-[3px] outline-[#EBE4DF] px-[9px] py-[4px] rounded-full" style="transform: rotate3d(-3, 1, -3, 6deg);">
+
+              {{ service.discount_value }} %
             </div>
           </div>
         </template>
@@ -88,7 +106,7 @@
         </div>
       </template>
     </Dialog>
-    
+
 
   </Container>
 </template>
@@ -103,7 +121,7 @@ import type { TabsItem, RadioGroupItem, RadioGroupValue } from '@nuxt/ui'
 import { CalendarDate } from '@internationalized/date'
 import { COMPONENTS } from "~/data/constants";
 import { SERVICE_TYPES } from '~/data/constants'
-  const { setServiceType , getServiceType  } = useApp();
+const { setServiceType, getServiceType } = useApp();
 import PriceIcon from '@/components/icons/PriceIcon.vue'
 
 
@@ -121,7 +139,7 @@ interface Service {
 
 const menuModule = useMenu();
 // getProducts
-  setServiceType(SERVICE_TYPES.RESERVATION);
+setServiceType(SERVICE_TYPES.RESERVATION);
 
 menuModule.initMenu();
 
@@ -261,7 +279,9 @@ const { setDialogShow, setDialogComponent } = useApp();
 
 function openModal(service: any) {
   menuModule.setService(service)
-  setDialogComponent(COMPONENTS.SERVICE_SHOW);
+  setDialogComponent(COMPONENTS.SERVICE_SHOW, {
+    modalMaxWidth: 'max-w-[539px]'
+  });
   setDialogShow(true);
   // selectedService.value = service
   // selectedExtension.value = ''
@@ -303,7 +323,7 @@ const filters = ref({
 onMounted(() => {
   console.log('Shop page mounted, initializing...');
   setServiceType(SERVICE_TYPES.RESERVATION);
-  
+
 });
 
 </script>

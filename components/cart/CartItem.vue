@@ -20,9 +20,24 @@
 
       </div>
       <div class="flex flex-1 justify-end">
-        <p class="flex-2 text-[#EBE4DF] text-[14px] font-normal leading-normal hidden md:block">{{ item.duration }}</p>
+        <p class="flex-2 text-[#EBE4DF] text-[14px] font-normal leading-normal hidden md:block">
+          <span class="block">{{ item.date }}</span>
+          <span class="block">{{ item.duration }}</span>
+        </p>
         
-        <p class="flex-1 text-[#EBE4DF] text-[14px] font-normal leading-normal hidden md:block"><span class="sar-icon">&#xe900;</span> {{ item.price }}</p>
+        <p class="flex-1 text-[#EBE4DF] text-[14px] font-normal leading-normal hidden md:block">
+          <span class="block">
+            <span class="sar-icon">&#xe900;</span> {{ item.unit_price_before_discount }}
+          </span>
+          <span class="block">
+            <span class="sar-icon">&#xe900;</span> {{ item.unit_price_with_tax }}
+          </span>
+          <span class="block">
+            <span class="sar-icon">&#xe900;</span> {{ item.unit_discount }}
+          </span>
+          
+        
+        </p>
         <div class="md:flex-1">
           <button class="cursor-pointer"
           @click="$emit('edit', item)">
@@ -88,6 +103,9 @@ defineProps<{
     name: string
     duration: string
     price: number
+    unit_price_before_discountce: number
+    unit_discount: number
+    unit_price_with_tax: number
     expanded?: boolean
     professional?: string
     date?: string

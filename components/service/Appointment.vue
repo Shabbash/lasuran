@@ -72,11 +72,11 @@
         :class="selectedExtension === '' ? 'bg-[#a0576f69]' : 'bg-[#A0576F]'">
         <PriceIcon />
         <span>
-          
+
           {{ selectedExtension === '' && (!selectedService.price && !computedService?.price)
             ? 'Price Upon Selection'
-            : (selectedService.price ?? computedService?.price) + ' SAR' }} - 
-            {{ isEditing ? 'Update' : 'Continue' }}
+            : (selectedService.price ?? computedService?.price) + ' SAR' }} -
+          {{ isEditing ? 'Update' : 'Continue' }}
         </span>
       </BaseButton>
 
@@ -233,7 +233,9 @@ const addToCart = function () {
     }
     console.log('selectedDateObject.value.slots ', selectedDateObject.value.slots, body)
     cartModule.updateServiceAvailableSlot(body).then((availableSlots) => {
-      setDialogComponent(COMPONENTS.SERVICE_SUCCESS);
+      setDialogComponent(COMPONENTS.SERVICE_SUCCESS, {
+        modalMaxWidth: 'max-w-[430px]'
+      });
       cartModule.fetchCart();
     })
     // setDialogComponent(COMPONENTS.SERVICE_SUCCESS);

@@ -4,9 +4,9 @@
 
     <div>
       <h2 class="text-white mb-[16px] text-[19px] font-normal">Gift Cards</h2>
-      <p class="hint text-[#C6C6C7] text-[13px] font-[350] flex items-center gap-[10px] mb-[15px]">
+      <!-- <p class="hint text-[#C6C6C7] text-[13px] font-[350] flex items-center gap-[10px] mb-[15px]">
         {{ giftCards[0]?.single_use_message || 'The gift card is valid for one time use only.' }}
-      </p>
+      </p> -->
 
       <!-- Loading State -->
       <GiftCardSkeleton v-if="isLoading" />
@@ -25,25 +25,24 @@
         <div v-for="(card, index) in giftCards" :key="card.id || index" class="relative cursor-pointer"
           @click="openCardModal(card)">
           <div class="w-full h-full">
-            <img class="w-full h-full cover" :src="card.card_image"
-                 :alt="card.name || 'Gift card image'"
-                 @error="(e) => (e.target as HTMLImageElement).src = '/assets/img/default-gift-card.png'" />
+            <img class="w-full h-full cover" :src="card.card_image" :alt="card.name || 'Gift card image'"
+              @error="(e) => (e.target as HTMLImageElement).src = '/assets/img/default-gift-card.png'" />
           </div>
           <div class="flex items-center justify-between absolute inset-0 px-[17px] py-[15px]">
             <div class="flex flex-col justify-between h-full">
               <div>
                 <h2 class="text-white text-[15px] font-bold leading-normal">{{ card.title || 'Gift Card' }}</h2>
                 <h3 class="text-white text-[40px] font-bold leading-normal">
-                  <span class="sar-icon">&#xe900;</span> {{ card.price || 0 }} <span class="text-[20px]"</span>
+                  <span class="sar-icon">&#xe900;</span> {{ card.price || 0 }} <span class="text-[20px]" </span>
                 </h3>
               </div>
               <p class="text-white text-[11px] font-bold leading-normal">
-                  {{ card.name || 'Lasuran Gift Card' }}
+                {{ card.name || 'Lasuran Gift Card' }}
               </p>
             </div>
-            <div v-if="card.logo">
+            <!-- <div v-if="card.logo">
               <img :src="card.logo" alt="logo" />
-            </div>
+            </div> -->
           </div>
         </div>
       </div>
@@ -68,44 +67,48 @@
             <div v-if="selectedCard" class="relative">
               <div class="w-full h-full">
                 <img class="w-full h-full cover" :src="selectedCard.card_image"
-                     :alt="selectedCard.name || 'Gift card image'"
-                     @error="(e) => (e.target as HTMLImageElement).src = '/assets/img/default-gift-card.png'" />
+                  :alt="selectedCard.name || 'Gift card image'"
+                  @error="(e) => (e.target as HTMLImageElement).src = '/assets/img/default-gift-card.png'" />
               </div>
               <div class="flex items-center justify-between absolute inset-0 px-[17px] py-[15px]">
                 <div class="flex flex-col justify-between h-full">
                   <div>
-                    <h2 class="text-white text-[15px] font-bold leading-normal">{{ selectedCard?.title || 'Gift Card' }}</h2>
+                    <h2 class="text-white text-[15px] font-bold leading-normal">{{ selectedCard?.title || 'Gift Card' }}
+                    </h2>
                     <h3 class="text-white text-[40px] font-bold leading-normal">
-                      <span class="sar-icon">&#xe900;</span> {{ selectedCard?.price || 0 }} 
+                      <span class="sar-icon">&#xe900;</span> {{ selectedCard?.price || 0 }}
                     </h3>
                   </div>
                   <p class="text-white text-[11px] font-bold leading-normal">
                     expires: {{ selectedCard?.expiry_date || '2025-12-31' }}
                   </p>
                 </div>
-                <div v-if="selectedCard?.logo">
+                <!-- <div v-if="selectedCard?.logo">
                   <img :src="selectedCard.logo" alt="logo" />
-                </div>
+                </div> -->
               </div>
             </div>
 
             <div class="flex justify-between items-center mt-[40px] mb-[15px]">
-              <h2 class="text-[30px] font-bold text-[#A0576F] leading-normal">{{ selectedCard?.title || 'Gift Card' }}</h2>
-              <p class="text-[19px] font-bold text-[#A0576F] leading-normal"><span class="sar-icon">&#xe900;</span> {{ selectedCard?.price || 0 }}</p>
+              <h2 class="text-[30px] font-bold text-[#A0576F] leading-normal">{{ selectedCard?.title || 'Gift Card' }}
+              </h2>
+              <p class="text-[19px] font-bold text-[#A0576F] leading-normal"><span class="sar-icon">&#xe900;</span> {{
+                selectedCard?.price || 0 }}</p>
             </div>
 
             <div class="text-[#5B605C] mb-[16px] text-[14px] font-[350] leading-[23.128px]"
-                 v-html="selectedCard?.description || 'Give the perfect gift with a Lasuran gift card. Valid for all services and products at our salon.'">
+              v-html="selectedCard?.description || 'Give the perfect gift with a Lasuran gift card. Valid for all services and products at our salon.'">
             </div>
 
-            <p v-if="selectedCard?.single_use_message" class="text-[#5B605C] mb-[16px] text-[12px] font-[350] italic">
+            <p v-if="selectedCard?.single_use_message" class="text-[#5B605C] mb-[16px] text-[12px] font-[350]">
               {{ selectedCard.single_use_message }}
             </p>
 
             <div class="flex justify-between items-center gap-[25px] mt-[55px]">
 
-              <BaseCounter v-model="quantity" />
-              <BaseButton @click="checkoutGiftCard" :loading="isCheckingOut" :disabled="!selectedCard"
+              <BaseCounter v-model="quantity" :max="selectedCard?.number_of_gift_card || 1" />
+              <BaseButton @click="checkoutGiftCard" :loading="isCheckingOut"
+                :disabled="!selectedCard || quantity < 1 || quantity > (selectedCard?.number_of_gift_card || 1)"
                 class="cart-btn flex align-center gap-[10px] w-full text-white rounded-full font-[400] text-[16px] justify-center disabled:bg-[#A0576F] hover:bg-[#913E5D]"
                 :class="selectedCard ? 'bg-[#A0576F]' : 'bg-[#a0576f69]'">
 

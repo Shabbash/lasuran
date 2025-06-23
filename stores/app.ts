@@ -1,69 +1,71 @@
 import { defineStore } from "pinia";
 import { DELIVERY_METHOD, DEVICE_TYPES, SERVICE_TYPES } from "~/data/constants";
 import type { AppState } from '~/types/app';
-import  components from "~/components/import";
+import components from "~/components/import";
 
 export const useApp = defineStore("app", {
-    state: () : AppState => {
+    state: (): AppState => {
         return {
-          locale: "en",
-          serviceType: SERVICE_TYPES.RESERVATION,
-          deliveryMethod: DELIVERY_METHOD.RESERVATION,
-          deviceType: DEVICE_TYPES.WEB,
-          dialog: {
-            show: false,
-            options: {},
-            component: '',
-            data: {}
-          }
+            locale: "en",
+            serviceType: SERVICE_TYPES.RESERVATION,
+            deliveryMethod: DELIVERY_METHOD.RESERVATION,
+            deviceType: DEVICE_TYPES.WEB,
+            dialog: {
+                show: false,
+                options: {},
+                component: '',
+                data: {}
+            }
         }
     },
     getters: {
-        getLocale(state:AppState) {
+        getLocale(state: AppState) {
             return state.locale;
         },
-        getServiceType(state:AppState) {
+        getServiceType(state: AppState) {
             return state.serviceType;
         },
-        getDeliveryMethod(state:AppState) {
+        getDeliveryMethod(state: AppState) {
             return state.deliveryMethod;
         },
-        getDeviceType(state:AppState) {
+        getDeviceType(state: AppState) {
             return state.deviceType;
         },
-        getDialogShow(state:AppState) {
+        getDialogShow(state: AppState) {
             return state.dialog.show;
         },
-        getDialogComponent(state:AppState) {
+        getDialogComponent(state: AppState) {
             const componentKey = state.dialog.component;
             console.log("components[component] ", componentKey in components ? components[componentKey] : null);
             return (componentKey in components) ? components[componentKey] : state.dialog.component;
         },
-        getDialogOptions(state:AppState) {
+        getDialogOptions(state: AppState) {
             return state.dialog.options ?? {};
         }
     },
     actions: {
-        setLocale(locale : string)  {
+        setLocale(locale: string) {
             this.$state.locale = locale;
         },
-        setServiceType(serviceType :string) {
+        setServiceType(serviceType: string) {
             this.$state.serviceType = serviceType;
         },
-        setDeliveryMethod(deliveryMethod :string) {
+        setDeliveryMethod(deliveryMethod: string) {
             this.$state.deliveryMethod = deliveryMethod;
         },
-        setDeviceType(deviceType :string) {
+        setDeviceType(deviceType: string) {
             this.$state.deviceType = deviceType;
         },
-        setDialogComponent(component: string) {
-            this.dialog.component = component;
-        },
+        setDialogComponent(component: string, options: object = {}) {
+            this.dialog.component = component
+            this.dialog.options = options
+        }
+        ,
         setDialogShow(show: boolean, options: {} = {}) {
             this.dialog.show = show;
-            this.dialog.options = options;
+            // this.dialog.options = options;
         },
-        setDialogOptions(options: object | []){
+        setDialogOptions(options: object | []) {
             this.dialog.data = options
         },
     },

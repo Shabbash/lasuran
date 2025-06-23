@@ -23,7 +23,10 @@ export const useAuthCheck = () => {
 
       // Set up the authentication dialog
       authStore.setStepComponent(COMPONENTS.INTRO_STEP);
-      setDialogComponent(COMPONENTS.AUTH_WIZARD);
+      setDialogComponent(COMPONENTS.AUTH_WIZARD, {
+        modalMaxWidth: 'max-w-[638px]'
+      });
+
       setDialogShow(true);
 
       // Execute optional callback for not authenticated
@@ -112,7 +115,10 @@ export const useAuthCheck = () => {
    */
   const showAuthDialog = () => {
     authStore.setStepComponent(COMPONENTS.INTRO_STEP);
-    setDialogComponent(COMPONENTS.AUTH_WIZARD);
+    setDialogComponent(COMPONENTS.AUTH_WIZARD, {
+      modalMaxWidth: 'max-w-[638px]'
+    });
+
     setDialogShow(true);
   };
 

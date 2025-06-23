@@ -31,13 +31,19 @@ const props = defineProps({
   min: {
     type: Number,
     default: 1
+  },
+  max: {
+    type: Number,
+    default: Infinity
   }
 })
 
 const emit = defineEmits(['update:modelValue'])
 
 const increase = () => {
-  emit('update:modelValue', props.modelValue + 1)
+  if (props.modelValue < props.max) {
+    emit('update:modelValue', props.modelValue + 1)
+  }
 }
 
 const decrease = () => {

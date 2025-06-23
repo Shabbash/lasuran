@@ -42,33 +42,21 @@
         </div>
 
         <div class="mt-6 space-x-4">
-          <button
-            v-if="!authStore.isAuthenticated"
-            @click="showLogin"
-            class="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600"
-          >
+          <button v-if="!authStore.isAuthenticated" @click="showLogin"
+            class="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600">
             Login
           </button>
 
-          <button
-            v-if="authStore.isAuthenticated"
-            @click="logout"
-            class="bg-red-500 text-white px-6 py-2 rounded hover:bg-red-600"
-          >
+          <button v-if="authStore.isAuthenticated" @click="logout"
+            class="bg-red-500 text-white px-6 py-2 rounded hover:bg-red-600">
             Logout
           </button>
 
-          <button
-            @click="initAuth"
-            class="bg-purple-500 text-white px-6 py-2 rounded hover:bg-purple-600"
-          >
+          <button @click="initAuth" class="bg-purple-500 text-white px-6 py-2 rounded hover:bg-purple-600">
             Refresh Auth
           </button>
 
-          <button
-            @click="testAPI"
-            class="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600"
-          >
+          <button @click="testAPI" class="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-600">
             Test Profile API
           </button>
         </div>
@@ -94,7 +82,10 @@ const result = ref('');
 
 const showLogin = () => {
   authStore.setStepComponent(COMPONENTS.INTRO_STEP);
-  setDialogComponent(COMPONENTS.AUTH_WIZARD);
+  setDialogComponent(COMPONENTS.AUTH_WIZARD, {
+    modalMaxWidth: 'max-w-[638px]'
+  });
+
   setDialogShow(true);
 };
 

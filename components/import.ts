@@ -28,5 +28,6 @@ const components: {} = {
     [COMPONENTS.PAYMENT_CARDS] : Cards,
     [COMPONENTS.PAYMENT_CREATE_CARD] : CreateCard,
     [COMPONENTS.PAYMENT_LOADING] : PaymentLoading,
+
 };
 export default components;

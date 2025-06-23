@@ -15,7 +15,10 @@ export default defineNuxtRouteMiddleware(() => {
 
         // Set up the authentication dialog
         authStore.setStepComponent(COMPONENTS.INTRO_STEP);
-        setDialogComponent(COMPONENTS.AUTH_WIZARD);
+        setDialogComponent(COMPONENTS.AUTH_WIZARD, {
+          modalMaxWidth: 'max-w-[638px]'
+        });
+        
         setDialogShow(true);
       });
     }

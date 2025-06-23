@@ -9,7 +9,8 @@
     <div class="mx-[20px] mt-[20px] mb-[40px] relative">
       <div class="flex justify-between items-center mb-2">
         <h2 class="font-bold text-[30px] text-[#A0576F] leading-[100%]">{{ defaultService.name }}</h2>
-        <span class="font-bold text-[19px] text-[#A0576F] leading-[100%]" v-html="selectedExtension === '' && selectedService.price <= 0 ? 'Price Upon Selection' : formatSAR(selectedService.price)"></span>
+        <span class="font-bold text-[19px] text-[#A0576F] leading-[100%]"
+          v-html="selectedExtension === '' && selectedService.price <= 0 ? 'Price Upon Selection' : formatSAR(selectedService.price)"></span>
 
       </div>
 
@@ -18,7 +19,7 @@
       </div>
 
       <p class="text-[14px] font-[350] text-[#5F2C3E] leading-[1.6] mb-[18px]" v-html="selectedService.description">
-                
+
       </p>
 
       <!-- <div class="flex justify-between gap-4">
@@ -78,6 +79,8 @@ import ServiceDetailSkeleton from "~/components/skeletons/ServiceDetailSkeleton.
 import { COMPONENTS } from "~/data/constants";
 import PriceIcon from '@/components/icons/PriceIcon.vue'
 import { formatSAR } from '~/utils/formatCurrency'
+
+
 
 const priceWithIcon = computed(() => {
   if (selectedExtension.value === '' && (selectedService.value.price == null || selectedService.value.price <= 0)) {
@@ -207,7 +210,10 @@ const addToCart = function () {
     // Use the same method for both add and update operations
     // The API will detect if it's an update based on the presence of cart_product_id
     cartModule.addOrUpdateServiceInCart(payload).then(() => {
-      setDialogComponent(COMPONENTS.SERVICE_APPOINTMENT);
+      setDialogComponent(COMPONENTS.SERVICE_APPOINTMENT, {
+        modalMaxWidth: 'max-w-[539px]'
+      });
+
     }).catch((error) => {
       console.error('Error adding/updating cart:', error);
       // Loading state will be reset by the cart module's onError handler
