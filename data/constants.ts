@@ -27,6 +27,7 @@ export const COMPONENTS = {
     PAYMENT_CARDS: "PaymentCards",
     PAYMENT_CREATE_CARD: "PaymentCreateCard",
     PAYMENT_LOADING: "PaymentLoading",
+    CONFIRM_DIALOG: "ConfirmDialog"
 
 }
 

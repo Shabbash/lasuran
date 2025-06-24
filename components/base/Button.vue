@@ -1,11 +1,21 @@
 <template>
-  <UButton :label="label" :loading="loading" :disabled="disabled"
-           class="bg-transparent text-[#A0576F] border border-[#A0576F] rounded-[100px] w-full py-[16px] justify-center text-[18px] font-normal hover:bg-[#F4EAEA] transition cursor-pointer leading-[100%] tracking-[0]">
-    <slot></slot>
+  <UButton
+    :label="label"
+    :loading="loading"
+    :disabled="disabled"
+    class="w-full justify-center transition cursor-pointer leading-[100%] tracking-[0]"
+    v-bind="attrs"
+  >
+    <slot />
   </UButton>
 </template>
 
 <script lang="ts" setup>
+defineOptions({ inheritAttrs: false })
+
+import { useAttrs } from 'vue'
+
+const attrs = useAttrs()
 
 const props = defineProps({
   label: {
@@ -21,10 +31,4 @@ const props = defineProps({
     default: false
   }
 })
-
 </script>
-
-
-<style scoped>
-
-</style>

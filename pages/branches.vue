@@ -94,10 +94,10 @@
                   Opening Times:</h3>
 
                 <!-- Common time display if available -->
-                <div v-if="selectedBranch.common_time" class="mb-4 p-3 bg-white/10 rounded-lg">
+                <!-- <div v-if="selectedBranch.common_time" class="mb-4 p-3 bg-white/10 rounded-lg">
                   <div class="text-[#81F6D0] text-[14px] font-medium">{{ selectedBranch.common_day }}</div>
                   <div class="text-white text-[16px]">{{ selectedBranch.common_time }}</div>
-                </div>
+                </div> -->
 
                 <!-- Detailed working times -->
                 <div class="space-y-3">

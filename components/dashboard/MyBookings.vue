@@ -20,7 +20,7 @@
 
         
       </div> -->
-  
+
 
       <BaseButton label="Book A Table" @click="navigateTo('/services')"
         class="px-6 py-1.5 bg-[#6B8B9B] hover:bg-[#6B8B9B] hover:opacity-[.9] text-white rounded-full text-sm font-medium transition-colors max-w-[175px]" />
@@ -158,26 +158,34 @@
                   <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">Subtotal ({{ selectedBooking.guests }}
                     Persons)</p>
                   <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">
-                   <span class="sar-icon">&#xe900;</span> {{selectedBooking._originalData?.total || '00.00' }}</p>
+                    <span class="sar-icon">&#xe900;</span> {{ selectedBooking._originalData?.total || '00.00' }}
+                  </p>
                 </div>
                 <div class="flex justify-between pb-[12px] border-b border-b-[#B2B0B0]">
                   <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">VAT Amount (15%)</p>
-                  <p class="text-[#5B605C] text-[12px] font-[350] leading-normal"><span class="sar-icon">&#xe900;</span> 00.00</p>
+                  <p class="text-[#5B605C] text-[12px] font-[350] leading-normal"><span class="sar-icon">&#xe900;</span>
+                    00.00</p>
                 </div>
                 <div class="flex justify-between pb-[12px] border-b border-b-[#B2B0B0]">
                   <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">Service Cost</p>
                   <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">
-                    <span class="sar-icon">&#xe900;</span> {{selectedBooking._originalData?.order_service_fee_price || '00.00' }}</p>
+                    <span class="sar-icon">&#xe900;</span> {{ selectedBooking._originalData?.order_service_fee_price ||
+                      '00.00' }}
+                  </p>
                 </div>
                 <div class="flex justify-between pb-[12px] border-b border-b-[#B2B0B0]">
                   <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">Discount</p>
                   <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">
-                    <span class="sar-icon">&#xe900;</span> {{selectedBooking._originalData?.promo_discount || '00.00' }}</p>
+                    <span class="sar-icon">&#xe900;</span> {{ selectedBooking._originalData?.promo_discount || '00.00'
+                    }}
+                  </p>
                 </div>
                 <div class="flex justify-between pb-[12px] border-b border-b-[#B2B0B0]">
                   <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">Bookmarked points (-100 Pts.)</p>
                   <p class="text-[#5B605C] text-[12px] font-[350] leading-normal">
-                    <span class="sar-icon">&#xe900;</span> {{selectedBooking._originalData?.redeem_points_price || '00.00' }}</p>
+                    <span class="sar-icon">&#xe900;</span> {{ selectedBooking._originalData?.redeem_points_price ||
+                      '00.00' }}
+                  </p>
                 </div>
               </div>
 
@@ -185,7 +193,8 @@
                 <div class="flex justify-between">
                   <p class="text-[#A0576F] text-[21px] font-bold leading-normal">Total</p>
                   <p class="text-[#A0576F] text-[21px] font-bold leading-normal">
-                    <span class="sar-icon">&#xe900;</span> {{ selectedBooking._originalData?.total || '00.00' }}</p>
+                    <span class="sar-icon">&#xe900;</span> {{ selectedBooking._originalData?.total || '00.00' }}
+                  </p>
                 </div>
               </div>
             </div>
@@ -239,9 +248,11 @@
               <!-- ✅ Cancel Booking - Show if order is cancelable -->
               <BaseButton v-if="selectedBooking._originalData?.is_cancelable"
                 class="w-full h-[50px] bg-[#C44E4E] hover:bg-[#C44E4E] text-[#EBE4DF] rounded-full text-[13px] font-medium"
-                @click="handleCancelBooking">
+                @click="openCancelBookingConfirm">
                 Cancel Booking
               </BaseButton>
+
+
             </div>
 
 
@@ -251,7 +262,7 @@
     </Dialog>
 
     <!-- Delete Confirmation Dialog -->
-    <Dialog v-model:open="deleteModalOpen" :modalMaxWidth="'max-w-[356px]'">
+    <!-- <Dialog v-model:open="deleteModalOpen" :modalMaxWidth="'max-w-[356px]'">
       <template #body>
         <div class="mx-auto rounded-[30px] overflow-hidden shadow-lg bg-[#EBE4DF] text-[#5F2C3E]">
           <div class="pt-[34px] px-[50px] pb-[30px] relative text-center">
@@ -286,7 +297,7 @@
           </div>
         </div>
       </template>
-    </Dialog>
+    </Dialog> -->
 
 
     <Dialog v-model:open="ratingModalOpen" :modalMaxWidth="'max-w-[608px]'">
@@ -328,24 +339,24 @@
 
   </div>
 </template>
-
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
 import Dialog from '@/components/base/Dialog.vue';
 import StarRating from '@/components/cart/StarRating.vue';
 import { useBookings } from '@/stores/bookings';
 import { useAuth } from '@/stores/auth';
+import { useApp } from '@/stores/app';
+import { COMPONENTS } from '~/data/constants';
 
-import UserIcon from '~/components/icons/UserIcon.vue'
-import GuestsIcon from '~/components/icons/GuestsIcon.vue'
-import LocationIcon from '~/components/icons/LocationIcon.vue'
-import CalendarIcon2 from '~/components/icons/CalendarIcon2.vue'
-import ClockIcon from '~/components/icons/ClockIcon.vue'
-import BookingSkeleton from '@/components/skeletons/BookingSkeleton.vue'
+import UserIcon from '~/components/icons/UserIcon.vue';
+import GuestsIcon from '~/components/icons/GuestsIcon.vue';
+import LocationIcon from '~/components/icons/LocationIcon.vue';
+import CalendarIcon2 from '~/components/icons/CalendarIcon2.vue';
+import ClockIcon from '~/components/icons/ClockIcon.vue';
+import BookingSkeleton from '@/components/skeletons/BookingSkeleton.vue';
+import ConfirmDialog from '@/components/base/ConfirmDialog.vue';
 
-
-const ratingModalOpen = ref(false)
-
+const ratingModalOpen = ref(false);
 const isRatingReadOnly = ref(false);
 
 const ratingLevels = [
@@ -354,59 +365,38 @@ const ratingLevels = [
   { value: 3, label: 'Average' },
   { value: 4, label: 'Good' },
   { value: 5, label: 'Excellent' }
-]
+];
 
 const rating = ref({
   serviceQuality: 3,
   atmosphere: 0,
   comment: ''
-})
-
-
-// watch(
-//   () => rating.value.serviceQuality,
-//   (val) => {
-//     console.log('✅ Selected Rating (Service Quality):', val)
-//   },
-//   { immediate: true }
-// )
+});
 
 function submitRating() {
-  console.log('Submitted:', rating.value)
-
-  // تحديث حالة التقييم
   if (selectedBooking.value) {
     selectedBooking.value.rating_status = true;
-
-    // تحديث كمان في البيانات الأساسية لو بدك تخزنها بشكل دائم
     const index = bookings.value.findIndex(b => b.id === selectedBooking.value.id);
     if (index !== -1) {
       bookings.value[index].rating_status = true;
     }
   }
-
   ratingModalOpen.value = false;
 }
 
-
 function handleViewRating() {
-  // البيانات المفترضة من الحجز (ممكن تستبدلها من booking real data)
   rating.value = {
     serviceQuality: selectedBooking.value.serviceQuality ?? 4,
     atmosphere: selectedBooking.value.atmosphere ?? 3,
     comment: selectedBooking.value.comment ?? 'Service was great!'
   };
-
-  isRatingReadOnly.value = true; // 🟢 اجعل المودال عرض فقط
+  isRatingReadOnly.value = true;
   ratingModalOpen.value = true;
-  modalOpen.value = false;
+  // modalOpen.value = false;
 }
-
 
 const showEmptyState = computed(() => !isLoading.value && filteredBookings.value.length === 0);
 
-
-// Filter options
 const filters = [
   { id: 'all', label: 'ALL' },
   { id: 'served', label: 'Served' },
@@ -414,42 +404,34 @@ const filters = [
   { id: 'active', label: 'Active' }
 ];
 
-// Currently active filter
 const activeFilter = ref('all');
-
-// Initialize stores
 const bookingsStore = useBookings();
 const authStore = useAuth();
+const { setDialogComponent, setDialogShow } = useApp();
 
-// API Integration - Transform API data to match existing UI
 const bookings = computed(() => {
   return bookingsStore.orders.map(order => ({
     id: order.id,
     bookingNumber: order.order_number,
     status: mapApiStatusToUIStatus(order.status.value),
-    guests: order.number_of_users || 1, // Default to 1 if not specified
+    guests: order.number_of_users || 1,
     branch: order.branch_name,
     date: formatDate(order.date),
     time: order.time,
-    rating_status: !order.can_rate, // If can't rate, means already rated
-    // Store original API data for detailed view
+    rating_status: !order.can_rate,
     _originalData: order
   }));
 });
 
-// Map API status values to UI status values
 function mapApiStatusToUIStatus(apiStatus) {
-  // Map based on your API status values
   const statusMap = {
-    1: 'active',     // Order Confirmed
-    2: 'served',     // Completed/Served
-    3: 'cancelled',  // Cancelled
-    // Add more mappings as needed
+    1: 'active',
+    2: 'served',
+    3: 'cancelled'
   };
   return statusMap[apiStatus] || 'active';
 }
 
-// Format date to match existing UI format
 function formatDate(dateString) {
   const date = new Date(dateString);
   return date.toLocaleDateString('en-US', {
@@ -459,32 +441,22 @@ function formatDate(dateString) {
   });
 }
 
-// Selected booking for details popup
 const selectedBooking = ref(null);
 const modalOpen = ref(false);
-
-// Booking to delete (for confirmation dialog)
 const bookingToDelete = ref(null);
-const deleteModalOpen = ref(false);
 
-// Check if there are any bookings
 const hasAnyBookings = computed(() => bookings.value.length > 0);
-
-// Loading state
 const isLoading = computed(() => bookingsStore.isLoading);
 
-// Check if there are bookings with a specific status
 const hasBookingsWithStatus = (status) => {
   return bookings.value.some(booking => booking.status === status);
 };
 
-// Check if a filter should be disabled
 const isFilterDisabled = (filterId) => {
   if (filterId === 'all') return false;
   return !hasBookingsWithStatus(filterId);
 };
 
-// Get filtered bookings based on active filter
 const filteredBookings = computed(() => {
   if (activeFilter.value === 'all') {
     return bookings.value;
@@ -492,26 +464,21 @@ const filteredBookings = computed(() => {
   return bookings.value.filter(booking => booking.status === activeFilter.value);
 });
 
-// Helper function to capitalize first letter
 function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-// Open booking details popup
 function openBookingDetails(booking) {
   selectedBooking.value = booking;
   modalOpen.value = true;
 }
 
-// Handle rate service button
 function handleRateService() {
   isRatingReadOnly.value = false;
   ratingModalOpen.value = true;
   modalOpen.value = false;
 }
 
-
-// Handle make service button (View Invoice)
 function handleMakeService() {
   if (selectedBooking.value?._originalData?.invoice_link) {
     window.open(selectedBooking.value._originalData.invoice_link, '_blank');
@@ -521,53 +488,45 @@ function handleMakeService() {
   modalOpen.value = false;
 }
 
-function handleCancelBooking() {
-  // نعمل clone حتى Vue يشوفه كـ new value
-  bookingToDelete.value = { ...selectedBooking.value };
-  modalOpen.value = false;
+function openCancelBookingConfirm() {
+  setDialogComponent(COMPONENTS.CONFIRM_DIALOG, {
+    title: 'Cancel Reservation',
+    message: 'Are you sure you want to cancel your reservation?',
+    confirmText: 'Yes, Cancel',
+    cancelText: 'No, Keep',
+    modalMaxWidth: 'max-w-[356px]',
+    loading: bookingsStore.isLoading,
+    confirmButtonClass: 'h-[49px] bg-[#C44E4E] hover:bg-[#913E5D] text-white rounded-[100px] text-[16px]',
+    cancelButtonClass: 'h-[49px] bg-[#6B8B9B] text-white hover:bg-[#5a7886] rounded-[100px] text-[16px]',
+    onConfirm: () => confirmDeleteBooking()
+  })
+  setDialogShow(true)
+   modalOpen.value = false;
+
 }
 
-
-// Open delete confirmation dialog
-watch(bookingToDelete, (newValue) => {
-  if (newValue) {
-    deleteModalOpen.value = true;
-  }
-});
-
+ 
 async function confirmDeleteBooking() {
-  if (!bookingToDelete.value) return;
-
+  if (!selectedBooking.value) return;
   try {
-    // Call the API to cancel the order
-    const result = await bookingsStore.cancelOrder(bookingToDelete.value.id);
-
+    const result = await bookingsStore.cancelOrder(selectedBooking.value.id);
     if (result.success) {
-      // API call successful - the store has already updated the order status
-      // Close the modal
-      deleteModalOpen.value = false;
-      bookingToDelete.value = null;
+      setDialogShow(false);
+      selectedBooking.value = null;
     } else {
-      // API call failed - error message already shown by the store
       console.error('Failed to cancel order:', result.error);
     }
   } catch (error) {
     console.error('Error cancelling order:', error);
-    // Error handling is done in the store, so we just log here
   }
 }
 
-// Fetch bookings on component mount
 onMounted(async () => {
-  // Ensure auth is initialized first
   if (!authStore.getToken) {
     await authStore.initAuth();
   }
-
-  // Then fetch bookings if we have a token
   if (authStore.getToken) {
     bookingsStore.fetchOrders();
   }
 });
-
 </script>

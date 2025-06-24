@@ -1,5 +1,7 @@
 import { defineStore } from "pinia";
 import { useApi } from "../composables/useApi";
+import { useToast } from '#imports';
+import { useAuth } from '@/stores/auth';
 
 export interface HealthyInfo {
     workout_id: number | null;
@@ -87,8 +89,8 @@ export const useProfile = defineStore("profile", {
             return state.profile?.email_verified === 1;
         },
         getProfileImage(state): string {
-        return state.profile?.image_profile || '/assets/img/default-user.png';
-}
+            return state.profile?.image_profile || '/assets/img/default-user.png';
+        }
     },
 
     actions: {
@@ -128,8 +130,8 @@ export const useProfile = defineStore("profile", {
             // Add all fields to FormData (handles both text and files)
             Object.keys(profileData).forEach(key => {
                 const value = profileData[key as keyof ProfileUpdateData];
-                if (value !== undefined && value !== null) {
-                    if (value instanceof File) {
+                if (value !== undefined && value !== null && value !== '') {
+                    if (typeof File !== 'undefined' && value instanceof File) {
                         formData.append(key, value);
                     } else {
                         formData.append(key, String(value));
@@ -192,7 +194,46 @@ export const useProfile = defineStore("profile", {
             this.$state.updateSuccess = false;
             localStorage.removeItem('pinia-profile');
 
+        },
+
+        deleteProfile() {
+            this.$state.isLoading = true;
+            this.$state.error = null;
+
+            return useApi('account/delete', {
+                method: 'DELETE',
+            }, {
+                onSuccess: async () => {
+                    const authStore = useAuth();
+                    this.clearProfile();        // Clear profile data
+                    await authStore.logout();   // Remove token and navigate
+
+                    const toast = useToast();
+                    toast.add({
+                        title: 'Profile deleted successfully',
+                        color: 'success'
+                    });
+
+                    this.$state.isLoading = false;
+
+                    // Optional safety redirect if logout() didn't redirect
+                    const router = useRouter();
+                    router.push('/auth/login');
+                },
+                onError: (error: any) => {
+                    const toast = useToast();
+                    this.$state.error = error?.message || 'Failed to delete profile';
+                    toast.add({
+                        title: this.$state.error,
+                        color: 'error'
+                    });
+                    this.$state.isLoading = false;
+                }
+            });
         }
+
+
+
     },
 
     persist: {

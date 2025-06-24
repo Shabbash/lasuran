@@ -78,17 +78,16 @@
           <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
         </div>
 
-        <div v-else-if="tickets.length === 0" class="text-center py-10">
+        <div v-if="!isLoading && tickets.length === 0" class="text-center py-10">
           <p class="text-[#EBE4DF] text-lg mb-4">No tickets found</p>
           <BaseButton label="Create New Ticket" @click="navigateToNewTicket"
             class="bg-[#6B8B9B] hover:bg-[#6B8B9B]/90 text-white rounded-full px-[22px] py-[12px] text-sm font-medium" />
         </div>
 
         <Swiper :modules="[Mousewheel]" direction="vertical" :breakpoints="{
-    0: { slidesPerView: 1 },      // mobile
-    768: { slidesPerView: 4 }     // tablets and up
-  }"
-          :mousewheel="{ forceToAxis: true, releaseOnEdges: true }" @activeIndexChange="onActiveTicketChange"
+          0: { slidesPerView: 1 },      // mobile
+          768: { slidesPerView: 4 }     // tablets and up
+        }" :mousewheel="{ forceToAxis: true, releaseOnEdges: true }" @activeIndexChange="onActiveTicketChange"
           class="h-full">
           <SwiperSlide v-for="(ticket, index) in tickets" :key="ticket.id">
             <div @click="selectTicketByIndex(index)" :class="[
@@ -142,8 +141,13 @@
             </div>
           </div>
 
-          <ChatBox :messages="selectedTicket.messages || []" :isClosed="selectedTicket.status === 'closed'"
-            :loading="isLoadingReplies" @send="handleSendMessage" />
+          <!-- <ChatBox :messages="selectedTicket.messages || []" :isClosed="selectedTicket.status === 'closed'"
+            :loading="isLoadingReplies" @send="handleSendMessage" /> -->
+
+          <ChatBox v-if="selectedTicket" :messages="selectedTicket.messages ?? []"
+            :isClosed="selectedTicket.status === 'closed'" :ticketId="selectedTicket.id" :loading="isLoadingReplies"
+            @send="handleSendMessage" />
+
         </template>
       </div>
     </div>
@@ -162,6 +166,7 @@ import ChatBox from '@/components/base/ChatBox.vue'
 import BaseButton from '@/components/base/Button.vue'
 import TicketSkeleton from '@/components/skeletons/TicketSkeleton.vue'
 const isLoading = ref(true)
+const currentTicketFetchId = ref(null)
 
 const filters = [
   { id: 'all', label: 'ALL', type: null },
@@ -208,16 +213,30 @@ const onActiveTicketChange = (swiper) => {
 }
 
 // التحديد اليدوي (اختياري)
+// const selectTicketByIndex = (index) => {
+//   activeTicketIndex.value = index
+//   selectedTicket.value = tickets.value[index] || null
+//   fetchTicketDetails(selectedTicket.value?.id)
+// }
+
+
 const selectTicketByIndex = (index) => {
   activeTicketIndex.value = index
   selectedTicket.value = tickets.value[index] || null
-  fetchTicketDetails(selectedTicket.value?.id)
+  if (selectedTicket.value?.id) {
+    currentTicketFetchId.value = selectedTicket.value.id // 👈 حفظ ID التذكرة الجارية
+    fetchTicketDetails(selectedTicket.value.id)
+  }
 }
+
 
 const onFilterChange = (id) => {
   activeFilter.value = id
   const type = filters.find(f => f.id === id)?.type ?? null
   fetchTickets(type)
+  selectedTicket.value = null
+  activeTicketIndex.value = 0
+
 }
 
 const fetchTickets = async (filterType = null) => {
@@ -247,9 +266,15 @@ const fetchTickets = async (filterType = null) => {
       }))
 
       // أول بطاقة هي المختارة
+      // if (tickets.value.length > 0) {
+      //   selectTicketByIndex(0)
+      // }
       if (tickets.value.length > 0) {
         selectTicketByIndex(0)
+      } else {
+        selectedTicket.value = null
       }
+
     }
   } catch (error) {
     console.error('Error fetching tickets:', error)
@@ -258,8 +283,40 @@ const fetchTickets = async (filterType = null) => {
   }
 }
 
+// const fetchTicketDetails = async (id) => {
+//   if (isLoadingReplies.value || !id) return
+
+//   const now = Date.now()
+//   if (now - lastFetchTime.value < FETCH_COOLDOWN) return
+
+//   isLoadingReplies.value = true
+//   lastFetchTime.value = now
+
+//   try {
+//     const { data } = await useApi(`customer-service/feedbacks/${id}`, {
+//       method: 'GET'
+//     })
+
+//     if (data.value?.status && data.value?.data) {
+//       const messages = transformRepliesFromEndpoint(data.value.data)
+//       if (selectedTicket.value?.id === id) {
+//         selectedTicket.value.messages = messages
+//       }
+//     }
+//   } catch (error) {
+//     console.error('Error fetching replies:', error)
+//     if (error.status === 429) {
+//       const toast = useToast()
+//       toast.add({ title: 'Too many requests. Please wait.', color: 'warning' })
+//       lastFetchTime.value = Date.now() + 5000
+//     }
+//   } finally {
+//     isLoadingReplies.value = false
+//   }
+// }
+
 const fetchTicketDetails = async (id) => {
-  if (isLoadingReplies.value || !id) return
+  if (!id || isLoadingReplies.value) return
 
   const now = Date.now()
   if (now - lastFetchTime.value < FETCH_COOLDOWN) return
@@ -274,8 +331,17 @@ const fetchTicketDetails = async (id) => {
 
     if (data.value?.status && data.value?.data) {
       const messages = transformRepliesFromEndpoint(data.value.data)
-      if (selectedTicket.value?.id === id) {
-        selectedTicket.value.messages = messages
+
+      // ✅ تأكد أن التذكرة المختارة هي نفس اللي طلبناها وأن الرسائل غير فارغة
+      if (
+        selectedTicket.value?.id === id &&
+        currentTicketFetchId.value === id &&
+        Array.isArray(messages)
+      ) {
+        // لا تمسح الرسائل لو كانت فاضية، خليها زي ما هي
+        if (messages.length > 0) {
+          selectedTicket.value.messages = messages
+        }
       }
     }
   } catch (error) {
@@ -289,6 +355,10 @@ const fetchTicketDetails = async (id) => {
     isLoadingReplies.value = false
   }
 }
+
+
+
+
 
 const handleSendMessage = async (msg) => {
   if (!selectedTicket.value || !msg.trim() || isLoadingReplies.value) return

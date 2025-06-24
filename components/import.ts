@@ -13,6 +13,8 @@ import Selection from "~/components/payment/Selection.vue";
 import Cards from "~/components/payment/Cards.vue";
 import CreateCard from "~/components/payment/CreateCard.vue";
 import PaymentLoading from "~/components/payment/Loading.vue";
+import ConfirmDialog from '~/components/base/ConfirmDialog.vue'
+
 
 const components: {} = {
     [COMPONENTS.AUTH_WIZARD] : Wizard,
@@ -28,6 +30,7 @@ const components: {} = {
     [COMPONENTS.PAYMENT_CARDS] : Cards,
     [COMPONENTS.PAYMENT_CREATE_CARD] : CreateCard,
     [COMPONENTS.PAYMENT_LOADING] : PaymentLoading,
+    [COMPONENTS.CONFIRM_DIALOG]: ConfirmDialog,
 
 };
 export default components;

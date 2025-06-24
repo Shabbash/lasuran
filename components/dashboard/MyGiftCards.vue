@@ -28,7 +28,7 @@
           </div>
           <div class="flex justify-between">
             <span>Expiry Date</span>
-            <span>{{ group.items?.[0]?.expiry_date || '—' }}</span>
+            <span>{{ group.expiry_date || '—' }}</span>
           </div>
         </div>
       </div> -->
@@ -67,7 +67,7 @@
         </div>
         <div class="flex justify-between">
           <span>Expiry Date</span>
-          <span>{{ group.items?.[0]?.expiry_date || '—' }}</span>
+          <span>{{ group.expiry_date || '—' }}</span>
         </div>
       </div>
     </SwiperSlide>
@@ -119,7 +119,7 @@
             selectedCard.total }} {{ selectedCard.currency }}</h2>
           <div class="relative rounded-[14px] overflow-hidden bg-[#e9c9ad] h-[127px]">
             <img class="w-full h-full object-cover"
-              :src="selectedCard.items?.[0]?.card_image || '/assets/img/my-gift-card.svg'" alt="Gift Card Image" />
+              :src="selectedCard.card_image || '/assets/img/my-gift-card.svg'" alt="Gift Card Image" />
             <div class="absolute inset-0 px-[15px] py-[15px] flex flex-col justify-between">
               <!-- Header: لوجو + الحالة -->
               <div class="flex justify-between">
@@ -127,8 +127,8 @@
                   <img class="w-full" src="/assets/img/card-laz.svg" alt="Logo" />
                 </div>
                 <div class="h-[23px] px-[20px] flex items-center justify-center rounded-[100px] text-[13px]"
-                  :class="getStatusClass(selectedCard.items?.[0]?.status)">
-                  <span>{{ selectedCard.items?.[0]?.status || 'Active' }}</span>
+                  :class="getStatusClass(selectedCard.status)">
+                  <span>{{ selectedCard.status || 'Active' }}</span>
                 </div>
               </div>
 
@@ -136,15 +136,15 @@
               <div>
                 <!-- <div class="flex flex-col items-end pe-[20px]">
                   <p class="text-white text-[21.94px] font-normal tracking-[0.52em] text-end">
-                    {{ selectedCard.items?.[0]?.serial_number || 'N/A' }}
+                    {{ selectedCard.serial_number || 'N/A' }}
                   </p>
                   <p class="text-white text-[13.96px] font-bold opacity-70 text-end">
-                    {{ selectedCard.items?.[0]?.expiry_date || 'N/A' }}
+                    {{ selectedCard.expiry_date || 'N/A' }}
                   </p>
                 </div> -->
                 <div>
                   <p class="text-white text-[12.97px] font-medium">GIFT CARD</p>
-                  <p class="text-white text-[18.53px] font-bold">{{ selectedCard.items?.[0]?.remaining_amount ||
+                  <p class="text-white text-[18.53px] font-bold">{{ selectedCard.remaining_amount ||
                     selectedCard.total }} {{ selectedCard.currency }}</p>
                 </div>
               </div>
@@ -156,7 +156,7 @@
             <p class="text-[#EBE4DF] font-medium text-[16px] leading-normal">
               Gift Card Description
             </p>
-            <p class="text-[#C6C6C7] font-normal text-[14px]" v-html="selectedCard.items?.[0]?.description || selectedCard.description || 'No description available for this gift card.' ">
+            <p class="text-[#C6C6C7] font-normal text-[14px]" v-html="selectedCard.description || selectedCard.description || 'No description available for this gift card.' ">
             </p>
           </div>
 
@@ -168,19 +168,19 @@
               <div
                 class="flex justify-between pb-[11px] mb-[11px] border-b border-b-[#AD7084] last:border-b-0 last:mb-0 last:pb-0">
                 <p class="text-[#C6C6C7] font-[350] text-[13px] leading-normal">Serial Number</p>
-                <p class="text-[#C6C6C7] font-[350] text-[13px] leading-normal">{{ selectedCard.items?.[0]?.serial_number || 'N/A' }}</p>
+                <p class="text-[#C6C6C7] font-[350] text-[13px] leading-normal">{{ selectedCard.serial_number || 'N/A' }}</p>
               </div>
 
               <div
                 class="flex justify-between pb-[11px] mb-[11px] border-b border-b-[#AD7084] last:border-b-0 last:mb-0 last:pb-0">
                 <p class="text-[#C6C6C7] font-[350] text-[13px] leading-normal">Expiry Date</p>
-                <p class="text-[#C6C6C7] font-[350] text-[13px] leading-normal">{{ selectedCard.items?.[0]?.expiry_date || 'N/A' }}</p>
+                <p class="text-[#C6C6C7] font-[350] text-[13px] leading-normal">{{ selectedCard.expiry_date || 'N/A' }}</p>
               </div>
 
               <div
                 class="flex justify-between pb-[11px] mb-[11px] border-b border-b-[#AD7084] last:border-b-0 last:mb-0 last:pb-0">
                 <p class="text-[#C6C6C7] font-[350] text-[13px] leading-normal">Purchase No</p>
-                <p class="text-[#C6C6C7] font-[350] text-[13px] leading-normal">{{ selectedCard.order_number || 'N/A' }}</p>
+                <p class="text-[#C6C6C7] font-[350] text-[13px] leading-normal">{{ selectedCard.voucher_order_number || 'N/A' }}</p>
               </div>
 
               <div
@@ -189,10 +189,10 @@
                 <p class="text-[#C6C6C7] font-[350] text-[13px] leading-normal">{{ getRedeemedAmount() }} {{ selectedCard.currency }}</p>
               </div>
 
-              <div v-if="selectedCard.items?.[0]?.remaining_amount"
+              <div v-if="selectedCard.remaining_amount"
                 class="flex justify-between pb-[11px] mb-[11px] border-b border-b-[#AD7084] last:border-b-0 last:mb-0 last:pb-0">
                 <p class="text-[#C6C6C7] font-[350] text-[13px] leading-normal">Remaining Amount</p>
-                <p class="text-[#C6C6C7] font-[350] text-[13px] leading-normal">{{ selectedCard.items?.[0]?.remaining_amount }} {{ selectedCard.currency }}</p>
+                <p class="text-[#C6C6C7] font-[350] text-[13px] leading-normal">{{ selectedCard.remaining_amount }} {{ selectedCard.currency }}</p>
               </div>
 
             </div>
@@ -200,7 +200,7 @@
 
           <div class="text-center">
             <div class="qr mx-auto w-[160px] h-[165px] my-[22px]">
-              <img class="w-full" :src="selectedCard.items?.[0]?.qr_code || '/assets/img/qr.png'" alt="Gift Card QR Code">
+              <img class="w-full" :src="selectedCard.qr_code || '/assets/img/qr.png'" alt="Gift Card QR Code">
             </div>
 
             <!-- <button
@@ -367,6 +367,8 @@ const onActiveCardChange = (swiper) => {
 // Open Modal with selected card
 const openCardModal = (card) => {
   selectedCard.value = card
+    console.log('🔍 selectedCard.value', selectedCard.value)
+
   modalOpen.value = true
 }
 
@@ -389,7 +391,7 @@ const getRedeemedAmount = () => {
   if (!selectedCard.value) return '0.00'
 
   const total = parseFloat(selectedCard.value.total || 0)
-  const remaining = parseFloat(selectedCard.value.items?.[0]?.remaining_amount || 0)
+  const remaining = parseFloat(selectedCard.value.remaining_amount || 0)
   const redeemed = total - remaining
 
   return redeemed > 0 ? redeemed.toFixed(2) : '0.00'
@@ -400,7 +402,7 @@ const getRedeemHistory = () => {
   if (!selectedCard.value) return []
 
   // Check if the card has redeem history data
-  return selectedCard.value.items?.[0]?.redeem_history ||
+  return selectedCard.value.redeem_history ||
          selectedCard.value.redeem_history ||
          []
 }

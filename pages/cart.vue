@@ -5,7 +5,14 @@
       <div class="lg:col-span-2 space-y-6 md:h-[450px] md:overflow-y-auto">
         <div class="flex justify-between">
           <h2 class="text-[#EBE4DF] text-[20px] font-medium leading-normal">Cart</h2>
-          <button @click="confirmEmptyCartOpen = true" :disabled="cartModule.isEmptying || cartProducts.length === 0"
+          <!-- <button @click="confirmEmptyCartOpen = true" :disabled="cartModule.isEmptying || cartProducts.length === 0"
+            class="text-[#EBE4DF] text-[14px] font-[350] leading-normal cursor-pointer">
+            <EmptyCartIcon />
+          </button> -->
+
+          <button
+            @click="openEmptyCartDialog"
+            :disabled="cartModule.isEmptying || cartProducts.length === 0"
             class="text-[#EBE4DF] text-[14px] font-[350] leading-normal cursor-pointer">
             <EmptyCartIcon />
           </button>
@@ -81,7 +88,7 @@
 
 
     <!-- Confirm Empty Cart Dialog -->
-    <Dialog v-model:open="confirmEmptyCartOpen" :modalMaxWidth="'max-w-[458px]'">
+    <!-- <Dialog v-model:open="confirmEmptyCartOpen" :modalMaxWidth="'max-w-[458px]'">
       <template #body>
         <div class="bg-decore-modal mx-auto rounded-[30px] overflow-hidden shadow-lg bg-[#EBE4DF] text-[#5F2C3E]">
           <div class="pt-[34px] px-[50px] pb-[30px] relative text-center">
@@ -108,12 +115,11 @@
           </div>
         </div>
       </template>
-    </Dialog>
+    </Dialog> -->
 
 
   </Container>
 </template>
-
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import Container from '@/components/base/Container.vue'
@@ -135,17 +141,30 @@ definePageMeta({ middleware: 'auth' })
 const cartModule = useCart()
 const menuModule = useMenu()
 const { setDialogComponent, setDialogShow } = useApp()
+
 const expandedItems = ref<{ [key: string]: boolean }>({})
 const checkoutModalOpen = ref(false)
 const selectedPayment = ref('cash')
 
-const confirmEmptyCartOpen = ref(false)
-
 const handleConfirmEmptyCart = async () => {
   await cartModule.emptyCart()
-  confirmEmptyCartOpen.value = false
+  setDialogShow(false)
 }
 
+const openEmptyCartDialog = () => {
+  setDialogComponent(COMPONENTS.CONFIRM_DIALOG, {
+    title: 'Remove All Services',
+    message: 'Are you sure you want to remove all of your services from the cart?',
+    confirmText: 'Yes, Remove All',
+    cancelText: 'No, Cancel',
+    modalMaxWidth: 'max-w-[458px]',
+    loading: cartModule.isEmptying,
+    confirmButtonClass: 'h-[49px] bg-[#C44E4E] hover:bg-[#913E5D] text-white rounded-[100px] text-[16px]',
+    cancelButtonClass: 'h-[49px] bg-[#6B8B9B] text-white hover:bg-[#5a7886] rounded-[100px] text-[16px]',
+    onConfirm: handleConfirmEmptyCart
+  })
+  setDialogShow(true)
+}
 
 const paymentOptions = [
   { label: 'Cash on Delivery', value: 'cash', icon: '/assets/img/icon-cash.svg' },

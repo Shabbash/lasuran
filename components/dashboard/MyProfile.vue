@@ -43,19 +43,27 @@
               class="flex-1 outline-none bg-transparent text-[#BBCACF] placeholder:text-[#D3C9C5] text-[14px]" />
           </div>
         </div>
+
+        <div>
+          <p class="text-start text-[14px] font-medium text-white mb-3">Email</p>
+          <input type="email" v-model="formData.email" placeholder="name@domain.com"
+            class="w-full h-[50px] rounded-[14px] border border-[#EBE4DF] bg-transparent px-4 text-[#BBCACF] placeholder:text-[#D3C9C5] text-[14px] outline-none" />
+        </div>
+
         <div>
           <div>
             <p class="text-start text-[14px] font-medium text-white mb-3">
               Date Of Birth
             </p>
-            <div class="relative flex items-center gap-[10px] border border-[#EBE4DF] rounded-[13px] px-[23px] bg-transparent">
+            <div
+              class="relative flex items-center gap-[10px] border border-[#EBE4DF] rounded-[13px] px-[23px] bg-transparent">
 
               <!-- التقويم -->
               <UPopover :popper="{ placement: 'bottom-end' }">
                 <UButton color="white" variant="link" class="p-0 absolute inset-0 cursor-pointer">
-                  
+
                 </UButton>
-                <CalendarIcon3/>
+                <CalendarIcon3 />
                 <template #content>
                   <UCalendar v-model="calendarDate" />
                 </template>
@@ -87,6 +95,19 @@
                   {{ city.label }}
                 </option>
               </select>
+              <!-- <p class="text-white">
+              Selected ID: {{ formData.address_id }}
+            </p> -->
+              <!-- <select v-model="formData.address_id"
+                class="w-full h-[50px] pl-10 pr-4 py-2 rounded-[14px] bg-[#A0576F] ring-1 ring-[#EBE4DF] focus:ring-0 focus:border-[#A0576F] text-[#BBCACF] placeholder:text-[#D3C9C5] text-[14px] appearance-none">
+                <option disabled value="">Select Address</option>
+                <option v-for="addr in addressList" :key="addr.id" :value="addr.id">
+                  {{ addr.title }}
+                </option>
+              </select> -->
+
+
+
               <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
 
                 <SelectArrowIcon />
@@ -122,11 +143,11 @@
           </div>
         </div>
 
-        <div>
+        <div class="flex items-end">
 
 
           <BaseButton label="Delete Profile" @click="deleteProfile"
-            class="bg-[#C44E4E] text-[#EBE4DF] rounded-[100px] py-[10px] px-8 text-[14px] hover:bg-[#913E5D] transition cursor-pointer" />
+            class="bg-[#C44E4E] text-[#EBE4DF] rounded-[100px] py-[10px] px-8 text-[14px] hover:bg-[#913E5D] transition cursor-pointer w-auto" />
 
 
         </div>
@@ -153,11 +174,16 @@ import CalendarIcon3 from '@/components/icons/CalendarIcon3.vue';
 import LocationIcon2 from '@/components/icons/LocationIcon2.vue';
 import SelectArrowIcon from '@/components/icons/SelectArrowIcon.vue';
 import ProfileSkeleton from '@/components/skeletons/ProfileSkeleton.vue'
+import { useApp } from '@/stores/app'
+import { COMPONENTS } from '@/data/constants'
+
+const { setDialogComponent, setDialogShow } = useApp()
 
 
 // Stores
 const profileStore = useProfile();
 const authStore = useAuth();
+const router = useRouter();
 
 // Refs and reactive state
 const fileInput = ref<HTMLInputElement | null>(null);
@@ -172,6 +198,8 @@ const formData = reactive({
   gender: '',
   date_of_birth: '',
   address: '',
+  // address_id: null,
+  email: ''
 });
 
 // Cities
@@ -191,9 +219,32 @@ watch(() => profileStore.profile, (newProfile) => {
     formData.gender = newProfile.gender || '';
     formData.date_of_birth = newProfile.date_of_birth || '';
     formData.address = newProfile.address || '';
+    // formData.address_id = newProfile.address?.id || null;
+    formData.email = newProfile.email || ''; 
+    // console.log('[DEBUG] selected address_id:', formData.address_id);
+
+
   }
 }, { immediate: true });
 
+const addressList = ref<{ id: number, title: string }[]>([]);
+
+// const addressList = ref([
+//   { id: 1, title: 'Riyadh' },
+//   { id: 2, title: 'Jeddah' },
+//   { id: 19, title: 'Test Address 19' },
+// ]);
+
+
+const fetchAddresses = async () => {
+  const { data } = await useApi('/v1/addresses', { method: 'GET' });
+  if (data?.status && Array.isArray(data.data)) {
+    addressList.value = data.data.map(addr => ({
+      id: addr.id,
+      title: addr.title
+    }));
+  }
+};
 
 // const formatDate = (date: CalendarDate): string => {
 //   const monthNames = [
@@ -289,13 +340,17 @@ const saveProfile = () => {
     gender: formData.gender,
     date_of_birth: formData.date_of_birth,
     address: formData.address || null,
+    // address_id: formData.address_id,
+
+    // address: formData.address ? { title: formData.address } : null,
+    email: formData.email
   };
 
   if (selectedImage.value) {
     updateData.image_profile = selectedImage.value;
   }
 
-  const requiredFields = ['first_name', 'last_name', 'gender','date_of_birth'];
+  const requiredFields = ['first_name', 'last_name', 'gender', 'date_of_birth'];
   Object.keys(updateData).forEach(key => {
     if (key !== 'image_profile' && !requiredFields.includes(key) && (updateData[key] === '' || updateData[key] === null)) {
       delete updateData[key];
@@ -304,17 +359,39 @@ const saveProfile = () => {
     }
   });
 
+  console.log('📤 Sending address:', updateData.address);
+
   profileStore.updateProfile(updateData);
   selectedImage.value = null;
   imagePreview.value = null;
 };
 
 // Delete profile
+import { useRouter } from 'vue-router';
+
+
 const deleteProfile = () => {
-  if (confirm('Are you sure you want to delete your profile?')) {
-    console.log('Deleting profile', formData);
-  }
-};
+  setDialogComponent(COMPONENTS.CONFIRM_DIALOG, {
+    title: 'Delete Profile',
+    message: 'Are you sure you want to delete your profile?',
+    confirmText: 'Yes, Delete',
+    cancelText: 'Cancel',
+    modalMaxWidth: 'max-w-[458px]',
+    loading: profileStore.isUpdating,
+    confirmButtonClass: 'h-[49px] bg-[#C44E4E] hover:bg-[#913E5D] text-white rounded-[100px] text-[16px]',
+    cancelButtonClass: 'h-[49px] bg-[#6B8B9B] text-white hover:bg-[#5a7886] rounded-[100px] text-[16px]',
+    onConfirm: async () => {
+      await profileStore.deleteProfile()
+      if (!profileStore.profile) {
+        router.push('/')
+      }
+    }
+  })
+
+  setDialogShow(true)
+}
+
+
 
 // On mount fetch profile
 onMounted(async () => {
@@ -324,6 +401,8 @@ onMounted(async () => {
 
   if (authStore.getToken && !profileStore.profile) {
     profileStore.fetchProfile();
+    console.log('📥 Received address from API:', profileStore.profile?.address);
+
   }
 });
 </script>
