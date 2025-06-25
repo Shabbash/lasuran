@@ -17,6 +17,7 @@ import ConfirmDialog from '~/components/base/ConfirmDialog.vue'
 import MyGiftCardsDialog from '~/components/cart/MyGiftCardsDialog.vue'
 import CheckoutPaymentDialog from '@/components/cart/CheckoutPaymentDialog.vue'
 import BranchShow from '@/components/branch/Show.vue'
+import ShopShow from '~/components/shop/Show.vue';
 
 
 const components: {} = {
@@ -37,6 +38,8 @@ const components: {} = {
     [COMPONENTS.MY_GIFT_CARDS_DIALOG]: MyGiftCardsDialog,
     [COMPONENTS.CHECKOUT_PAYMENT_DIALOG]: CheckoutPaymentDialog,
     [COMPONENTS.BRANCH_SHOW]: BranchShow,
+    [COMPONENTS.SHOP_SHOW]: ShopShow,
+
 
 };
 export default components;
