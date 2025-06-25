@@ -11,24 +11,86 @@
           <!-- Inbound Message -->
           <div v-if="msg.direction === 'inbound'" class="flex gap-[15px]">
             <div
-              class="w-[35px] h-[35px] rounded-full bg-[#EBE4DF] flex items-center justify-center text-[#A0576F] text-sm font-bold">
+                class="w-[35px] h-[35px] rounded-full bg-[#EBE4DF] flex items-center justify-center text-[#A0576F] text-sm font-bold">
               H
             </div>
+
             <div>
               <p class="text-[#EBE4DF] font-medium text-[14.119px] mb-[10px]">{{ msg.from }}</p>
+
               <p
-                class="text-[#5B605C] text-[14px] bg-[#F2F7FB] p-[12px] rounded-[16px] rounded-ss-none ms-[10px] mb-[7px] inline-block">
+                  class="text-[#5B605C] text-[14px] bg-[#F2F7FB] p-[12px] rounded-[16px] rounded-ss-none ms-[10px] mb-[7px] inline-block">
                 {{ msg.text }}
               </p>
+
+
+              <!-- Attachments Preview -->
+              <div v-if="msg.attachments?.length" class="ms-[10px] mb-[7px] grid grid-cols-2 gap-3">
+                <div
+                    v-for="(attachment, index) in msg.attachments"
+                    :key="index"
+                    class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+
+                  <!-- Image preview -->
+                  <a target="_blank" v-if="isImage(attachment)" :href="attachment">
+                    <img  :src="attachment"
+                         alt="Attachment"
+                         class="w-full h-[100px] object-cover rounded-xl"
+                    />
+                  </a>
+                  <!-- File download preview -->
+                  <div v-else class="flex items-center p-3 gap-2">
+                    <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" stroke-width="2"
+                         viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M12 4v16m8-8H4"/>
+                    </svg>
+                    <a :href="attachment" target="_blank" class="text-sm text-blue-600 underline truncate max-w-[120px]">
+                      {{ getFilename(attachment) }}
+                    </a>
+                  </div>
+                </div>
+              </div>
+
               <p class="text-white text-[10.085px] ms-[17px]">{{ msg.time }}</p>
             </div>
           </div>
+
 
           <!-- Outbound Message -->
           <div v-else class="flex justify-end gap-3">
             <div class="text-end">
               <p class="text-white text-[14px] bg-[#6B8B9B] p-[12px] rounded-[16px] rounded-se-none mb-[7px]">
                 {{ msg.text }}
+
+                <div v-if="msg.attachments?.length" class="ms-[10px] mb-[7px] grid grid-cols-2 gap-3">
+                  <div
+                      v-for="(attachment, index) in msg.attachments"
+                      :key="index"
+                      class="bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm">
+
+                    <!-- Image preview -->
+
+                    <a target="_blank"  v-if="isImage(attachment)" :href="attachment">
+                      <img :src="attachment"
+                          alt="Attachment"
+                          class="w-full h-[100px] object-cover rounded-xl"
+                      />
+                    </a>
+
+                    <!-- File download preview -->
+                    <div v-else class="flex items-center p-3 gap-2">
+                      <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" stroke-width="2"
+                           viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                              d="M12 4v16m8-8H4"/>
+                      </svg>
+                      <a :href="attachment" target="_blank" class="text-sm text-blue-600 underline truncate max-w-[120px]">
+                        {{ getFilename(attachment) }}
+                      </a>
+                    </div>
+                  </div>
+                </div>
               </p>
               <p class="text-white text-[10.085px] ms-[17px] inline-block">{{ msg.time }}</p>
             </div>
@@ -82,7 +144,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['send'])
+const emit = defineEmits(['send','refresh'])
 
 const newMessage = ref('')
 const fileInput = ref(null)
@@ -95,6 +157,7 @@ function attach() {
 
 async function handleFileUpload(event) {
   const file = event.target.files?.[0]
+  console.log('file',file)
   if (!file) return
 
   if (file.size > 5 * 1024 * 1024) {
@@ -107,14 +170,14 @@ async function handleFileUpload(event) {
   formData.append('attachments[0]', file)
 
   try {
-    const { data } = await useApi(`/customer-service/feedbacks/${props.ticketId}/replies`, {
+    const { data } = await useApi(`customer-service/feedbacks/${props.ticketId}/replies`, {
       method: 'POST',
       body: formData
     })
 
     if (data.value?.status) {
       toast.add({ title: 'File uploaded successfully', color: 'success' })
-      emit('send', '') // ممكن تحدث الرسائل من هنا
+      emit('refresh') // عشان تضيفها بالشاشة
     } else {
       toast.add({ title: 'Upload failed', color: 'error' })
     }
@@ -145,7 +208,7 @@ async function send() {
 
     if (data.value?.status) {
       toast.add({ title: 'Message sent successfully', color: 'success' })
-      emit('send', newMessage.value.trim()) // عشان تضيفها بالشاشة
+      emit('refresh') // عشان تضيفها بالشاشة
       newMessage.value = ''
       selectedFiles.value = []
       fileInput.value.value = '' // reset input
@@ -157,4 +220,16 @@ async function send() {
     toast.add({ title: 'Send error occurred', color: 'error' })
   }
 }
+
+const isImage = (url) => {
+  return /\.(jpg|jpeg|png|gif|webp)$/i.test(url);
+};
+
+const getFilename = (url) => {
+  try {
+    return decodeURIComponent(url.split('/').pop());
+  } catch {
+    return 'File';
+  }
+};
 </script>

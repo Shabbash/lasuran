@@ -146,7 +146,7 @@
 
           <ChatBox v-if="selectedTicket" :messages="selectedTicket.messages ?? []"
             :isClosed="selectedTicket.status === 'closed'" :ticketId="selectedTicket.id" :loading="isLoadingReplies"
-            @send="handleSendMessage" />
+            @refresh="fetchTickets(null,false)" />
 
         </template>
       </div>
@@ -239,8 +239,8 @@ const onFilterChange = (id) => {
 
 }
 
-const fetchTickets = async (filterType = null) => {
-  isLoading.value = true
+const fetchTickets = async (filterType = null,withLoading = true) => {
+  if(withLoading) isLoading.value = true
   try {
     const params = {}
     if (filterType !== null) {

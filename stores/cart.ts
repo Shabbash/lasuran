@@ -8,6 +8,12 @@ let paymentInterval: any = null;
 export const useCart = defineStore("cart", {
     state: () => {
         return {
+            isGiftCardApplyLoading: false,
+            isPromoApplyLoading: false,
+            params: {
+                promo_code: null,
+                gift_card: null,
+            },
             isAddLoading: false,
             isLoading: false,
             isRemoving: false,
@@ -92,10 +98,13 @@ export const useCart = defineStore("cart", {
             this.$state.isEmptying = false;
             this.$state.order.loading = false;
         },
-        fetchCart() {
-            this.$state.isLoading = true;
+        fetchCart(payload : { promo_code: null , gift_card: null}, options : {disableLoading : false} ) {
+            if(!options?.disableLoading){
+                this.$state.isLoading = true;
+            }
             return useApi(`cart`, {
-                method: "GET"
+                method: "GET",
+                params: payload
             },
                 {
                     onSuccess: (data: any) => {
@@ -325,7 +334,9 @@ export const useCart = defineStore("cart", {
         },
         updateServiceAvailableSlot(payload: any) {
             this.$state.isAddLoading = true;
-            return useApi(`cart-products/${this.$state.products?.[0]?.cart_product_id}/update-time-slot`, {
+            const menu = useMenu();
+
+            return useApi(`cart-products/${menu?.service?.data?.cart_product_id ?? this.$state.products?.[0]?.cart_product_id}/update-time-slot`, {
                 method: "POST",
                 body: payload
             },

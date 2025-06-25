@@ -15,6 +15,7 @@ export const useApi = (
   const toast = useToast()
 
 
+
  const headers: RequestHeaders = getRequestHeaders(options.headers, options.body);
 //   if (callbacks.transformData) options.transform = callbacks.transformData;
 
@@ -23,9 +24,9 @@ export const useApi = (
     onResponse(response : any)  {
         let data = response?.response?._data;
       if (callbacks.onSuccess instanceof Function && data?.status) callbacks.onSuccess(data);
-      // else if(!data?.status) {
-      //     toast.add({title : data?.message, color:'error'});
-      // }
+      else if(data?.status && options?.activateSuccessToast)
+          toast.add({title : data?.message, color:'success'});
+
       return response;
     },
     onResponseError (error : any)  {

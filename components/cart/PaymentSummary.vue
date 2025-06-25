@@ -26,7 +26,7 @@
     <div class="space-y-4 mt-4">
       <!-- Promo Code Input -->
       <div class="flex gap-2 relative border border-[#A0576F] rounded-[100px] overflow-hidden">
-        <UInput v-model="promoCode" placeholder="Enter Promo Code"
+        <UInput v-model="params.promo_code" placeholder="Enter Promo Code"
           class="flex-1 bg-transparent text-[15px] font-normal leading-normal capitalize ps-[10px] h-[44px] summary-input"
           :ui="{
             base:'flex-1 bg-transparent text-[15px] font-normal leading-normal capitalize h-[44px] summary-input border-0 ring-0 focus-visible:ring-0'
@@ -43,7 +43,7 @@
       <!-- Gift Card Input -->
       <div class="flex gap-[15px]">
         <div class="flex gap-2 relative border border-[#A0576F] rounded-[100px] overflow-hidden">
-          <UInput v-model="giftCardSerial" placeholder="Gift Card SN"
+          <UInput v-model="params.gift_card" placeholder="Gift Card SN"
             class="flex-1 bg-transparent text-[15px] font-normal leading-normal capitalize ps-[10px] h-[44px] summary-input" 
             :ui="{
               base:'flex-1 bg-transparent text-[15px] font-normal leading-normal capitalize h-[44px] summary-input border-0 ring-0 focus-visible:ring-0'
@@ -87,7 +87,10 @@ import { useApi } from '~/composables/useApi'
 import { useCart } from '~/stores/cart'
 import { useToast } from '#imports'
 
+import {formatNumber} from '~/utils/helper';
+
 const toast = useToast()
+const cartModule = useCart();
 
 // Props for incoming payment data
 const props = defineProps<{
@@ -101,12 +104,26 @@ const props = defineProps<{
 
 const appModule = useApp()
 
+// const params  = ref({
+//   gift_card: null,
+//   promo_code: null,
+// })
+
+const params = computed({
+  set(newValue){
+    cartModule.params = newValue ?? {}
+  },
+  get() {
+    return cartModule.params ?? {};
+  }
+})
+
 // Main reactive payment-related values
-const subtotal = ref(props.subtotal)
-const vat = ref(props.vat ?? props.subtotal * 0.15)
-const discount = ref(props.discount ?? 0)
-const serviceCost = ref(props.serviceCost ?? 0)
-const total = ref(props.total ?? (props.subtotal + vat.value - discount.value + serviceCost.value))
+// const subtotal = ref(props.subtotal)
+// const vat = ref(props.vat ?? props.subtotal * 0.15)
+// const discount = ref(props.discount ?? 0)
+// const serviceCost = ref(props.serviceCost ?? 0)
+// const total = ref(props.total ?? (props.subtotal + vat.value - discount.value + serviceCost.value))
 
 // Gift Card logic
 const giftCardSerial = ref('')
@@ -114,71 +131,87 @@ const giftCards = ref([])
 const isLoadingCards = ref(false)
 const isProcessing = ref(false)
 const accepted = ref(false)
-const isApplyingGiftCard = ref(false)
+const isApplyingGiftCard = computed({
+  set:(value) => cartModule.isGiftCardApplyLoading = value,
+  get:() => cartModule.isGiftCardApplyLoading,
+})
 
 // Formatted computed currency values to avoid crash on .toFixed()
-const formattedSubtotal = computed(() => typeof subtotal.value === 'number' ? subtotal.value.toFixed(2) : '0.00')
-const formattedVat = computed(() => typeof vat.value === 'number' ? vat.value.toFixed(2) : '0.00')
-const formattedDiscount = computed(() => typeof discount.value === 'number' ? discount.value.toFixed(2) : '0.00')
-const formattedServiceCost = computed(() => typeof serviceCost.value === 'number' ? serviceCost.value.toFixed(2) : '0.00')
-const formattedTotal = computed(() => typeof total.value === 'number' ? total.value.toFixed(2) : '0.00')
+const formattedSubtotal = computed(() => formatNumber(props.subtotal) )
+const formattedVat = computed(() => formatNumber(props.vat))
+const formattedDiscount = computed(() => formatNumber(props.discount))
+const formattedServiceCost = computed(() => formatNumber(props.serviceCost))
+const formattedTotal = computed(() => formatNumber(props.total))
+
+
+// const { data: availableVouchers, pending: isLoadingCards , refresh: fetchGiftCards} = await useApi('vouchers/list_available_vouchers', { method: 'GET', params: {page: 1, per_page: 30}, immediate: false });
 
 // Fetch and open gift card selector dialog
 const openAllGiftCards = async () => {
-  if (giftCards.value.length === 0) {
-    isLoadingCards.value = true
-    try {
-      const { data } = await useApi('vouchers/list_available_vouchers?page=1', { method: 'GET' })
-      giftCards.value = data.value?.data?.vouchers || []
-    } catch (err) {
-      console.error('❌ Failed to fetch gift cards:', err)
-    } finally {
-      isLoadingCards.value = false
-    }
-  }
+  // if (giftCards.value.length === 0) {
+  //   isLoadingCards.value = true
+  //   try {
+  //     const { data } = await useApi('vouchers/list_available_vouchers?page=1', { method: 'GET' })
+  //     giftCards.value = data.value?.data?.vouchers || []
+  //   } catch (err) {
+  //     console.error('❌ Failed to fetch gift cards:', err)
+  //   } finally {
+  //     isLoadingCards.value = false
+  //   }
+  // }
 
   appModule.setDialogComponent(COMPONENTS.MY_GIFT_CARDS_DIALOG, {
-    giftCards: giftCards.value,
     onSelect(serial: string) {
       giftCardSerial.value = serial
       appModule.setDialogShow(false)
     },
     modalMaxWidth: 'max-w-[400px]'
   })
-
   appModule.setDialogShow(true)
 }
 
+// watch(()=> cartModule.params.gift_card , (newValue) => {
+//   applyGiftCard();
+// })
 // Apply selected gift card to cart
 const applyGiftCard = async () => {
-  if (!giftCardSerial.value) {
-    return toast.add({ title: "Please enter a gift card serial number", color: 'warning' })
-  }
-
+  // if (!params.value?.gift_card) {
+  //   return toast.add({ title: "Please enter a gift card serial number", color: 'warning' })
+  // }
   isApplyingGiftCard.value = true
-
-  try {
-    const { data } = await useApi(`cart?gift_card=${giftCardSerial.value}`, { method: 'GET' })
-
-    if (data.value?.status && data.value?.data) {
-      const cartData = data.value.data
-
-      subtotal.value = cartData.sub_total
-      vat.value = cartData.tax_amount
-      discount.value = (cartData.promo_discount || 0) + (cartData.gift_card_discount || 0)
-      serviceCost.value = cartData.order_service_fees_price || 0
-      total.value = cartData.total
-
-      toast.add({ title: "Gift card applied successfully!", color: 'green' })
-    } else {
-      toast.add({ title: "Invalid or expired gift card", color: 'error' })
-    }
-  } catch (err) {
-    console.error('Failed to apply gift card:', err)
-    toast.add({ title: "An error occurred", color: 'error' })
-  } finally {
+  cartModule.fetchCart(
+      params.value,
+      {
+        disableLoading: true,
+      }
+  ).then(() => {
     isApplyingGiftCard.value = false
-  }
+  });
+
+  // isApplyingGiftCard.value = true
+  //
+  // try {
+  //   const { data } = await useApi(`cart?gift_card=${giftCardSerial.value}`, { method: 'GET' })
+  //
+  //   if (data.value?.status && data.value?.data) {
+  //     const cartData = data.value.data
+  //
+  //     subtotal.value = cartData.sub_total
+  //     vat.value = cartData.tax_amount
+  //     discount.value = (cartData.promo_discount || 0) + (cartData.gift_card_discount || 0)
+  //     serviceCost.value = cartData.order_service_fees_price || 0
+  //     total.value = cartData.total
+  //
+  //     toast.add({ title: "Gift card applied successfully!", color: 'green' })
+  //   } else {
+  //     // toast.add({ title: "Invalid or expired gift card", color: 'error' })
+  //   }
+  // } catch (err) {
+  //   console.error('Failed to apply gift card:', err)
+  //   toast.add({ title: "An error occurred", color: 'error' })
+  // } finally {
+  //   isApplyingGiftCard.value = false
+  // }
 }
 
 // Promo code logic
@@ -187,34 +220,44 @@ const isApplyingPromo = ref(false)
 
 // Apply promo code to cart
 const applyPromoCode = async () => {
-  if (!promoCode.value) {
-    return toast.add({ title: "Please enter a promo code", color: 'warning' })
-  }
+  // if (!params.value?.promo_code) {
+  //   return toast.add({ title: "Please enter a promo code", color: 'warning' })
+  // }
 
   isApplyingPromo.value = true
-
-  try {
-    const { data } = await useApi(`cart?promo_code=${promoCode.value}`, { method: 'GET' })
-
-    if (data.value?.status && data.value?.data) {
-      const cartData = data.value.data
-
-      subtotal.value = cartData.sub_total
-      vat.value = cartData.tax_amount
-      discount.value = (cartData.promo_discount || 0) + (cartData.gift_card_discount || 0)
-      serviceCost.value = cartData.order_service_fees_price || 0
-      total.value = cartData.total
-
-      toast.add({ title: "Promo code applied successfully!", color: 'green' })
-    } else {
-      toast.add({ title: "Invalid or expired promo code", color: 'error' })
-    }
-  } catch (err) {
-    console.error('Failed to apply promo code:', err)
-    toast.add({ title: "An error occurred", color: 'error' })
-  } finally {
+  cartModule.fetchCart(
+      params.value,
+      {
+        disableLoading: true,
+      }
+  ).then(() => {
     isApplyingPromo.value = false
-  }
+  });
+
+  // isApplyingPromo.value = true
+  //
+  // try {
+  //   const { data } = await useApi(`cart?promo_code=${promoCode.value}`, { method: 'GET' , activateSuccessToast: true })
+  //
+  //   if (data.value?.status && data.value?.data) {
+  //     const cartData = data.value.data
+  //
+  //     subtotal.value = cartData.sub_total
+  //     vat.value = cartData.tax_amount
+  //     discount.value = (cartData.promo_discount || 0) + (cartData.gift_card_discount || 0)
+  //     serviceCost.value = cartData.order_service_fees_price || 0
+  //     total.value = cartData.total
+  //
+  //     // toast.add({ title: "Promo code applied successfully!", color: 'green' })
+  //   } else {
+  //     // toast.add({ title: "Invalid or expired promo code", color: 'error' })
+  //   }
+  // } catch (err) {
+  //   console.error('Failed to apply promo code:', err)
+  //   toast.add({ title: "An error occurred", color: 'error' })
+  // } finally {
+  //   isApplyingPromo.value = false
+  // }
 }
 
 // Finalize checkout flow

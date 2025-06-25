@@ -24,7 +24,7 @@ export const useContact = defineStore("contact", {
     },
 
     actions: {
-        async submitFeedback(formData: ContactFormData) {
+        async submitFeedback(formData: ContactFormData, onSuccess: Function = () => {}) {
             this.$state.isSubmitting = true;
             this.$state.error = null;
             this.$state.submitSuccess = false;
@@ -38,8 +38,8 @@ export const useContact = defineStore("contact", {
                 submitData.append('message', formData.message);
                 
                 // Add optional order_id if provided
-                if (formData.order_id && formData.order_id.trim()) {
-                    submitData.append('order_id', formData.order_id.trim());
+                if (formData.order_id) {
+                    submitData.append('order_id', formData.order_id);
                 }
                 
                 // Add attachments if provided
@@ -65,6 +65,7 @@ export const useContact = defineStore("contact", {
                         color: 'success'
                     });
 
+                    onSuccess(response);
                     return { success: true, data: response.data };
                 } else {
                     throw new Error(response.message || 'Failed to submit feedback');

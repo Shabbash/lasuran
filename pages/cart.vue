@@ -63,7 +63,7 @@
           :services-count="cartProducts.length"
           :subtotal="cartModule.getSubtotal"
           :vat="cartModule.getVat"
-          :discount="cartModule.getDiscount"
+          :discount="cartModule?.getDiscount"
           :service-cost="cartModule.getServiceCost"
           :total="cartModule.getTotal"
           @checkout="openCheckoutDialog"

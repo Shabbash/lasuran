@@ -1,16 +1,22 @@
 <template>
+<LayoutDefault>
   <div class="flex">
     <div class="w-[320px] hidden md:block">
       <DashboardSideMenu @menu-click="handleMenuClick" />
     </div>
 
     <div class="flex-1 md:ps-6">
-      <component :is="activeComponent" />
+      <!--      <NuxtPage />-->
+      <slot>
+        <!--        <component :is="activeComponent" />-->
+      </slot>
     </div>
   </div>
+</LayoutDefault>
 </template>
 
 <script setup>
+
 import { ref, markRaw, defineAsyncComponent, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import DashboardSideMenu from '~/components/dashboard/SideMenu.vue';
@@ -50,7 +56,8 @@ watch(
 // عند النقر على عنصر من القائمة
 function handleMenuClick(menuId) {
   if (components[menuId]) {
-    router.push({ path: '/dashboard', query: { tab: menuId } });
+    router.push({ path: `/dashboard/${menuId}` });
+    // router.push({ path: `/dashboard/${menuId}`, query: { tab: menuId } });
   } else {
     console.warn(`Component "${menuId}" not found`);
   }

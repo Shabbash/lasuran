@@ -104,32 +104,32 @@ const onChangeMenu = function (key: string, _: any) {
   menuModule.fetchServices();
 }
 
-onMounted(async () => {
-  const subCategoryIdFromQuery = route.query.sub_category_id;
-
-  if (subCategoryIdFromQuery) {
-    menuModule.sub_category_id = +subCategoryIdFromQuery;
-  }
-
-  if (!menuModule.menus.data || menuModule.menus.data.length === 0) {
-    await menuModule.initMenu();
-  } else {
-    if (!menuModule.category_id) {
-      menuModule.setDefaultCategory();
-    }
-
-    if (!menuModule.sub_category_id) {
-      menuModule.setDefaultSubCategory();
-    }
-
+// onMounted(async () => {
+//   const subCategoryIdFromQuery = route.query.sub_category_id;
+//
+//   if (subCategoryIdFromQuery) {
+//     menuModule.sub_category_id = +subCategoryIdFromQuery;
+//   }
+//
+//   if (!menuModule.menus.data || menuModule.menus.data.length === 0) {
+//     await menuModule.initMenu();
+//   } else {
+//     if (!menuModule.category_id) {
+//       menuModule.setDefaultCategory();
+//     }
+//
+//     if (!menuModule.sub_category_id) {
+//       menuModule.setDefaultSubCategory();
+//     }
+//
     const branchesData = branches.value;
     if (branchesData && branchesData.length > 0 && !filters.value.branch) {
       filters.value.branch = branchesData[0].id;
     }
 
-    menuModule.fetchServices();
-  }
-});
+//     menuModule.fetchServices();
+//   }
+// });
 
 
 const emit = defineEmits(['update:modelValue'])

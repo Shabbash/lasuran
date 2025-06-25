@@ -20,4 +20,5 @@ export interface RequestOptions<DataT = any> extends AsyncDataOptions<DataT> {
   headers?: {}
   onResponse?: (response: any) => void
   onResponseError?: (error: any) => void
+  activateSuccessToast?:boolean
 }

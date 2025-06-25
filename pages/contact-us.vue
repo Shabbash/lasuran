@@ -24,18 +24,25 @@
       <div class="flex-1">
         <div class="rounded-[30px] bg-[#EBE4DF] px-[15px] md:px-[50px] py-[30px]">
 
-          <USelectMenu v-model="contactForm.category" :items="feedbackOptions" valueKey="id" labelKey="name"
+          <USelectMenu v-model="contactForm.category" :items="customerServiceOptions?.feedbacks ?? []" valueKey="id" labelKey="name"
             placeholder="Select Feedback Type"
             class="w-full rounded-[23px] border border-[#A0576F] bg-transparent h-[59px] text-[#90928F] text-[16px] font-[400] leading-normal ps-[28px] mb-[20px]"
             :ui="{
               placeholder: 'text-[#90928F] text-[16px] font-[400] leading-normal'
             }" />
 
-          <UInput v-model="contactForm.order_id" placeholder="Order ID (Optional)"
-            class="w-full rounded-[23px] border border-[#A0576F] bg-transparent h-[59px] text-[#90928F] text-[16px] font-[400] leading-normal ps-[28px] mb-[20px]"
-            :ui="{
-              base: ['w-full h-full p-0 bg-transparent border-0 outline-none shadow-none text-[#90928F] text-[16px] font-normal leading-normal ring-0 ring-transparent focus-visible:ring-none']
+          <USelectMenu v-model="contactForm.order_id" :items="customerServiceOptions?.orders ?? []" valueKey="id" labelKey="order_number"
+                       placeholder="Select Order"
+                       class="w-full rounded-[23px] border border-[#A0576F] bg-transparent h-[59px] text-[#90928F] text-[16px] font-[400] leading-normal ps-[28px] mb-[20px]"
+                       :ui="{
+              placeholder: 'text-[#90928F] text-[16px] font-[400] leading-normal'
             }" />
+
+<!--          <UInput v-model="contactForm.order_id" placeholder="Order ID (Optional)"-->
+<!--            class="w-full rounded-[23px] border border-[#A0576F] bg-transparent h-[59px] text-[#90928F] text-[16px] font-[400] leading-normal ps-[28px] mb-[20px]"-->
+<!--            :ui="{-->
+<!--              base: ['w-full h-full p-0 bg-transparent border-0 outline-none shadow-none text-[#90928F] text-[16px] font-normal leading-normal ring-0 ring-transparent focus-visible:ring-none']-->
+<!--            }" />-->
 
           <UTextarea v-model="contactForm.message" placeholder="Leave your comment"
             class="w-full rounded-[23px] border border-[#A0576F] bg-transparent h-[170px] text-[#90928F] text-[16px] font-[400] leading-normal ps-[28px] py-[23px] mb-[20px]"
@@ -125,12 +132,9 @@ const contactForm = ref({
 const selectedFiles = ref<File[]>([])
 
 // Feedback options based on API categories
-const feedbackOptions = [
-  { id: 1, name: 'Feedback' },
-  { id: 2, name: 'Enquiry' },
-  { id: 3, name: 'Complaint' },
-  { id: 4, name: 'Suggestion' }
-]
+const { data: customerServiceOptions, pending: isFetchLoading } = useApi('customer-service', {
+  transform: (response) => response?.data ?? {}
+});
 
 // Form validation
 const isFormValid = computed(() => {
@@ -164,9 +168,8 @@ const submitForm = async () => {
     attachments: selectedFiles.value
   }
 
-  const result = await contactStore.submitFeedback(formData)
-
-  if (result.success) {
+  const result =  contactStore.submitFeedback(formData, (response) => {
+    console.log('submitFeedback',result)
     // Reset form on success
     contactForm.value = {
       category: null,
@@ -176,8 +179,8 @@ const submitForm = async () => {
     selectedFiles.value = []
 
     // Redirect to dashboard tickets tab after successful submission
-    await navigateTo('/dashboard?tab=tickets')
-  }
+    navigateTo('/dashboard?tab=tickets')
+  })
 }
 
 </script>
