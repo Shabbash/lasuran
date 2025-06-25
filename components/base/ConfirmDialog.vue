@@ -1,6 +1,5 @@
 <template>
-  <Dialog v-model:show="show" :options="{ modalMaxWidth }">
-    <template #body>
+
       <div class="px-[50px] pt-[34px] pb-[30px] text-center bg-[#EBE4DF] rounded-[30px] text-[#5F2C3E]">
 
         <!-- Icon -->
@@ -9,7 +8,7 @@
         </svg>
 
         <!-- Title + Message -->
-        <h2 class="text-[#A0576F] text-[20px] font-bold mb-[5px] leading-normal">{{ title }}</h2>
+        <h2 class="text-[#A0576F] text-[20px] font-bold mb-[5px] leading-normal">{{ dialogTitle }}</h2>
         <p class="text-[#5B605C] text-[16px] mb-[24px] leading-normal">{{ message }}</p>
 
         <!-- Buttons -->
@@ -29,8 +28,7 @@
         </div>
       </div>
     </template>
-  </Dialog>
-</template>
+
 
 <script setup lang="ts">
 import Dialog from '~/components/base/Dialog.vue' // أو المسار الصحيح للمكون
@@ -39,7 +37,7 @@ const show = defineModel<boolean>('show')
 
 
 const props = defineProps({
-  title: String,
+  dialogTitle: String,
   message: String,
   confirmText: { type: String, default: 'Confirm' },
   cancelText: { type: String, default: 'Cancel' },

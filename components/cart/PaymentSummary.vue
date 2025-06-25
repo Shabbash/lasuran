@@ -2,62 +2,94 @@
   <div class="p-[24px] pb-[40px] rounded-[16px] border border-[#E7E7E7] bg-[#EBE4DF]">
     <h2 class="text-[#A0576F] mb-[16px] text-[20px] font-medium leading-normal">Payment Details</h2>
 
-    <div class="space-y-[16px] text-[#5B605C]text-[14px] font-medium">
+    <!-- Summary values display -->
+    <div class="space-y-[16px] text-[#5B605C] text-[14px] font-medium">
       <div class="flex justify-between">
         <span>Subtotal ({{ servicesCount }} Services)</span>
-        <span class="font-bold"><span class="sar-icon">&#xe900;</span> {{ subtotal.toFixed(2) }}</span>
+        <span class="font-bold"><span class="sar-icon">&#xe900;</span> {{ formattedSubtotal }}</span>
       </div>
       <div class="flex justify-between">
         <span>VAT (15%)</span>
-        <span class="font-bold"><span class="sar-icon">&#xe900;</span> {{ vat.toFixed(2) }}</span>
+        <span class="font-bold"><span class="sar-icon">&#xe900;</span> {{ formattedVat }}</span>
       </div>
       <div class="flex justify-between">
         <span>Services cost</span>
-        <span class="font-bold"><span class="sar-icon">&#xe900;</span> {{ serviceCost.toFixed(2) }}</span>
+        <span class="font-bold"><span class="sar-icon">&#xe900;</span> {{ formattedServiceCost }}</span>
       </div>
       <div class="flex justify-between">
         <span>Discount</span>
-        <span class="font-bold"><span class="sar-icon">&#xe900;</span> {{ discount.toFixed(2) }}</span>
+        <span class="font-bold"><span class="sar-icon">&#xe900;</span> {{ formattedDiscount }}</span>
       </div>
     </div>
 
+    <!-- Promo code and gift card inputs -->
     <div class="space-y-4 mt-4">
-
+      <!-- Promo Code Input -->
       <div class="flex gap-2 relative border border-[#A0576F] rounded-[100px] overflow-hidden">
-        <UInput placeholder="Enter Promo Code"
-          class="flex-1 bg-transparent text-[15px] font-normal leading-normal capitalize ps-[24px] h-[44px] summary-input" />
-        <UButton
+        <UInput v-model="promoCode" placeholder="Enter Promo Code"
+          class="flex-1 bg-transparent text-[15px] font-normal leading-normal capitalize ps-[10px] h-[44px] summary-input"
+          :ui="{
+            base:'flex-1 bg-transparent text-[15px] font-normal leading-normal capitalize h-[44px] summary-input border-0 ring-0 focus-visible:ring-0'
+          }"
+        />
+
+        <UButton :loading="isApplyingPromo" @click="applyPromoCode"
           class="h-full bg-transparent text-[#A0576F] text-[15px] font-normal leading-normal underline p-0 pe-[24px] h-[44px] hover:bg-transparent"
-          color="primary" variant="soft">Apply</UButton>
+          color="primary" variant="soft">
+          Apply
+        </UButton>
       </div>
+
+      <!-- Gift Card Input -->
       <div class="flex gap-[15px]">
         <div class="flex gap-2 relative border border-[#A0576F] rounded-[100px] overflow-hidden">
-          <UInput placeholder="Gift Card SN"
-            class="flex-1 bg-transparent text-[15px] font-normal leading-normal capitalize ps-[24px] h-[44px] summary-input" />
-          <UButton
+          <UInput v-model="giftCardSerial" placeholder="Gift Card SN"
+            class="flex-1 bg-transparent text-[15px] font-normal leading-normal capitalize ps-[10px] h-[44px] summary-input" 
+            :ui="{
+              base:'flex-1 bg-transparent text-[15px] font-normal leading-normal capitalize h-[44px] summary-input border-0 ring-0 focus-visible:ring-0'
+            }"
+          />
+          <UButton :loading="isApplyingGiftCard" @click="applyGiftCard"
             class="h-full bg-transparent text-[#A0576F] text-[15px] font-normal leading-normal underline p-0 pe-[24px] h-[44px] hover:bg-transparent"
-            color="primary" variant="soft">Apply</UButton>
+            color="primary" variant="soft">
+            Apply
+          </UButton>
         </div>
-        <a href="#"
-          class="flex items-center justify-center px-[18px] w-[45%] text-[#6B8B9B] bg-[#BBCACF] text-center text-[14px] font-normal leading-normal rounded-[100px] h-[44px]">All
-          Cards</a>
+
+        <!-- Open All Gift Cards Dialog -->
+        <BaseButton @click="openAllGiftCards"
+          class="flex items-center justify-center px-[18px] w-[45%] text-[#6B8B9B] bg-[#BBCACF] hover:bg-[#BBCACF] text-center text-[14px] font-normal leading-normal rounded-[100px] h-[44px]">
+          All Cards
+        </BaseButton>
       </div>
+
+      <!-- Terms and Conditions Checkbox -->
       <div class="flex items-center gap-2 text-sm text-[#A0576F]">
         <UCheckbox v-model="accepted" />
         <span>Accept terms and conditions</span>
       </div>
-      <BaseButton :loading="isProcessing" @click="proceedToCheckout" class="cart-btn flex align-center gap-[24px] w-full text-white py-3 rounded-full font-[600] text-[16px] justify-center bg-[#A0576F] hover:bg-[#913E5D] mt-[35px] disabled:bg-[#A0576F]" :disabled="!accepted || servicesCount === 0">
-        <span class="sar-icon">&#xe900;</span> {{ total.toFixed(2) }} - Checkout
-      </BaseButton>
 
+      <!-- Checkout Button -->
+      <BaseButton :loading="isProcessing" @click="proceedToCheckout"
+        class="cart-btn flex align-center gap-[24px] w-full text-white py-3 rounded-full font-[600] text-[16px] justify-center bg-[#A0576F] hover:bg-[#913E5D] mt-[35px] disabled:bg-[#A0576F]"
+        :disabled="!accepted || servicesCount === 0">
+        <span class="sar-icon">&#xe900;</span> {{ formattedTotal }} - Checkout
+      </BaseButton>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import {COMPONENTS} from "~/data/constants";
+import { COMPONENTS } from "~/data/constants"
+import { useApp } from '~/stores/app'
+import { useApi } from '~/composables/useApi'
+import { useCart } from '~/stores/cart'
+import { useToast } from '#imports'
 
+const toast = useToast()
+
+// Props for incoming payment data
 const props = defineProps<{
   servicesCount: number
   subtotal: number
@@ -67,74 +99,163 @@ const props = defineProps<{
   total?: number
 }>()
 
-// Use provided values or compute defaults
-const vat = computed(() => props.vat !== undefined ? props.vat : props.subtotal * 0.15)
-const discount = computed(() => props.discount || 0)
-const serviceCost = computed(() => props.serviceCost || 0)
-const total = computed(() => props.total !== undefined ? props.total : props.subtotal + vat.value - discount.value + serviceCost.value)
+const appModule = useApp()
 
-const cartModule = useCart() as any;
-const appModule = useApp();
-const isProcessing = ref(false);
+// Main reactive payment-related values
+const subtotal = ref(props.subtotal)
+const vat = ref(props.vat ?? props.subtotal * 0.15)
+const discount = ref(props.discount ?? 0)
+const serviceCost = ref(props.serviceCost ?? 0)
+const total = ref(props.total ?? (props.subtotal + vat.value - discount.value + serviceCost.value))
 
-const proceedToCheckout = function () {
-  if (isProcessing.value) return; // Prevent double clicks
+// Gift Card logic
+const giftCardSerial = ref('')
+const giftCards = ref([])
+const isLoadingCards = ref(false)
+const isProcessing = ref(false)
+const accepted = ref(false)
+const isApplyingGiftCard = ref(false)
 
-  isProcessing.value = true;
+// Formatted computed currency values to avoid crash on .toFixed()
+const formattedSubtotal = computed(() => typeof subtotal.value === 'number' ? subtotal.value.toFixed(2) : '0.00')
+const formattedVat = computed(() => typeof vat.value === 'number' ? vat.value.toFixed(2) : '0.00')
+const formattedDiscount = computed(() => typeof discount.value === 'number' ? discount.value.toFixed(2) : '0.00')
+const formattedServiceCost = computed(() => typeof serviceCost.value === 'number' ? serviceCost.value.toFixed(2) : '0.00')
+const formattedTotal = computed(() => typeof total.value === 'number' ? total.value.toFixed(2) : '0.00')
+
+// Fetch and open gift card selector dialog
+const openAllGiftCards = async () => {
+  if (giftCards.value.length === 0) {
+    isLoadingCards.value = true
+    try {
+      const { data } = await useApi('vouchers/list_available_vouchers?page=1', { method: 'GET' })
+      giftCards.value = data.value?.data?.vouchers || []
+    } catch (err) {
+      console.error('❌ Failed to fetch gift cards:', err)
+    } finally {
+      isLoadingCards.value = false
+    }
+  }
+
+  appModule.setDialogComponent(COMPONENTS.MY_GIFT_CARDS_DIALOG, {
+    giftCards: giftCards.value,
+    onSelect(serial: string) {
+      giftCardSerial.value = serial
+      appModule.setDialogShow(false)
+    },
+    modalMaxWidth: 'max-w-[400px]'
+  })
+
+  appModule.setDialogShow(true)
+}
+
+// Apply selected gift card to cart
+const applyGiftCard = async () => {
+  if (!giftCardSerial.value) {
+    return toast.add({ title: "Please enter a gift card serial number", color: 'warning' })
+  }
+
+  isApplyingGiftCard.value = true
 
   try {
-    if (cartModule.getPaymentMethods.length > 1) {
-      appModule.setDialogComponent(COMPONENTS.PAYMENT_SELECTION);
-      appModule.setDialogShow(true);
-      isProcessing.value = false; // Reset loading for dialog
+    const { data } = await useApi(`cart?gift_card=${giftCardSerial.value}`, { method: 'GET' })
+
+    if (data.value?.status && data.value?.data) {
+      const cartData = data.value.data
+
+      subtotal.value = cartData.sub_total
+      vat.value = cartData.tax_amount
+      discount.value = (cartData.promo_discount || 0) + (cartData.gift_card_discount || 0)
+      serviceCost.value = cartData.order_service_fees_price || 0
+      total.value = cartData.total
+
+      toast.add({ title: "Gift card applied successfully!", color: 'green' })
     } else {
-      cartModule.setPaymentMethod(cartModule.getPaymentMethods?.[0]?.id);
-
-      // Use a timeout to ensure loading stops even if something goes wrong
-      const timeoutId = setTimeout(() => {
-        isProcessing.value = false;
-        console.warn('Order creation timeout - resetting loading state');
-      }, 10000); // 10 second timeout
-
-      cartModule.createOrder({},
-        (_data: any) => {
-          // Success callback
-          clearTimeout(timeoutId);
-          appModule.setDialogComponent(COMPONENTS.PAYMENT_LOADING);
-          appModule.setDialogShow(true,{
-            dismissible: false,
-            close: false
-          });
-          isProcessing.value = false; // Reset loading when done
-        },
-        (error: any) => {
-          // Error callback
-          clearTimeout(timeoutId);
-          console.error('Order creation failed:', error);
-          isProcessing.value = false; // Reset loading on error
-        }
-      );
+      toast.add({ title: "Invalid or expired gift card", color: 'error' })
     }
-  } catch (error) {
-    console.error('Error in checkout process:', error);
-    isProcessing.value = false; // Reset loading on error
+  } catch (err) {
+    console.error('Failed to apply gift card:', err)
+    toast.add({ title: "An error occurred", color: 'error' })
+  } finally {
+    isApplyingGiftCard.value = false
   }
 }
 
-const accepted = ref(false)
-</script>
+// Promo code logic
+const promoCode = ref('')
+const isApplyingPromo = ref(false)
 
-<style>
-.summary-input input {
-  background-color: transparent !important;
-  border: 0;
-  box-shadow: unset;
-  padding: 0;
-  height: 100%;
-  font-size: 15px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: normal;
-  text-transform: capitalize;
+// Apply promo code to cart
+const applyPromoCode = async () => {
+  if (!promoCode.value) {
+    return toast.add({ title: "Please enter a promo code", color: 'warning' })
+  }
+
+  isApplyingPromo.value = true
+
+  try {
+    const { data } = await useApi(`cart?promo_code=${promoCode.value}`, { method: 'GET' })
+
+    if (data.value?.status && data.value?.data) {
+      const cartData = data.value.data
+
+      subtotal.value = cartData.sub_total
+      vat.value = cartData.tax_amount
+      discount.value = (cartData.promo_discount || 0) + (cartData.gift_card_discount || 0)
+      serviceCost.value = cartData.order_service_fees_price || 0
+      total.value = cartData.total
+
+      toast.add({ title: "Promo code applied successfully!", color: 'green' })
+    } else {
+      toast.add({ title: "Invalid or expired promo code", color: 'error' })
+    }
+  } catch (err) {
+    console.error('Failed to apply promo code:', err)
+    toast.add({ title: "An error occurred", color: 'error' })
+  } finally {
+    isApplyingPromo.value = false
+  }
 }
-</style>
+
+// Finalize checkout flow
+const proceedToCheckout = () => {
+  if (isProcessing.value) return
+  isProcessing.value = true
+
+  try {
+    const cartModule = useCart()
+    if (cartModule.getPaymentMethods.length > 1) {
+      appModule.setDialogComponent(COMPONENTS.PAYMENT_SELECTION)
+      appModule.setDialogShow(true)
+      isProcessing.value = false
+    } else {
+      cartModule.setPaymentMethod(cartModule.getPaymentMethods?.[0]?.id)
+
+      const timeoutId = setTimeout(() => {
+        isProcessing.value = false
+        console.warn('Order creation timeout - resetting loading state')
+      }, 10000)
+
+      cartModule.createOrder({},
+        (_data: any) => {
+          clearTimeout(timeoutId)
+          appModule.setDialogComponent(COMPONENTS.PAYMENT_LOADING)
+          appModule.setDialogShow(true, {
+            dismissible: false,
+            close: false
+          })
+          isProcessing.value = false
+        },
+        (error: any) => {
+          clearTimeout(timeoutId)
+          console.error('Order creation failed:', error)
+          isProcessing.value = false
+        }
+      )
+    }
+  } catch (error) {
+    console.error('Error in checkout process:', error)
+    isProcessing.value = false
+  }
+}
+</script>

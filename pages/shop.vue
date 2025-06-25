@@ -168,7 +168,7 @@
       @cancel="handleCancelConflict"
     /> -->
 
-    <ServiceTypeConflictModal
+    <ServiceTypeConflictDialog
   v-model:open="showServiceTypeModal"
   :current-service-type="currentServiceType"
   :new-service-type="newServiceType"
@@ -209,7 +209,7 @@ import OutlineHeartIcon from '@/components/icons/OutlineHeartIcon.vue'
 import OutlineStarIcon2 from '@/components/icons/OutlineStarIcon2.vue'
 import ShopSkeleton from '@/components/skeletons/ShopSkeleton.vue'
 import ShopIcon from '@/components/icons/ShopIcon.vue'
-import ServiceTypeConflictModal from '~/components/cart/ServiceTypeConflictModal.vue'
+import ServiceTypeConflictDialog from '~/components/cart/ServiceTypeConflictDialog.vue'
 import { useCart } from '@/stores/cart'
 import { useProducts } from '@/stores/products'
 import { useApp } from '@/stores/app'

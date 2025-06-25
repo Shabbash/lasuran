@@ -48,7 +48,7 @@
       </BaseButton> -->
 
       <BaseButton @click="addToCart" :loading="cartModule.isAddLoading" :disabled="cartModule.isAddLoading"
-        class="flex items-center gap-[10px] w-full text-white rounded-full font-[400] text-[16px] justify-center disabled:bg-[#A0576F] hover:bg-[#913E5D] transition cursor-pointer mt-[30px]"
+        class="flex items-center gap-[10px] w-full text-white py-3 rounded-full font-[400] text-[16px] justify-center disabled:bg-[#A0576F] hover:bg-[#913E5D] transition cursor-pointer mt-[30px]"
         :class="cartModule.isAddLoading ? 'bg-[#a0576f69]' : 'bg-[#A0576F]'">
         <PriceIcon />
         <span v-html="priceWithIcon"></span>

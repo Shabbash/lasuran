@@ -14,6 +14,9 @@ import Cards from "~/components/payment/Cards.vue";
 import CreateCard from "~/components/payment/CreateCard.vue";
 import PaymentLoading from "~/components/payment/Loading.vue";
 import ConfirmDialog from '~/components/base/ConfirmDialog.vue'
+import MyGiftCardsDialog from '~/components/cart/MyGiftCardsDialog.vue'
+import CheckoutPaymentDialog from '@/components/cart/CheckoutPaymentDialog.vue'
+import BranchShow from '@/components/branch/Show.vue'
 
 
 const components: {} = {
@@ -31,6 +34,9 @@ const components: {} = {
     [COMPONENTS.PAYMENT_CREATE_CARD] : CreateCard,
     [COMPONENTS.PAYMENT_LOADING] : PaymentLoading,
     [COMPONENTS.CONFIRM_DIALOG]: ConfirmDialog,
+    [COMPONENTS.MY_GIFT_CARDS_DIALOG]: MyGiftCardsDialog,
+    [COMPONENTS.CHECKOUT_PAYMENT_DIALOG]: CheckoutPaymentDialog,
+    [COMPONENTS.BRANCH_SHOW]: BranchShow,
 
 };
 export default components;

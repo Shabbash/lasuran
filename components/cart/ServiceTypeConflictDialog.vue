@@ -1,6 +1,5 @@
 <template>
-  <Dialog v-model:show="isOpen" :ui="{ width: 'w-full max-w-md' }">
-    <template #body>
+
       <div class="bg-[#A0576F] rounded-[20px] p-6 text-center">
         <!-- Icon -->
         <div class="mx-auto w-16 h-16 bg-[#EBE4DF] rounded-full flex items-center justify-center mb-4">
@@ -43,9 +42,7 @@
           </button>
         </div>
       </div>
-    </template>
 
-  </Dialog>
 </template>
 
 <script setup lang="ts">

@@ -490,7 +490,7 @@ function handleMakeService() {
 
 function openCancelBookingConfirm() {
   setDialogComponent(COMPONENTS.CONFIRM_DIALOG, {
-    title: 'Cancel Reservation',
+    dialogTitle: 'Cancel Reservation',
     message: 'Are you sure you want to cancel your reservation?',
     confirmText: 'Yes, Cancel',
     cancelText: 'No, Keep',

@@ -109,7 +109,7 @@
               <BaseCounter v-model="quantity" :max="selectedCard?.number_of_gift_card || 1" />
               <BaseButton @click="checkoutGiftCard" :loading="isCheckingOut"
                 :disabled="!selectedCard || quantity < 1 || quantity > (selectedCard?.number_of_gift_card || 1)"
-                class="cart-btn flex align-center gap-[10px] w-full text-white rounded-full font-[400] text-[16px] justify-center disabled:bg-[#A0576F] hover:bg-[#913E5D]"
+                class="cart-btn flex align-center gap-[10px] w-full text-white py-3 rounded-full font-[400] text-[16px] justify-center disabled:bg-[#A0576F] hover:bg-[#913E5D]"
                 :class="selectedCard ? 'bg-[#A0576F]' : 'bg-[#a0576f69]'">
 
                 <PriceIcon />

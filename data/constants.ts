@@ -27,7 +27,10 @@ export const COMPONENTS = {
     PAYMENT_CARDS: "PaymentCards",
     PAYMENT_CREATE_CARD: "PaymentCreateCard",
     PAYMENT_LOADING: "PaymentLoading",
-    CONFIRM_DIALOG: "ConfirmDialog"
+    CONFIRM_DIALOG: "ConfirmDialog",
+    MY_GIFT_CARDS_DIALOG: 'MyGiftCardsDialog',
+    CHECKOUT_PAYMENT_DIALOG: 'CHECKOUT_PAYMENT_DIALOG',
+    BRANCH_SHOW: 'BranchShow',
 
 }
 

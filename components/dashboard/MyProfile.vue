@@ -372,7 +372,7 @@ import { useRouter } from 'vue-router';
 
 const deleteProfile = () => {
   setDialogComponent(COMPONENTS.CONFIRM_DIALOG, {
-    title: 'Delete Profile',
+    dialogTitle: 'Delete Profile',
     message: 'Are you sure you want to delete your profile?',
     confirmText: 'Yes, Delete',
     cancelText: 'Cancel',

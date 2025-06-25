@@ -50,11 +50,12 @@
           <AttachIcon />
         </button>
       </div>
-      <button
-        class="w-[48px] h-[50px] rounded-[13px] bg-[#EBE4DF] flex items-center justify-center text-white cursor-pointer"
+      <button :disabled="!newMessage.trim()"
+        class="w-[48px] h-[50px] rounded-[13px] bg-[#EBE4DF] flex items-center justify-center text-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         @click="send">
         <SendIcon />
       </button>
+
     </div>
 
     <!-- Closed Message -->

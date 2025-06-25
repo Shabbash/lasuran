@@ -7,6 +7,7 @@
     content: `bg-[#EBE4DF] rounded-[30px] ${modalMaxWidth.value} w-full overflow-hidden`
   }" v-bind="options">
     <!-- Close -->
+    <template #header></template>
 
     <template #close v-if="!(options.hasOwnProperty('close') && !options.close)">
       <slot name="close">
