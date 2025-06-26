@@ -24,7 +24,7 @@
         </div>
 
         <div class="grid grid-cols-2 gap-y-[5px] text-[#A0576F] text-sm my-[40px]">
-          <NuxtLink to="/profile?tab=profile" v-if="authModule.isAuthenticated" @click="closePopover"
+          <NuxtLink to="/dashboard/profile" v-if="authModule.isAuthenticated" @click="closePopover"
             class="flex items-center gap-2 px-4 py-2 rounded-lg hover:opacity-70 transition cursor-pointer">
             <img src="/assets/img/menu-icons/Layer.svg" alt="" class="w-[20px] h-[20px]" />
             <span class="text-[15px] font-[350] leading-none">My Profile</span>
@@ -36,7 +36,7 @@
             <span class="text-[15px] font-[350] leading-none">Branches</span>
           </NuxtLink>
 
-          <NuxtLink to="/profile?tab=bookings" v-if="authModule.isAuthenticated" @click="closePopover"
+          <NuxtLink to="/dashboard/bookings" v-if="authModule.isAuthenticated" @click="closePopover"
             class="flex items-center gap-2 px-4 py-2 rounded-lg hover:opacity-70 transition cursor-pointer">
             <img src="/assets/img/menu-icons/Frame-5.svg" alt="" class="w-[20px] h-[20px]" />
             <span class="text-[15px] font-[350] leading-none">My Bookings</span>
@@ -48,19 +48,19 @@
             <span class="text-[15px] font-[350] leading-none">Customer Service</span>
           </NuxtLink>
 
-          <NuxtLink to="/profile?tab=wallet" v-if="authModule.isAuthenticated" @click="closePopover"
+          <NuxtLink to="/dashboard/wallet" v-if="authModule.isAuthenticated" @click="closePopover"
             class="flex items-center gap-2 px-4 py-2 rounded-lg hover:opacity-70 transition cursor-pointer">
             <img src="/assets/img/menu-icons/Frame-1.svg" alt="" class="w-[20px] h-[20px]" />
             <span class="text-[15px] font-[350] leading-none">My Wallet</span>
           </NuxtLink>
 
-          <NuxtLink to="/invite" v-if="authModule.isAuthenticated" @click="closePopover"
+          <div v-if="authModule.isAuthenticated" @click="openInviteModal"
             class="flex items-center gap-2 px-4 py-2 rounded-lg hover:opacity-70 transition cursor-pointer">
             <img src="/assets/img/menu-icons/Frame-3.svg" alt="" class="w-[20px] h-[20px]" />
             <span class="text-[15px] font-[350] leading-none">Invite Friends</span>
-          </NuxtLink>
+          </div>
 
-          <NuxtLink to="/profile?tab=gift-cards" v-if="authModule.isAuthenticated" @click="closePopover"
+          <NuxtLink to="/dashboard/gift-cards" v-if="authModule.isAuthenticated" @click="closePopover"
             class="flex items-center gap-2 px-4 py-2 rounded-lg hover:opacity-70 transition cursor-pointer">
             <img src="/assets/img/menu-icons/svgexport-17.svg" alt="" class="w-[20px] h-[20px]" />
             <span class="text-[15px] font-[350] leading-none">My Gift Cards</span>
@@ -72,7 +72,7 @@
             <span class="text-[15px] font-[350] leading-none">العربية</span>
           </NuxtLink>
 
-          <NuxtLink to="/profile?tab=tickets" v-if="authModule.isAuthenticated" @click="closePopover"
+          <NuxtLink to="/dashboard/tickets" v-if="authModule.isAuthenticated" @click="closePopover"
             class="flex items-center gap-2 px-4 py-2 rounded-lg hover:opacity-70 transition cursor-pointer">
             <img src="/assets/img/menu-icons/Frame-2.svg" alt="" class="w-[20px] h-[20px]" />
             <span class="text-[15px] font-[350] leading-none">My Tickets</span>
@@ -100,7 +100,7 @@
     </template>
   </UPopover>
 
-<LegalDialog v-model:show="showLegalModal" :url="legalUrl" />
+  <LegalDialog v-model:show="showLegalModal" :url="legalUrl" />
 
 
 </template>
@@ -169,5 +169,15 @@ const logout = () => {
   localStorage.removeItem('pinia-profile')
   closePopover()
 }
-</script>
 
+
+// Open the invite modal
+const openInviteModal = () => {
+  closePopover();
+  setDialogComponent(COMPONENTS.INVITE_FRIENDS, {
+    modalMaxWidth: 'max-w-[430px]'
+  });
+  setDialogShow(true)
+}
+
+</script>

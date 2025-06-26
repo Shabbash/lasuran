@@ -91,7 +91,7 @@ onMounted(async () => {
 
 // Open product modal
 const openProductModal = (product: any) => {
-  setDialogComponent(COMPONENTS.SHOP_SHOW, { product })
+  setDialogComponent(COMPONENTS.ShopShow, { product })
   setDialogShow(true)
 }
 </script>

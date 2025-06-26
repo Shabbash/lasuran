@@ -439,7 +439,7 @@ export const useCart = defineStore("cart", {
                                     paymentWin.close();
                                     paymentWindow = null;
                                 }
-                                navigateTo("/profile?tab=bookings");
+                                navigateTo("/dashboard/bookings");
                                 this.$state.products = [];
                                 this.fetchCart();
                             } else {

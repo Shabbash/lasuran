@@ -179,7 +179,7 @@ const submitForm = async () => {
     selectedFiles.value = []
 
     // Redirect to dashboard tickets tab after successful submission
-    navigateTo('/dashboard?tab=tickets')
+    navigateTo('/dashboard/tickets')
   })
 }
 

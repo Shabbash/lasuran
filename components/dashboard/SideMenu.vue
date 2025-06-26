@@ -11,7 +11,7 @@
 
             <div v-html="getIcon(item)" ></div>
 <!--            <MenuProfileIcon />-->
-            <span :class="activeItem === 'profile' ? 'text-[#A0576F]' : 'text-[#EBE4DF]'">{{  item.label }}</span>
+            <span>{{  item.label }}</span>
           </NuxtLink>
 <!--          <UButton block-->
 <!--            :class="activeItem === 'profile' ? 'active text-[#A0576F] bg-[#EBE4DF] hover:bg-[#EBE4DF] !hover:text-[#A0576F] !hover:opacity-100' : 'text-[#EBE4DF] hover:bg-white opacity-100 !hover:opacity-100'"-->
@@ -171,7 +171,9 @@ const getIcon = function (item) {
 
 
 <style>
-.side-menu button:hover span {
-  color: #A0576F;
+
+.side-menu li{
+  color: #EBE4DF;
 }
+
 </style>

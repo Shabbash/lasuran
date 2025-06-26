@@ -2,14 +2,16 @@
   <div class="bg-[#A0576F] bg-decore">
     <LayoutHeader></LayoutHeader>
     <div class="min-h-[calc(100vh-222px)] relative">
-      <slot> </slot>
+      <div class="max-w-[95%] md:max-w-[1200px] mx-auto">
+        <slot> </slot>
+      </div>
     </div>
     <LayoutFooter></LayoutFooter>
 
     <BaseDialog v-model:show="isDialogDisplayed" :options="appModule.getDialogOptions">
       <template #body>
         <component :is="appModule.getDialogComponent" v-bind="appModule.getDialogOptions"
-                   v-model:show="isDialogDisplayed" />
+          v-model:show="isDialogDisplayed" />
       </template>
     </BaseDialog>
 

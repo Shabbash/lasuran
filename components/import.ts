@@ -18,6 +18,7 @@ import MyGiftCardsDialog from '~/components/cart/MyGiftCardsDialog.vue'
 import CheckoutPaymentDialog from '@/components/cart/CheckoutPaymentDialog.vue'
 import BranchShow from '@/components/branch/Show.vue'
 import ShopShow from '~/components/shop/Show.vue';
+import InviteFriends from '@/components/base/InviteFriends.vue'
 
 
 const components: {} = {
@@ -39,6 +40,7 @@ const components: {} = {
     [COMPONENTS.CHECKOUT_PAYMENT_DIALOG]: CheckoutPaymentDialog,
     [COMPONENTS.BRANCH_SHOW]: BranchShow,
     [COMPONENTS.SHOP_SHOW]: ShopShow,
+    [COMPONENTS.INVITE_FRIENDS]: InviteFriends,
 
 
 };

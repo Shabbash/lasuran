@@ -1,18 +1,18 @@
 <template>
-<LayoutDefault>
-  <div class="flex">
-    <div class="w-[320px] hidden md:block">
-      <DashboardSideMenu @menu-click="handleMenuClick" />
-    </div>
+  <LayoutDefault>
+    <div class="flex">
+      <div class="w-[320px] hidden md:block">
+        <DashboardSideMenu @menu-click="handleMenuClick" />
+      </div>
 
-    <div class="flex-1 md:ps-6">
-      <!--      <NuxtPage />-->
-      <slot>
-        <!--        <component :is="activeComponent" />-->
-      </slot>
+      <div class="flex-1 md:ps-6">
+        <!--      <NuxtPage />-->
+        <slot>
+          <!--        <component :is="activeComponent" />-->
+        </slot>
+      </div>
     </div>
-  </div>
-</LayoutDefault>
+  </LayoutDefault>
 </template>
 
 <script setup>

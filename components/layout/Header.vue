@@ -174,7 +174,7 @@
                                         <span class="text-[15px] font-[350] leading-none">Shop</span>
                                     </NuxtLink> -->
 
-                                    <NuxtLink to="/profile?tab=profile" v-if="authModule.isAuthenticated"
+                                    <NuxtLink to="/dashboard/profile" v-if="authModule.isAuthenticated"
                                         class="flex items-center gap-2 px-4 py-[6px] rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
                                         <img src="/assets/img/menu-icons/Layer.svg" alt="" class="w-[20px] h-[20px]" />
                                         <span class="text-[15px] font-[350] leading-none">My Profile</span>
@@ -182,7 +182,7 @@
 
 
 
-                                    <NuxtLink to="/profile?tab=bookings" v-if="authModule.isAuthenticated"
+                                    <NuxtLink to="/dashboard/bookings" v-if="authModule.isAuthenticated"
                                         class="flex items-center gap-2 px-4 py-[6px] rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
                                         <img src="/assets/img/menu-icons/Frame-5.svg" alt=""
                                             class="w-[20px] h-[20px]" />
@@ -196,21 +196,30 @@
                                         <span class="text-[15px] font-[350] leading-none">Customer Service</span>
                                     </NuxtLink>
 
-                                    <NuxtLink to="/profile?tab=wallet" v-if="authModule.isAuthenticated"
+                                    <NuxtLink to="/dashboard/wallet" v-if="authModule.isAuthenticated"
                                         class="flex items-center gap-2 px-4 py-[6px] rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
                                         <img src="/assets/img/menu-icons/Frame-1.svg" alt=""
                                             class="w-[20px] h-[20px]" />
                                         <span class="text-[15px] font-[350] leading-none">My Wallet</span>
                                     </NuxtLink>
 
-                                    <NuxtLink to="/invite" v-if="authModule.isAuthenticated"
+                                    <!-- <NuxtLink to="/invite" v-if="authModule.isAuthenticated"
                                         class="flex items-center gap-2 px-4 py-[6px] rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
                                         <img src="/assets/img/menu-icons/Frame-3.svg" alt=""
                                             class="w-[20px] h-[20px]" />
                                         <span class="text-[15px] font-[350] leading-none">Invite Friends</span>
-                                    </NuxtLink>
+                                    </NuxtLink> -->
 
-                                    <NuxtLink to="/gift-cards" v-if="authModule.isAuthenticated"
+                                    <!-- Invite Friends Button -->
+                                    <button v-if="authModule.isAuthenticated" @click="openInviteModal"
+                                        class="flex items-center gap-2 px-4 py-[6px] rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
+                                        <img src="/assets/img/menu-icons/Frame-3.svg" alt=""
+                                            class="w-[20px] h-[20px]" />
+                                        <span class="text-[15px] font-[350] leading-none">Invite Friends</span>
+                                    </button>
+
+
+                                    <NuxtLink to="/dashboard/gift-cards" v-if="authModule.isAuthenticated"
                                         class="flex items-center gap-2 px-4 py-[6px] rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
                                         <img src="/assets/img/menu-icons/svgexport-17.svg" alt=""
                                             class="w-[20px] h-[20px]" />
@@ -218,7 +227,7 @@
                                     </NuxtLink>
 
 
-                                    <NuxtLink to="/profile?tab=tickets" v-if="authModule.isAuthenticated"
+                                    <NuxtLink to="/dashboard/tickets" v-if="authModule.isAuthenticated"
                                         class="flex items-center gap-2 px-4 py-[6px] rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
                                         <img src="/assets/img/menu-icons/Frame-2.svg" alt=""
                                             class="w-[20px] h-[20px]" />
@@ -304,7 +313,7 @@
 
     </div>
 
-<LegalDialog v-model:show="showLegalModal" :url="legalUrl" />
+    <LegalDialog v-model:show="showLegalModal" :url="legalUrl" />
 
 
 
@@ -322,6 +331,12 @@ import { useHome } from '~/stores/home'
 import { useAuth } from '~/stores/auth'
 import { useApi } from '~/composables/useApi'
 
+
+import { COMPONENTS } from '~/data/constants'
+
+
+
+
 // auth, cart, home modules
 const authModule = useAuth()
 const cartModule = useCart()
@@ -334,12 +349,12 @@ const pagesUrls = ref<Record<string, string>>({})
 
 // fetch page URLs for iframe modals
 useApi('settings/pages-url', {
-  key: 'pages-url',
-  immediate: true
+    key: 'pages-url',
+    immediate: true
 }, {
-  onSuccess(res) {
-    pagesUrls.value = res.data
-  }
+    onSuccess(res) {
+        pagesUrls.value = res.data
+    }
 })
 
 // mobile menu slide state
@@ -347,29 +362,40 @@ const isOpen = ref(false)
 
 // open legal modal with dynamic URL
 const openLegal = (type: 'terms' | 'privacy') => {
-  legalUrl.value = type === 'terms'
-    ? pagesUrls.value?.terms_and_condition_url
-    : pagesUrls.value?.privacy_policy_url
+    legalUrl.value = type === 'terms'
+        ? pagesUrls.value?.terms_and_condition_url
+        : pagesUrls.value?.privacy_policy_url
 
-  isOpen.value = false
+    isOpen.value = false
 
-  setTimeout(() => {
-    showLegalModal.value = true
-  }, 150)
+    setTimeout(() => {
+        showLegalModal.value = true
+    }, 150)
 }
 
 // close slideover on route change
 const route = useRoute()
 watch(() => route.fullPath, () => {
-  isOpen.value = false
+    isOpen.value = false
 })
 
 // go to notifications page
 const navigateToNotifications = () => {
-  navigateTo({
-    path: '/notifications'
-  })
+    navigateTo({
+        path: '/notifications'
+    })
 }
+
+const { setDialogComponent, setDialogShow } = useApp()
+
+const openInviteModal = () => {
+  isOpen.value = false
+  setDialogComponent(COMPONENTS.INVITE_FRIENDS, {
+    modalMaxWidth: 'max-w-[430px]'
+  })
+  setDialogShow(true)
+}
+
 </script>
 
 

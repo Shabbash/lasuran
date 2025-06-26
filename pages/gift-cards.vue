@@ -294,7 +294,7 @@ const checkPaymentStatus = async (orderData: any): Promise<boolean> => {
         })
 
         // Redirect to dashboard gift cards tab
-        navigateTo('/dashboard?tab=gift-cards')
+        navigateTo('/dashboard/gift-cards')
 
         return true // Payment completed
       } else if (paymentData.success === false) {
@@ -359,7 +359,7 @@ const finalPaymentStatusCheck = async (orderData: any) => {
         })
 
         // Redirect to dashboard gift cards tab
-        navigateTo('/dashboard?tab=gift-cards')
+        navigateTo('/dashboard/gift-cards')
       } else if (paymentData.success === false) {
         closeCardModal()
         const errorMessage = response.value.message || 'Payment failed. Please try again.'
@@ -545,7 +545,7 @@ const checkoutGiftCard = async () => {
           })
 
           // Redirect to dashboard gift cards tab
-          navigateTo('/dashboard?tab=gift-cards')
+          navigateTo('/dashboard/gift-cards')
         }
       }
     } else {

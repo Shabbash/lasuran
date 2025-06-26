@@ -31,7 +31,8 @@ export const COMPONENTS = {
     MY_GIFT_CARDS_DIALOG: 'MyGiftCardsDialog',
     CHECKOUT_PAYMENT_DIALOG: 'CHECKOUT_PAYMENT_DIALOG',
     BRANCH_SHOW: 'BranchShow',
-    SHOP_SHOW: 'SHOP_SHOW',
+    SHOP_SHOW: 'ShopShow',
+    INVITE_FRIENDS: 'InviteFriends',
 
 }
 
