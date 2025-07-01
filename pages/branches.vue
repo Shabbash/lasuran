@@ -91,9 +91,9 @@ const bannerContent = {
 }
 
 onMounted(() => {
-  if (branchesStore.getBranches.length === 0) {
+  // if (branchesStore.getBranches.length === 0) {
     branchesStore.fetchBranches()
-  }
+  // }
   if (branchesStore.getAvailableCities.length > 0 && !filters.city) {
     filters.city = 'All Cities'
   }

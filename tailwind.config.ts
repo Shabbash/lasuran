@@ -1,4 +1,5 @@
 import type { Config } from 'tailwindcss'
+import rtl from 'tailwindcss-rtl' // ✅ RTL plugin import
 
 const config: Config = {
   content: [
@@ -7,11 +8,10 @@ const config: Config = {
     './pages/**/*.{vue,js,ts}',
     './app.vue',
   ],
-
-   safelist: [
+  safelist: [
     'max-w-[539px]',
-    'max-w-[638px]', // إن كنت تستخدمها أيضاً
-    'max-w-[800px]'  // أو أي مقاسات أخرى
+    'max-w-[638px]',
+    'max-w-[800px]'
   ],
   theme: {
     extend: {
@@ -22,7 +22,7 @@ const config: Config = {
       },
     },
   },
-  plugins: [],
+  plugins: [rtl()] // ✅ Enable RTL plugin
 }
 
 export default config

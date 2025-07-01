@@ -66,11 +66,15 @@
             <span class="text-[15px] font-[350] leading-none">My Gift Cards</span>
           </NuxtLink>
 
-          <NuxtLink to="/" @click="closePopover"
+          <!-- Language Switch Button -->
+          <button @click="toggleLocale"
             class="flex items-center gap-2 px-4 py-2 rounded-lg hover:opacity-70 transition cursor-pointer">
             <img src="/assets/img/menu-icons/Frame-4.svg" alt="" class="w-[20px] h-[20px]" />
-            <span class="text-[15px] font-[350] leading-none">العربية</span>
-          </NuxtLink>
+            <span class="text-[15px] font-[350] leading-none">
+              {{ locale === 'ar' ? 'English' : 'العربية' }}
+            </span>
+          </button>
+
 
           <NuxtLink to="/dashboard/tickets" v-if="authModule.isAuthenticated" @click="closePopover"
             class="flex items-center gap-2 px-4 py-2 rounded-lg hover:opacity-70 transition cursor-pointer">
@@ -104,6 +108,7 @@
 
 
 </template>
+
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useProfile } from '~/stores/profile'
@@ -112,6 +117,12 @@ import { useAuth } from '~/stores/auth'
 import { COMPONENTS } from '~/data/constants'
 import { useApi } from '~/composables/useApi'
 import LegalDialog from '~/components/base/LegalDialog.vue'
+const { locale } = useI18n()
+
+// Toggle between Arabic and English
+const toggleLocale = () => {
+  locale.value = locale.value === 'ar' ? 'en' : 'ar'
+}
 
 const profileStore = useProfile()
 const authModule = useAuth()

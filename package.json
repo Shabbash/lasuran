@@ -11,12 +11,15 @@
   },
   "dependencies": {
     "@internationalized/date": "^3.8.0",
+    "@intlify/vue-i18n-bridge": "^1.1.0",
     "@nuxt/ui": "^3.1.1",
+    "@nuxtjs/i18n": "^9.5.6",
     "@pinia/nuxt": "^0.11.0",
     "nuxt": "^3.17.1",
     "pinia": "^3.0.2",
     "pinia-plugin-persistedstate": "^4.3.0",
     "swiper": "^11.2.8",
+    "tailwindcss-rtl": "^0.9.0",
     "vue": "^3.5.13",
     "vue-router": "^4.5.1"
   },

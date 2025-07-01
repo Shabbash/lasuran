@@ -15,7 +15,7 @@ export const useApp = defineStore("app", {
                 options: {},
                 component: '',
                 data: {}
-            }
+            },
         }
     },
     getters: {
@@ -44,7 +44,8 @@ export const useApp = defineStore("app", {
         }
     },
     actions: {
-        setLocale(locale: string) {
+        setLocale(locale: any) {
+            
             this.$state.locale = locale;
         },
         setServiceType(serviceType: string) {
