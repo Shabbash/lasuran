@@ -134,6 +134,7 @@ export const useBookings = defineStore("bookings", {
             error: null as string | null,
             currentPage: 1,
             selectedOrder: null as Order | null,
+            order: null as Order | null,
         }
     },
 
@@ -221,6 +222,10 @@ export const useBookings = defineStore("bookings", {
 
         selectOrder(order: Order) {
             this.$state.selectedOrder = order;
+        },
+
+        getOrder(order: Order){
+            this.getOrderById(order);
         },
 
         clearSelectedOrder() {

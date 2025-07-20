@@ -82,15 +82,26 @@ import { COMPONENTS } from "~/data/constants";
 import PriceIcon from '@/components/icons/PriceIcon.vue'
 import { formatSAR } from '~/utils/formatCurrency'
 
+import { useI18n } from 'vue-i18n'
 
+// Access translation function
+const { t } = useI18n()
 
 const priceWithIcon = computed(() => {
-  if (selectedExtension.value === '' && (selectedService.value.price == null || selectedService.value.price <= 0)) {
-    return 'Price Upon Selection';
-  }
   const price = selectedService.value.price ?? 0;
-  return `${formatSAR(price)} - ${isEditing.value ? 'Update' : 'Continue'}`;
+
+  // If no price and no extension selected
+  if (
+    selectedExtension.value === '' &&
+    (selectedService.value.price == null || selectedService.value.price <= 0)
+  ) {
+    return t('price_upon_selection')
+  }
+
+  // With price
+  return `${formatSAR(price)} - ${isEditing.value ? t('update') : t('continue')}`;
 });
+
 
 
 

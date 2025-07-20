@@ -2,16 +2,18 @@
   <div class="bg-decore-modal mx-auto rounded-[30px] overflow-hidden shadow-lg bg-[#EBE4DF] text-[#5F2C3E]">
     <div class="pt-[34px] px-[30px] pb-[30px] relative">
       <!-- Title -->
-      <h2 class="text-[#A0576F] text-[18px] font-bold leading-normal text-center mb-[20px]">Invite a Friend</h2>
+      <h2 class="text-[#A0576F] text-[18px] font-bold leading-normal text-center mb-[20px]">
+        {{ t("invite_friend_title") }}
+      </h2>
 
       <!-- Loading State -->
-    <InviteFriendSkeleton v-if="isLoading" />
+      <InviteFriendSkeleton v-if="isLoading" />
 
       <!-- Content -->
       <template v-else-if="data">
         <!-- Illustration -->
         <div class="flex justify-center mb-4">
-          <img :src="data.image_page" alt="Invite Illustration" class="w-[120px] h-[120px]" />
+          <img :src="data.image_page" :alt="t('invite_illustration_alt')" class="w-[120px] h-[120px]" />
         </div>
 
         <!-- Description -->
@@ -22,29 +24,33 @@
         <!-- Invite Box -->
         <div class="bg-[#EBE4DF] text-[#A0576F] rounded-[20px] px-4 py-3 flex items-center justify-between gap-2 mt-[20px]">
           <div class="text-left">
-            <p class="text-xs font-medium">Your Code</p>
+            <p class="text-xs font-medium">{{ t("your_code") }}</p>
             <p class="text-sm font-bold tracking-wide">{{ data.invitation_code }}</p>
           </div>
 
-          <BaseButton @click="copyCode"
+          <BaseButton
+            @click="copyCode"
             class="bg-[#A0576F] text-white rounded-full px-5 py-2 text-sm font-medium hover:bg-[#913E5D] transition whitespace-nowrap">
-            {{ copied ? 'Copied!' : 'INVITE' }}
+            {{ copied ? t("copied") : t("invite_button") }}
           </BaseButton>
         </div>
       </template>
 
       <!-- Error -->
-      <div v-else class="text-center text-red-500">Failed to load data.</div>
+      <div v-else class="text-center text-red-500">
+        {{ t("invite_load_failed") }}
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { useToast, useApi, useAuth } from '#imports'
+import { useToast, useApi, useAuth, useI18n } from '#imports'
 import BaseButton from '@/components/base/Button.vue'
 import InviteFriendSkeleton from '@/components/skeletons/InviteFriendSkeleton.vue'
 
+const { t } = useI18n()
 const toast = useToast()
 const auth = useAuth()
 const data = ref<any>(null)
@@ -62,11 +68,11 @@ onMounted(async () => {
     if (res.value?.status) {
       data.value = res.value.data
     } else {
-      toast.add({ title: 'Failed to load invite data', color: 'error' })
+      toast.add({ title: t("invite_fetch_error"), color: 'error' })
     }
   } catch (err) {
     console.error('Error loading invite friend data:', err)
-    toast.add({ title: 'API Error', color: 'error' })
+    toast.add({ title: t("invite_api_error"), color: 'error' })
   } finally {
     isLoading.value = false
   }
@@ -78,7 +84,7 @@ const copyCode = async () => {
     copied.value = true
     setTimeout(() => (copied.value = false), 2000)
   } catch {
-    toast.add({ title: 'Copy failed', color: 'error' })
+    toast.add({ title: t("invite_copy_failed"), color: 'error' })
   }
 }
 </script>

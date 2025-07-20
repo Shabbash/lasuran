@@ -13,7 +13,7 @@
             <h3 class="text-white text-[15px] font-normal leading-normal">{{ item.name }}</h3>
             <button class="text-[#D29F8C] text-[14px] font-[350] leading-normal"
               :class="{ 'arrow-down': !item.expanded, 'arrow-up': item.expanded }" @click="$emit('toggle')">
-              {{ item.expanded ? 'View Less' : 'View More' }}
+              {{ item.expanded ? t('view_less') : t('view_more') }}
             </button>
           </div>
         </div>
@@ -24,7 +24,7 @@
           <span class="block">{{ item.date }}</span>
           <span class="block">{{ item.duration }}</span>
         </p>
-        
+
         <p class="flex-1 text-[#EBE4DF] text-[14px] font-normal leading-normal hidden md:block">
           <span class="block line-through text-[12px]">
             <span class="sar-icon">&#xe900;</span> {{ item.unit_price_before_discount }}
@@ -35,23 +35,21 @@
           <!-- <span class="block">
             <span class="sar-icon">&#xe900;</span> {{ item.unit_discount }}
           </span> -->
-          
-        
+
+
         </p>
         <div class="md:flex-1">
-          <button class="cursor-pointer"
-          @click="$emit('edit', item)">
-            <EditIcon/>
+          <button class="cursor-pointer" @click="$emit('edit', item)">
+            <EditIcon />
           </button>
-          <button class="cursor-pointer"
-          @click="$emit('remove')">
-            <DeleteIcon/>
+          <button class="cursor-pointer" @click="$emit('remove')">
+            <DeleteIcon />
           </button>
 
         </div>
       </div>
     </div>
-    
+
 
     <!-- Expanded Content -->
     <Transition name="fade-slide" enter-active-class="transition-all duration-200 ease-in-out"
@@ -60,16 +58,17 @@
       leave-to-class="opacity-0 -translate-y-2">
       <div v-if="item.expanded" class="mt-[6px] mb-[28px] md:px-[93px] space-y-[5px] md:space-y-[25px]">
 
-        <p class="flex-1 text-[#EBE4DF] text-[14px] font-normal leading-normal md:hidden"><span class="sar-icon">&#xe900;</span> {{ item.price }}</p>
+        <p class="flex-1 text-[#EBE4DF] text-[14px] font-normal leading-normal md:hidden"><span
+            class="sar-icon">&#xe900;</span> {{ item.price }}</p>
 
         <p class="text-[#EBE4DF] text-[14px] font-[350] leading-normal md:hidden">{{ item.duration }}</p>
 
 
         <div class="text-[#EBE4DF] text-[14px] font-[350] leading-normal" v-if="item.professional">
-          <span class="text-[#C6C6C7]">Branch:</span> {{ item.professional }}
+          <span class="text-[#C6C6C7]">{{ t('branch') }}:</span> {{ item.professional }}
         </div>
         <div class="text-[#EBE4DF] text-[14px] font-[350] leading-normal" v-if="item.date">
-          <span class="text-[#C6C6C7]">Date:</span> {{ item.date }}
+          <span class="text-[#C6C6C7]">{{ t('date') }}:</span> {{ item.date }}
         </div>
         <!-- <div class="" v-if="item.services">
           <span class="font-semibold">Services:</span> {{ item.services }} — <span class="text-gray-500">00.00
@@ -88,13 +87,15 @@
   </div>
 
 </template>
-
 <script setup lang="ts">
-
+import { useI18n } from 'vue-i18n'
 import EditIcon from '~/components/icons/EditIcon.vue'
 import DeleteIcon from '~/components/icons/DeleteIcon.vue'
 
+// ✅ Load translation function
+const { t } = useI18n()
 
+// ✅ Define props
 defineProps<{
   item: {
     id: number | string
@@ -115,5 +116,6 @@ defineProps<{
   }
 }>()
 
+// ✅ Define emitted events
 defineEmits(['toggle', 'remove', 'edit'])
 </script>

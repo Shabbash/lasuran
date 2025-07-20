@@ -33,6 +33,13 @@ export const COMPONENTS = {
     BRANCH_SHOW: 'BranchShow',
     SHOP_SHOW: 'ShopShow',
     INVITE_FRIENDS: 'InviteFriends',
+    BOOKING_SHOW: "BookingShow",
+    GIFT_CARD_REDEEM_HISTORY: "GiftCardRedeemHistory",
+    GIFT_CARD_DETAILS: "GiftCardDetails",
+    LOYALTY_INFO: "LoyaltyInfoDialog",
+    GIFTED_ORDER_DIALOG: "GiftedOrderDialog",
+    SCHEDULE_GIFTED_ORDER: "ScheduleGiftedOrder",
+
 
 }
 

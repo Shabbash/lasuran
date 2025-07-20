@@ -1,18 +1,23 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
 
-* {
+*, [dir="rtl"] .langClass {
   font-family: 'Klein', sans-serif;
 }
 
-[dir="rtl"] * {
+[dir="rtl"] * ,.langClass{
   font-family: 'Tajawal', sans-serif;
 }
 
 .sar-icon {
   font-family: 'saudi_riyal';
 }
-
+.mobile_number{
+  direction: ltr !important;
+}
+[dir="rtl"] .mobile_number{
+  text-align: right;
+}
 
 .bg-decore {
   position: relative;
@@ -121,6 +126,10 @@
 .shop-slider>.overflow-hidden>.flex {
   max-height: 375px;
 
+}
+
+[dir="rtl"] .rtl-rotate{
+  transform: rotateY(180deg);
 }
 
 @layer utilities {

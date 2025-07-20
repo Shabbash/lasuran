@@ -107,6 +107,8 @@ export const useMenu = defineStore("menu", {
             const params: {} = {
                 category_id: this.$state.category_id,
                 sub_category_id: this.$state.sub_category_id,
+                branch_id: this.$state.branch_id
+
             };
             this.$state.menus.loading = true;
             return useApi("menus", {
@@ -273,22 +275,24 @@ export const useMenu = defineStore("menu", {
                     }
                 });
         },
-        fetchServiceAvailableTimes() {
-            this.$state.service.loading = true;
-            return useApi(`product-masters/${this.$state.service.data.id}/available-times`, {},
-                {
-                    onSuccess: (data: any) => {
-                        console.log('fetchServiceAvailableTimes', data);
-                        this.$state.service.loading = false;
-                        this.$state.service.times = data.data;
-                    },
-                    onError: (err: any) => {
-                        console.error('Error fetching service for edit:', err);
-                        this.$state.service.loading = false;
-                    }
-                });
-            // api/v1/product-masters/176/available-times
+        fetchServiceAvailableTimes(productMasterId?: number) {
+            this.$state.service.loading = true
+
+            const id = productMasterId || this.$state.service.data.id
+
+            return useApi(`product-masters/${id}/available-times`, {}, {
+                onSuccess: (data: any) => {
+                    console.log('✅ fetchServiceAvailableTimes success:', data)
+                    this.$state.service.loading = false
+                    this.$state.service.times = data.data
+                },
+                onError: (err: any) => {
+                    console.error('❌ Error fetching available times:', err)
+                    this.$state.service.loading = false
+                }
+            })
         }
+
     },
 
     persist: true,

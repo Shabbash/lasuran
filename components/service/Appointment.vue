@@ -13,7 +13,7 @@
         </svg>
       </button>
 
-      <h2 class="text-center text-[23px] font-bold leading-normal text-[#A0576F] mb-[40px]">Book Services</h2>
+      <h2 class="text-center text-[23px] font-bold leading-normal text-[#A0576F] mb-[40px]">{{ t('book_services') }}</h2>
 
       <!-- <label class="flex items-center gap-[12px] text-[16px] font-normal leading-normal text-[#6B8B9B]">
                   <input type="radio" class="hidden" name="reservation" value="someone-else" v-model="reserveOption" />
@@ -34,12 +34,12 @@
                 </div> -->
 
       <div class="mb-[12px]">
-        <h3 class="text-[17px] font-normal leading-normal text-[#A0576F] mb-[12px]">Select Date</h3>
+        <h3 class="text-[17px] font-normal leading-normal text-[#A0576F] mb-[12px]">{{ t('select_date') }}</h3>
         <UCalendar initial-focus v-model="selectedDate" :is-date-unavailable="isDateUnavailable" />
       </div>
 
       <div class="">
-        <h3 class="text-[17px] font-normal leading-normal text-[#A0576F] mb-[12px]">Available Time</h3>
+        <h3 class="text-[17px] font-normal leading-normal text-[#A0576F] mb-[12px]">{{ t('available_time') }}</h3>
         <SelectableSlider v-model="form.time" :items="selectedDateObject?.slots ?? []" value-key="from"
           label-key="from" />
 
@@ -74,9 +74,9 @@
         <span>
 
           {{ selectedExtension === '' && (!selectedService.price && !computedService?.price)
-            ? 'Price Upon Selection'
+            ? t('price_upon_selection')
             : (selectedService.price ?? computedService?.price) + ' SAR' }} -
-          {{ isEditing ? 'Update' : 'Continue' }}
+          {{ isEditing ? t('update') : t('continue') }}
         </span>
       </BaseButton>
 
@@ -107,6 +107,8 @@ import PriceIcon from '@/components/icons/PriceIcon.vue'
 
 import { useMenu } from "~/stores/menu";
 import SelectableSlider from "~/components/base/SelectableSlider.vue";
+import { useI18n } from 'vue-i18n'
+const { t } = useI18n()
 
 // Define service type
 interface Service {
@@ -234,7 +236,7 @@ const addToCart = function () {
     console.log('selectedDateObject.value.slots ', selectedDateObject.value.slots, body)
     cartModule.updateServiceAvailableSlot(body).then((availableSlots) => {
       setDialogComponent(COMPONENTS.SERVICE_SUCCESS, {
-        modalMaxWidth: 'max-w-[430px]'
+        modalMaxWidth: '[430px]'
       });
       cartModule.fetchCart();
     })

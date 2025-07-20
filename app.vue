@@ -1,32 +1,37 @@
 <template>
   <UApp>
     <NuxtLayout>
-      <NuxtPage :key="appModule.getLocale" />
+      <NuxtPage :key="appModule.locale" />
     </NuxtLayout>
   </UApp>
 </template>
 
-<script lang="ts" setup>
-import { computed } from 'vue'
-import { useHead } from '#imports'
+<script setup lang="ts">
+import { computed, watchEffect } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useApp } from '~/stores/app'
+import { useHead } from '#imports'
+
 const appModule = useApp()
+const { locale, setLocaleMessage } = useI18n()
 
+// Load translation file manually
+const loadMessages = async (code: string) => {
+  const messages = await import(`~/locales/${code}.json`)
+  setLocaleMessage(code, messages.default)
+  locale.value = code
+}
 
-const { locale } = useI18n()
+// Update translation when locale changes
+watchEffect(async () => {
+  await loadMessages(appModule.locale)
+})
 
-locale.value=appModule.getLocale
-
-// Compute html attributes reactively based on current locale
+// ✅ Reactive HTML lang/dir attributes
 const htmlAttrs = computed(() => ({
-  lang: locale.value,
-  dir: locale.value === 'ar' ? 'rtl' : 'ltr'
+  lang: appModule.locale,
+  dir: appModule.locale === 'ar' ? 'rtl' : 'ltr',
 }))
 
-useHead({
-  htmlAttrs, // pass the computed ref directly for reactivity
-  link: [
-    { rel: 'icon', type: 'image/x-icon', href: '/favicon.svg' }
-  ]
-})
+useHead({ htmlAttrs })
 </script>

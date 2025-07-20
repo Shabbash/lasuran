@@ -19,6 +19,13 @@ import CheckoutPaymentDialog from '@/components/cart/CheckoutPaymentDialog.vue'
 import BranchShow from '@/components/branch/Show.vue'
 import ShopShow from '~/components/shop/Show.vue';
 import InviteFriends from '@/components/base/InviteFriends.vue'
+import BookingShow from '@/components/booking/Show.vue'
+import GiftCardRedeemHistory from '@/components/giftcards/GiftCardRedeemHistory.vue'
+import GiftCardDetails from '@/components/giftcards/GiftCardDetails.vue'
+import LoyaltyInfoDialog from '@/components/wallet/LoyaltyInfoDialog.vue'
+import GiftedOrderDialog from '@/components/cart/GiftedOrderDialog.vue'
+import ScheduleGiftedOrder from '~/components/cart/ScheduleGiftedOrder.vue'
+
 
 
 const components: {} = {
@@ -41,6 +48,12 @@ const components: {} = {
     [COMPONENTS.BRANCH_SHOW]: BranchShow,
     [COMPONENTS.SHOP_SHOW]: ShopShow,
     [COMPONENTS.INVITE_FRIENDS]: InviteFriends,
+    [COMPONENTS.BOOKING_SHOW]: BookingShow,
+    [COMPONENTS.GIFT_CARD_REDEEM_HISTORY]: GiftCardRedeemHistory,
+    [COMPONENTS.GIFT_CARD_DETAILS]: GiftCardDetails,
+    [COMPONENTS.LOYALTY_INFO]: LoyaltyInfoDialog,
+    [COMPONENTS.GIFTED_ORDER_DIALOG]: GiftedOrderDialog,
+    [COMPONENTS.SCHEDULE_GIFTED_ORDER]: ScheduleGiftedOrder,
 
 
 };

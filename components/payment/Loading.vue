@@ -9,7 +9,7 @@
         <UIcon name="i-heroicons-arrow-path" class="animate-spin w-full h-full text-primary" />
       </div>
       <p class="text-lg font-semibold text-center">
-        Payment is loading...
+        {{ $t('payment_loading') }}
       </p>
     </div>
   </div>

@@ -1,7 +1,10 @@
 <template>
-  <Container>
+  <div v-if="!homeStore?.isLoading">
+    <div class="lg:w-[50%] mb-[20px]">
+    <GiftAlert v-if="showGiftAlert" />
 
-    <div v-if="!homeStore?.isLoading" class="flex flex-row-reverse flex-wrap w-full gap-[24px]">
+    </div>
+    <div class="flex flex-row-reverse flex-wrap w-full gap-[24px]">
 
       <div class="w-full lg:w-[calc(50%-12px)]">
         <BaseCard>
@@ -36,8 +39,10 @@
                     <img class="h-[118px] w-full object-cover" :src="item.image_url ?? '/assets/img/imgg2.png'" />
                   </div>
                   <div class="px-[10px] pt-[10px] pb-[18px]">
-                    <h2 class="text-[#A0566E] text-[14px] font-[350] leading-normal">{{ item.title
-                    }}</h2>
+                    <h2
+                      class="text-[#A0566E] text-[14px] font-[350] leading-normal truncate overflow-hidden whitespace-nowrap">
+                      {{ item.title
+                      }}</h2>
                     <h3 class="text-[#A0566E] text-[12px] font-normal leading-normal tracking-[-0.241px]">
                       <span class="sar-icon">&#xe900;</span> {{ item.price }}
                     </h3>
@@ -57,7 +62,7 @@
                   </div><a
                     class="text-[white] flex justify-between items-center w-full absolute bottom-0 start-0 after:content-['+'] after:text-[40px] px-[10px]"
                     href="#">
-                    {{ item.title }}
+                    <span class="truncate overflow-hidden whitespace-nowrap">{{ item.title }}</span>
                   </a>
                 </div>
 
@@ -76,7 +81,7 @@
         <!-- Service Branch Image Filters - Inlined -->
         <!-- Inline Filters Section -->
         <div class="space-y-[20px] mt-0px">
-          <h2 class="font-normal text-[white] text-[15px] leading-[1] tracking-[0]">Categories</h2>
+          <h2 class="font-normal text-[white] text-[15px] leading-[1] tracking-[0]">{{ t('categories') }}</h2>
           <div>
             <SelectableSlider v-model="menuStore.menu_id" :items="Maincategories" notTransition="1"
               @update:modelValue="onChangeMenu('menu_id', $event)" class="main-category" />
@@ -110,10 +115,9 @@
 
       </div>
     </div>
+  </div>
+  <HomeSkeleton v-else />
 
-    <HomeSkeleton v-else />
-
-  </Container>
 </template>
 
 <script lang="ts" setup>
@@ -123,10 +127,14 @@ import { useRouter } from 'vue-router'
 import Container from '~/components/base/Container.vue'
 import HomeSkeleton from '@/components/skeletons/HomeSkeleton.vue'
 import SelectableSlider from '~/components/base/SelectableSlider.vue'
+import GiftAlert from '~/components/base/GiftAlert.vue'
 import { useHome } from '@/stores/home'
 import { useMenu } from '~/stores/menu'
 import { useApp } from '~/stores/app'
+import { useApi } from '~/composables/useApi'
 import { COMPONENTS } from '~/data/constants'
+
+const { t } = useI18n()
 
 // ====== Stores ======
 const homeStore = useHome()
@@ -156,6 +164,9 @@ const branches = computed(() => menuStore.getBranches || [])
 const filters = ref({
   branch: null
 })
+
+// ====== Gift Alert State ======
+const showGiftAlert = ref(false)
 
 // ====== Methods ======
 const onChangeMenu = (key: string, _: any) => {
@@ -199,8 +210,21 @@ onMounted(async () => {
 
     menuStore.fetchServices()
   }
+
+  // ✅ Fetch Gifted Orders
+  try {
+    const response = await useApi('gifted-orders', { method: 'GET' })
+    const orders = response?.data?.orders ?? []
+
+    if (orders.length > 0 && orders.some(order => order.status === 'pending')) {
+      showGiftAlert.value = true
+    }
+  } catch (error) {
+    console.error('❌ Failed to fetch gifted orders:', error)
+  }
 })
 </script>
+
 
 <style>
 .dots-style button {

@@ -30,7 +30,7 @@
               <div class="mb-[12px] h-[114px] rounded-[16px] overflow-hidden">
                 <img :src="branch.image || branch.thumpimage_image" alt="Branch Image" class="w-full h-full object-cover" />
               </div>
-              <div class="px-[6px]">
+              <div class="px-[6px] truncate overflow-hidden whitespace-nowrap">
                 <h3 class="text-[#A0576F] text-[14px] font-medium leading-normal mb-[10px]">
                   {{ branch.name }}
                 </h3>

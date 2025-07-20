@@ -1,9 +1,6 @@
-<!-- Branch Details Dialog -->
 <template>
-  <!-- Skeleton while loading -->
   <BranchDetailsSkeleton v-if="!branch" />
 
-  <!-- Branch Content -->
   <div
     v-else
     class="bg-decore-modal mx-auto rounded-[30px] overflow-hidden shadow-lg bg-[#EBE4DF] text-[#5F2C3E]"
@@ -23,7 +20,7 @@
         <div class="flex items-center gap-2">
           <div :class="branch.is_open ? 'bg-green-500' : 'bg-red-500'" class="w-3 h-3 rounded-full"></div>
           <span :class="branch.is_open ? 'text-green-600' : 'text-red-600'" class="text-sm font-medium">
-            {{ branch.is_open ? 'Open' : 'Closed' }}
+            {{ branch.is_open ? t('status_open') : t('status_closed') }}
           </span>
         </div>
       </div>
@@ -46,7 +43,7 @@
       <div class="mx-[40px] mt-[30px]">
         <div class="p-[20px] rounded-[20px] bg-[#A0576F]">
           <h3 class="text-white text-[16px] font-medium flex items-center gap-[10px] mb-[15px]">
-            Opening Times:
+            {{ t('opening_times') }}
           </h3>
 
           <div class="space-y-3">
@@ -56,7 +53,7 @@
                 <span v-if="workingTime.is_active">
                   {{ workingTime.start_at }} - {{ workingTime.end_at }}
                 </span>
-                <span v-else class="text-red-300">Closed</span>
+                <span v-else class="text-red-300">{{ t('closed') }}</span>
               </div>
             </div>
           </div>
@@ -65,7 +62,7 @@
         <!-- Get Directions -->
         <BaseButton
           @click="openDirections"
-          label="Get Directions"
+          :label="t('get_directions')"
           class="location-btn bg-[#A0576F] text-white rounded-[100px] w-full h-[50px] py-0 justify-center text-[16px] font-normal leading-[100%] tracking-[0] border border-[#A0576F] hover:bg-[#913E5D] transition cursor-pointer mt-[30px]"
         />
       </div>
@@ -74,7 +71,12 @@
 </template>
 
 <script setup lang="ts">
-// Props
+import { useI18n } from 'vue-i18n'
+
+// ✅ Load translation function
+const { t } = useI18n()
+
+// ✅ Receive branch as a required prop
 const props = defineProps({
   branch: {
     type: Object,
@@ -82,8 +84,8 @@ const props = defineProps({
   }
 })
 
-// Methods
-function openDirections() {
+// ✅ Open Google Maps with correct URL based on available data
+const openDirections = () => {
   if (props.branch.google_map_link) {
     window.open(props.branch.google_map_link, '_blank')
   } else if (props.branch.latitude && props.branch.longitude) {

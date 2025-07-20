@@ -1,8 +1,8 @@
 <template>
 
   <div class="p-[24px] pb-[40px] rounded-[16px] border border-[#E7E7E7] bg-[#EBE4DF]">
-    <h2 class="select-payment text-[#A0576F] mb-[16px] text-[20px] font-medium leading-normal">Payment Details</h2>
-    <p class="text-[#5B605C] text-[14px] font-[350">Select your preferred payment method</p>
+    <h2 class="select-payment text-[#A0576F] mb-[16px] text-[20px] font-medium leading-normal">{{ $t('payment_details_title') }}</h2>
+    <p class="text-[#5B605C] text-[14px] font-[350">{{ $t('payment_select_method') }}</p>
 
     <div class="payment-selection container p-8 mt-4">
       <BaseButton v-for="paymentMethod in cartModule.getPaymentMethods" @click="selectPaymentMethod(paymentMethod)"

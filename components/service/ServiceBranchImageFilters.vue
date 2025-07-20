@@ -51,6 +51,9 @@
 import { ref, onMounted, computed } from 'vue'
 import SelectableSlider from "~/components/base/SelectableSlider.vue";
 import { useMenu } from '~/stores/menu';
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n() // translation function
 
 const menuModule = useMenu();
 

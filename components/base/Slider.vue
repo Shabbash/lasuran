@@ -1,6 +1,6 @@
 <template>
 
-  <UCarousel v-slot="{ item }" :dots="dots" :items="items" class="w-full" :ui="uiOptions">
+  <UCarousel v-slot="{ item }" :dots="dots" :items="items" class="w-full" style="direction: ltr;" :ui="uiOptions">
     <slot :item="item"></slot>
   </UCarousel>
 
@@ -48,7 +48,7 @@ const uiOptions = computed(() => {
 
 
 <style>
-
+/* 
 .base_card--body .w-1\/2 {
   width: 50%;
   max-width: 50%;
@@ -87,5 +87,5 @@ const uiOptions = computed(() => {
   }
 
 
-}
+} */
 </style>

@@ -4,7 +4,7 @@
        {{ card }}
     </div>
   </div>
-  <BaseButton @click="addNewCard"> Add New Card </BaseButton>
+  <BaseButton @click="addNewCard">   {{ $t('payment_add_new_card') }} </BaseButton>
 </template>
 
 <script setup lang="ts">

@@ -1,14 +1,14 @@
 <template>
   <div class="max-w-[473px] mx-auto py-[100px]">
     <h2 class="text-[30px] font-bold leading-[165%] tracking-[0] text-center text-[#A0576F] mb-[19px]">
-      Complete Profile
+      {{ t('complete_profile') }}
     </h2>
 
     <div class="space-y-[10px]">
       <!-- First Name -->
       <div :class="['flex items-center gap-[10px] rounded-[13px] px-[23px] bg-transparent', errors.first_name ? 'border border-red-500' : 'border border-[#A0576F]']">
         <UserIcon />
-        <input placeholder="First Name *" v-model="form.first_name"
+        <input :placeholder="t('first_name_required')" v-model="form.first_name"
           class="py-[16px] w-full text-[15.38px] font-normal text-[#90928F] outline-none placeholder:text-[#A0576F]"
           type="text" />
       </div>
@@ -16,7 +16,7 @@
       <!-- Last Name -->
       <div :class="['flex items-center gap-[10px] rounded-[13px] px-[23px] bg-transparent', errors.last_name ? 'border border-red-500' : 'border border-[#A0576F]']">
         <UserIcon />
-        <input placeholder="Last Name *" v-model="form.last_name"
+        <input :placeholder="t('last_name_required')" v-model="form.last_name"
           class="py-[16px] w-full text-[15.38px] font-normal text-[#90928F] outline-none placeholder:text-[#A0576F]"
           type="text" />
       </div>
@@ -24,15 +24,15 @@
       <!-- Phone Number -->
       <div class="flex items-center gap-[10px] border border-[#A0576F] rounded-[13px] px-[23px] bg-transparent">
         <MobileIcon />
-        <input placeholder="Phone Number (Auto filled)" v-model="authModule.getFullOtpMobileNumber" disabled
-          class="py-[16px] w-full text-[15.38px] font-normal text-[#90928F] outline-none placeholder:text-[#A0576F]"
-          type="text" />
+        <input :placeholder="t('phone_number_auto')" v-model="authModule.getFullOtpMobileNumber" disabled
+          class="py-[16px] text-[15.38px] font-normal text-[#90928F] outline-none placeholder:text-[#A0576F] mobile_number"
+          type="text"/>
       </div>
 
       <!-- Email -->
       <div class="flex items-center gap-[10px] border border-[#A0576F] rounded-[13px] px-[23px] bg-transparent">
         <EmailIcon />
-        <input placeholder="Email Address" v-model="form.email"
+        <input :placeholder="t('email_address')" v-model="form.email"
           class="py-[16px] w-full text-[15.38px] font-normal text-[#90928F] outline-none placeholder:text-[#A0576F]"
           type="text" />
       </div>
@@ -46,7 +46,7 @@
             <UCalendar v-model="calendarDate" />
           </template>
         </UPopover>
-        <input placeholder="Date Of Birth *" :value="formattedDateOfBirth" readonly
+        <input :placeholder="t('date_of_birth_required')" :value="formattedDateOfBirth" readonly
           class="py-[16px] w-full text-[15.38px] font-normal text-[#90928F] outline-none placeholder:text-[#A0576F]"
           type="text" />
       </div>
@@ -54,7 +54,7 @@
 
     <!-- Gender -->
     <div class="mt-[20px]">
-      <h4 class="text-[19.11px] font-medium text-[#A0576F]">Gender *</h4>
+      <h4 class="text-[19.11px] font-medium text-[#A0576F]">{{ t('gender_required') }}</h4>
       <div class="flex gap-4 mt-[20px]">
         <div class="flex-1 basis-1/2">
           <input type="radio" id="gender-male" value="Male" v-model="form.gender" name="gender" class="sr-only peer" />
@@ -64,7 +64,7 @@
               form.gender === 'Male' ? 'bg-[#6B8B9B] text-[#EBE4DF] border-[#6B8B9B] shadow-md' : 'bg-transparent text-[#A0576F] border-[#A0576F]',
               errors.gender ? 'border-red-500 text-red-500' : ''
             ]">
-            Male
+            {{ t('male') }}
           </label>
         </div>
         <div class="flex-1 basis-1/2">
@@ -75,17 +75,18 @@
               form.gender === 'Female' ? 'bg-[#6B8B9B] text-[#EBE4DF] border-[#6B8B9B] shadow-md' : 'bg-transparent text-[#A0576F] border-[#A0576F]',
               errors.gender ? 'border-red-500 text-red-500' : ''
             ]">
-            Female
+            {{ t('female') }}
           </label>
         </div>
       </div>
     </div>
 
     <!-- Submit Button -->
-    <BaseButton label="Continue" @click="completeProfile" :loading="authModule.loading"
+    <BaseButton :label="t('continue')" @click="completeProfile" :loading="authModule.loading"
       class="bg-[#A0576F] text-white rounded-[100px] w-full py-[16px] justify-center text-[18px] font-normal mt-[30px] border border-[#A0576F] hover:bg-[#913E5D] disabled:bg-[#A0576F]" />
   </div>
 </template>
+
 
 <script setup lang="ts">
 import { ref, watch, computed } from 'vue'
@@ -97,6 +98,8 @@ import MobileIcon from '~/components/icons/MobileIcon.vue'
 import { useAuth } from '~/stores/auth'
 import { useProfile } from '~/stores/profile'
 import { useToast } from '#imports'
+import { useI18n } from 'vue-i18n'
+const { t } = useI18n()
 
 const authModule = useAuth()
 const profileStore = useProfile()

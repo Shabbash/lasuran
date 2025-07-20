@@ -15,7 +15,8 @@
                     </li>
                 </ul>
 
-                <p class="font-medium text-[14px] leading-[14px] tracking-normal text-[white] py-[15px] md:py-0">Copyright © Lasuran All Rights Reserved
+                <p class="font-medium text-[14px] leading-[14px] tracking-normal text-[white] py-[15px] md:py-0">
+                    {{ t('copyright') }}
                 </p>
 
                 <ul class="hidden md:flex justify-between items-center gap-[30px]">
@@ -49,4 +50,10 @@
 
 <script setup lang="ts">
 import Container from '~/components/base/Container.vue'
+import { useI18n } from 'vue-i18n'
+
+// Access translation function
+const { t } = useI18n()
+
+
 </script>

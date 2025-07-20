@@ -19,7 +19,7 @@
 
             <!-- Title + Price -->
             <div class="px-[6px]">
-              <h3 class="font-medium text-[18px] leading-[100%] text-[#5B605C] mb-[7px]">
+              <h3 class="font-medium text-[18px] leading-[100%] text-[#5B605C] mb-[7px] truncate overflow-hidden whitespace-nowrap">
                 {{ service.name }}
               </h3>
 

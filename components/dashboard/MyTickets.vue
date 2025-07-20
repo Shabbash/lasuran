@@ -4,74 +4,26 @@
     <div
       class="flex flex-col gap-4 md:flex-row justify-between md:items-center items-start mb-7 border-b border-[#AD7084] bg-[#EBE4DF] rounded-[12px] md:rounded-[40px] py-[20px] px-[10px] md:p-0 md:ps-[30px]">
       <h1 class="text-[#A0576F] font-medium text-[18.733px] not-italic leading-normal tracking-[0.749px]">
-        My Tickets
+        {{ $t('tickets_title') }}
       </h1>
 
       <div class="flex flex-wrap gap-2">
-        <button v-for="filter in filters" :key="filter.id" @click="onFilterChange(filter.id)" :class="[
+        <button v-for="filter in filters" :key="filter.id" @click="onFilterChange(filter.id)" :class="[ 
           'px-4 py-1.5 text-sm font-medium rounded-full transition-colors',
-          activeFilter === filter.id ? 'bg-[#A0576F] text-white' : 'text-[#A0576F] hover:bg-[#d6c5cb]'
+          activeFilter === filter.id ? 'bg-[#A0576F] text-white' : 'text-[#A0576F] hover:bg-[#d6c5cb]' 
         ]">
-          {{ filter.label }}
+          {{ $t(filter.label) }}
         </button>
       </div>
 
-      <BaseButton label="Open a New Ticket" @click="navigateToNewTicket"
+      <BaseButton :label="$t('tickets_open_new')" @click="navigateToNewTicket"
         class="bg-[#6B8B9B] hover:bg-[#6B8B9B]/90 text-white rounded-full px-[22px] py-[12px] text-sm font-medium w-auto" />
     </div>
 
-
     <!-- Main Grid -->
-
     <TicketSkeleton v-if="isLoading" />
 
-    <div else class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <!-- Tickets List -->
-      <!-- <div class="space-y-5">
-        <div v-if="isLoading" class="flex justify-center items-center py-10">
-          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
-        </div>
-
-        <div v-else-if="tickets.length === 0" class="text-center py-10">
-          <p class="text-[#EBE4DF] text-lg mb-4">No tickets found</p>
-          <BaseButton label="Create New Ticket" @click="navigateToNewTicket"
-            class="bg-[#6B8B9B] hover:bg-[#6B8B9B]/90 text-white rounded-full px-[22px] py-[12px] text-sm font-medium" />
-        </div>
-
-        <div v-else v-for="ticket in tickets" :key="ticket.id" @click="selectTicket(ticket)"
-          :class="[
-              'cursor-pointer p-[20px] rounded-[12px] border transition',
-              selectedTicket?.id === ticket.id
-                ? 'bg-[#EBE4DF] text-[#5B605C] border-[#D8D8D8]'
-                : 'bg-[#A0576F] text-[#C6C6C7] border-[#AD7084]'
-            ]">
-          <div class="flex justify-between items-center mb-3">
-            <p :class="ticket.status === 'open' ? 'text-[#A0576F] text-[17px] font-medium' : 'text-[#EBE4DF] text-[17px] font-medium'">
-              Ticket No. {{ ticket.number }}
-            </p>
-            <span :class="['px-3 py-1 text-xs rounded-full', getStatusStyle(ticket.status)]">
-              {{ capitalize(ticket.status) }}
-            </span>
-          </div>
-          <div class="flex justify-between text-[13px] font-[350] border-b pb-2 mb-2"
-            :class="ticket.status === 'open' ? 'border-[#D8D8D8]' : 'border-[#AD7084]'">
-            <span>Type</span>
-            <span>{{ ticket.type }}</span>
-          </div>
-          <div class="flex justify-between text-[13px] font-[350] border-b pb-2 mb-2"
-            :class="ticket.status === 'open' ? 'border-[#D8D8D8]' : 'border-[#AD7084]'">
-            <span>Date</span>
-            <span>{{ ticket.date }}</span>
-          </div>
-          <div class="flex justify-between text-[13px] font-[350]">
-            <span>Time</span>
-            <span>{{ ticket.time }}</span>
-          </div>
-        </div>
-      </div> -->
-
-
-
+    <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <!-- Tickets List -->
       <div class="h-[170px] md:h-[720px]">
         <div v-if="isLoading" class="flex justify-center items-center py-10">
@@ -79,14 +31,14 @@
         </div>
 
         <div v-if="!isLoading && tickets.length === 0" class="text-center py-10">
-          <p class="text-[#EBE4DF] text-lg mb-4">No tickets found</p>
-          <BaseButton label="Create New Ticket" @click="navigateToNewTicket"
+          <p class="text-[#EBE4DF] text-lg mb-4">{{ $t('tickets_not_found') }}</p>
+          <BaseButton :label="$t('tickets_create_new')" @click="navigateToNewTicket"
             class="bg-[#6B8B9B] hover:bg-[#6B8B9B]/90 text-white rounded-full px-[22px] py-[12px] text-sm font-medium" />
         </div>
 
         <Swiper :modules="[Mousewheel]" direction="vertical" :breakpoints="{
-          0: { slidesPerView: 1 },      // mobile
-          768: { slidesPerView: 4 }     // tablets and up
+          0: { slidesPerView: 1 },
+          768: { slidesPerView: 4 }
         }" :mousewheel="{ forceToAxis: true, releaseOnEdges: true }" @activeIndexChange="onActiveTicketChange"
           class="h-full">
           <SwiperSlide v-for="(ticket, index) in tickets" :key="ticket.id">
@@ -97,26 +49,25 @@
                 : 'bg-[#A0576F] text-[#C6C6C7] border-[#AD7084]'
             ]">
               <div class="flex justify-between items-center mb-3">
-                <p
-                  :class="ticket.status === 'open' ? 'text-[#A0576F] text-[17px] font-medium' : 'text-[#EBE4DF] text-[17px] font-medium'">
+                <p :class="ticket.status === 'open' ? 'text-[#A0576F] text-[17px] font-medium' : 'text-[#EBE4DF] text-[17px] font-medium'">
                   Ticket No. {{ ticket.number }}
                 </p>
                 <span :class="['px-3 py-1 text-xs rounded-full', getStatusStyle(ticket.status)]">
-                  {{ capitalize(ticket.status) }}
+                  {{ $t(`tickets_status_${ticket.status}`) }}
                 </span>
               </div>
               <div class="flex justify-between text-[13px] font-[350] border-b pb-2 mb-2"
                 :class="ticket.status === 'open' ? 'border-[#D8D8D8]' : 'border-[#AD7084]'">
-                <span>Type</span>
+                <span>{{ $t('tickets_type') }}</span>
                 <span>{{ ticket.type }}</span>
               </div>
               <div class="flex justify-between text-[13px] font-[350] border-b pb-2 mb-2"
                 :class="ticket.status === 'open' ? 'border-[#D8D8D8]' : 'border-[#AD7084]'">
-                <span>Date</span>
+                <span>{{ $t('tickets_date') }}</span>
                 <span>{{ ticket.date }}</span>
               </div>
               <div class="flex justify-between text-[13px] font-[350]">
-                <span>Time</span>
+                <span>{{ $t('tickets_time') }}</span>
                 <span>{{ ticket.time }}</span>
               </div>
             </div>
@@ -127,36 +78,33 @@
       <!-- Ticket Details -->
       <div class="space-y-6 flex flex-col h-full">
         <div v-if="!selectedTicket" class="flex items-center justify-center h-full">
-          <p class="text-[#EBE4DF] text-lg">Select a ticket to view details</p>
+          <p class="text-[#EBE4DF] text-lg">{{ $t('tickets_select_prompt') }}</p>
         </div>
 
         <template v-else>
           <div class="p-[20px] bg-[#EBE4DF] rounded-[12px] text-[#5B605C] text-[14px]">
-            <div class="mb-[13px] flex justify-between"><span>Type</span><span>{{ selectedTicket.type }}</span></div>
-            <div class="mb-[13px] flex justify-between"><span>Date</span><span>{{ selectedTicket.date }}</span></div>
-            <div class="mb-[13px] flex justify-between"><span>Time</span><span>{{ selectedTicket.time }}</span></div>
+            <div class="mb-[13px] flex justify-between"><span>{{ $t('tickets_type') }}</span><span>{{ selectedTicket.type }}</span></div>
+            <div class="mb-[13px] flex justify-between"><span>{{ $t('tickets_date') }}</span><span>{{ selectedTicket.date }}</span></div>
+            <div class="mb-[13px] flex justify-between"><span>{{ $t('tickets_time') }}</span><span>{{ selectedTicket.time }}</span></div>
             <div>
-              <p class="text-[#5B605C] font-medium text-[13px]">Message:</p>
+              <p class="text-[#5B605C] font-medium text-[13px]">{{ $t('tickets_message') }}:</p>
               <p class="text-[#5B605C] font-[350] text-[13px]">{{ selectedTicket.message }}</p>
             </div>
           </div>
 
-          <!-- <ChatBox :messages="selectedTicket.messages || []" :isClosed="selectedTicket.status === 'closed'"
-            :loading="isLoadingReplies" @send="handleSendMessage" /> -->
-
           <ChatBox v-if="selectedTicket" :messages="selectedTicket.messages ?? []"
             :isClosed="selectedTicket.status === 'closed'" :ticketId="selectedTicket.id" :loading="isLoadingReplies"
             @refresh="fetchTickets(null,false)" />
-
         </template>
       </div>
     </div>
   </div>
 </template>
+
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useApi } from '~/composables/useApi'
-import { useToast } from '#imports'
+import { useToast, useI18n } from '#imports'
 
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Mousewheel } from 'swiper/modules'
@@ -165,27 +113,28 @@ import 'swiper/css'
 import ChatBox from '@/components/base/ChatBox.vue'
 import BaseButton from '@/components/base/Button.vue'
 import TicketSkeleton from '@/components/skeletons/TicketSkeleton.vue'
+
+const { t } = useI18n()
+const toast = useToast()
+
 const isLoading = ref(true)
 const currentTicketFetchId = ref(null)
 
 const filters = [
-  { id: 'all', label: 'ALL', type: null },
-  { id: 'open', label: 'Open', type: 1 },
-  { id: 'responded', label: 'Responded', type: 2 },
-  { id: 'closed', label: 'Closed', type: 3 }
+  { id: 'all', label: 'tickets_filter_all', type: null },
+  { id: 'open', label: 'tickets_filter_open', type: 1 },
+  { id: 'responded', label: 'tickets_filter_responded', type: 2 },
+  { id: 'closed', label: 'tickets_filter_closed', type: 3 }
 ]
 
 const activeFilter = ref('all')
 const tickets = ref([])
 const selectedTicket = ref(null)
 const activeTicketIndex = ref(0)
-
-// const isLoading = ref(false)
 const isLoadingReplies = ref(false)
 const lastFetchTime = ref(0)
 const FETCH_COOLDOWN = 2000
 
-const capitalize = (s) => s.charAt(0).toUpperCase() + s.slice(1)
 const getStatusStyle = (status) => {
   switch (status) {
     case 'open': return 'bg-[#6B8B9B] text-white'
@@ -207,28 +156,18 @@ const mapStatus = (val) => {
   }
 }
 
-// تحديث selectedTicket حسب السلايد
 const onActiveTicketChange = (swiper) => {
   selectTicketByIndex(swiper.activeIndex)
 }
-
-// التحديد اليدوي (اختياري)
-// const selectTicketByIndex = (index) => {
-//   activeTicketIndex.value = index
-//   selectedTicket.value = tickets.value[index] || null
-//   fetchTicketDetails(selectedTicket.value?.id)
-// }
-
 
 const selectTicketByIndex = (index) => {
   activeTicketIndex.value = index
   selectedTicket.value = tickets.value[index] || null
   if (selectedTicket.value?.id) {
-    currentTicketFetchId.value = selectedTicket.value.id // 👈 حفظ ID التذكرة الجارية
+    currentTicketFetchId.value = selectedTicket.value.id
     fetchTicketDetails(selectedTicket.value.id)
   }
 }
-
 
 const onFilterChange = (id) => {
   activeFilter.value = id
@@ -236,11 +175,10 @@ const onFilterChange = (id) => {
   fetchTickets(type)
   selectedTicket.value = null
   activeTicketIndex.value = 0
-
 }
 
-const fetchTickets = async (filterType = null,withLoading = true) => {
-  if(withLoading) isLoading.value = true
+const fetchTickets = async (filterType = null, withLoading = true) => {
+  if (withLoading) isLoading.value = true
   try {
     const params = {}
     if (filterType !== null) {
@@ -265,16 +203,11 @@ const fetchTickets = async (filterType = null,withLoading = true) => {
         attachments: ticket.attachments || []
       }))
 
-      // أول بطاقة هي المختارة
-      // if (tickets.value.length > 0) {
-      //   selectTicketByIndex(0)
-      // }
       if (tickets.value.length > 0) {
         selectTicketByIndex(0)
       } else {
         selectedTicket.value = null
       }
-
     }
   } catch (error) {
     console.error('Error fetching tickets:', error)
@@ -282,38 +215,6 @@ const fetchTickets = async (filterType = null,withLoading = true) => {
     isLoading.value = false
   }
 }
-
-// const fetchTicketDetails = async (id) => {
-//   if (isLoadingReplies.value || !id) return
-
-//   const now = Date.now()
-//   if (now - lastFetchTime.value < FETCH_COOLDOWN) return
-
-//   isLoadingReplies.value = true
-//   lastFetchTime.value = now
-
-//   try {
-//     const { data } = await useApi(`customer-service/feedbacks/${id}`, {
-//       method: 'GET'
-//     })
-
-//     if (data.value?.status && data.value?.data) {
-//       const messages = transformRepliesFromEndpoint(data.value.data)
-//       if (selectedTicket.value?.id === id) {
-//         selectedTicket.value.messages = messages
-//       }
-//     }
-//   } catch (error) {
-//     console.error('Error fetching replies:', error)
-//     if (error.status === 429) {
-//       const toast = useToast()
-//       toast.add({ title: 'Too many requests. Please wait.', color: 'warning' })
-//       lastFetchTime.value = Date.now() + 5000
-//     }
-//   } finally {
-//     isLoadingReplies.value = false
-//   }
-// }
 
 const fetchTicketDetails = async (id) => {
   if (!id || isLoadingReplies.value) return
@@ -331,34 +232,25 @@ const fetchTicketDetails = async (id) => {
 
     if (data.value?.status && data.value?.data) {
       const messages = transformRepliesFromEndpoint(data.value.data)
-
-      // ✅ تأكد أن التذكرة المختارة هي نفس اللي طلبناها وأن الرسائل غير فارغة
       if (
         selectedTicket.value?.id === id &&
         currentTicketFetchId.value === id &&
-        Array.isArray(messages)
+        Array.isArray(messages) &&
+        messages.length > 0
       ) {
-        // لا تمسح الرسائل لو كانت فاضية، خليها زي ما هي
-        if (messages.length > 0) {
-          selectedTicket.value.messages = messages
-        }
+        selectedTicket.value.messages = messages
       }
     }
   } catch (error) {
     console.error('Error fetching replies:', error)
     if (error.status === 429) {
-      const toast = useToast()
-      toast.add({ title: 'Too many requests. Please wait.', color: 'warning' })
+      toast.add({ title: t('tickets_too_many_requests'), color: 'warning' })
       lastFetchTime.value = Date.now() + 5000
     }
   } finally {
     isLoadingReplies.value = false
   }
 }
-
-
-
-
 
 const handleSendMessage = async (msg) => {
   if (!selectedTicket.value || !msg.trim() || isLoadingReplies.value) return
@@ -390,8 +282,7 @@ const handleSendMessage = async (msg) => {
     })
 
     if (data.value?.status) {
-      const toast = useToast()
-      toast.add({ title: 'Message sent successfully', color: 'success' })
+      toast.add({ title: t('tickets_message_sent'), color: 'success' })
 
       const temp = selectedTicket.value.messages.find(m => m.isTemporary)
       if (temp) {
@@ -400,14 +291,12 @@ const handleSendMessage = async (msg) => {
       }
     } else {
       selectedTicket.value.messages = selectedTicket.value.messages.filter(m => !m.isTemporary)
-      const toast = useToast()
-      toast.add({ title: 'Failed to send message', color: 'error' })
+      toast.add({ title: t('tickets_message_failed'), color: 'error' })
     }
   } catch (err) {
     console.error('Error sending message:', err)
     selectedTicket.value.messages = selectedTicket.value.messages.filter(m => !m.isTemporary)
-    const toast = useToast()
-    toast.add({ title: 'Failed to send message', color: 'error' })
+    toast.add({ title: t('tickets_message_failed'), color: 'error' })
   }
 }
 
@@ -442,7 +331,7 @@ const transformRepliesFromEndpoint = (data) => {
 }
 
 const navigateToNewTicket = () => {
-  navigateTo('/contact-us')
+  navigateTo('/contact')
 }
 
 onMounted(() => {

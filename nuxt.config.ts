@@ -1,4 +1,5 @@
 
+import { resolve } from 'path'
 
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
@@ -29,31 +30,29 @@ export default defineNuxtConfig({
   },
 
   // ✅ Nuxt i18n configuration
-  i18n: {
-    // legacy: false,                // Use Composition API instead of legacy mode
-    // globalInjection: true,        // Allow global usage of $t() in templates
-    // defaultLocale: 'en',          // Default locale
-    skipSettingLocaleOnNavigate: true,
-    locales: [
-      {
-        code: 'ar',               // Locale code
-        // iso: 'ar-EG',             // ISO code
-        name: 'Arabic',           // Display name
-        file: 'ar.json',          // Translation file
-        dir: 'rtl'                // Text direction
-      },
-      {
-        code: 'en',
-        // iso: 'en-US',
-        name: 'English',
-        file: 'en.json',
-        dir: 'ltr'
-      }
-    ],
-    
-    // lazy: true,                   // Lazy load locale files
-    langDir: 'locales',           // Directory for language files
-    // langDir: resolve(__dirname, 'locales'), // ✅ safer & consistent
-    // detectBrowserLanguage: false  // Disable automatic language detection
-  }
+ i18n: {
+  legacy: false,
+  globalInjection: true,
+  defaultLocale: 'en',
+  skipSettingLocaleOnNavigate: true,
+  lazy: true,
+  langDir: resolve('./locales'),
+  detectBrowserLanguage: false,
+  vueI18n: './i18n.config.ts',
+  locales: [
+    {
+      code: 'ar',
+      name: 'Arabic',
+      file: 'ar.json',
+      dir: 'rtl'
+    },
+    {
+      code: 'en',
+      name: 'English',
+      file: 'en.json',
+      dir: 'ltr'
+    }
+  ]
+}
+
 })

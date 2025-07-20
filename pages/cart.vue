@@ -3,11 +3,13 @@
     <!-- Main Grid Layout for Cart Page -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 md:px-6 py-10 bg-[#A0576F1A]">
 
-      <!-- 🧺 Cart Items List Section -->
+      <!-- 🧼 Cart Items List Section -->
       <div class="lg:col-span-2 space-y-6 md:h-[450px] md:overflow-y-auto">
         <!-- Header with Empty Cart Button -->
         <div class="flex justify-between">
-          <h2 class="text-[#EBE4DF] text-[20px] font-medium leading-normal">Cart</h2>
+          <h2 class="text-[#EBE4DF] text-[20px] font-medium leading-normal">
+            {{ $t('cart_title') }}
+          </h2>
           <button
             @click="openEmptyCartDialog"
             :disabled="cartModule.isEmptying || cartProducts.length === 0"
@@ -19,15 +21,15 @@
         <!-- 📦 Cart Items Table Header -->
         <div v-if="!cartModule.isLoading && cartProducts.length > 0">
           <div class="flex justify-between md:px-[29px] border-b border-b-[#AD7084] pb-[14px] mb-[14px]">
-            <p class="flex-1 text-[#EBE4DF] text-[14px] font-[350] leading-normal">Package</p>
+            <p class="flex-1 text-[#EBE4DF] text-[14px] font-[350] leading-normal">{{ $t('cart_package') }}</p>
             <div class="flex flex-1 justify-end">
-              <p class="flex-2 text-[#EBE4DF] text-[14px] font-[350] hidden md:block">Duration</p>
-              <p class="flex-1 text-[#EBE4DF] text-[14px] font-[350] hidden md:block">Price</p>
-              <p class="md:flex-1 text-[#EBE4DF] text-[14px] font-[350] justify-end">Action</p>
+              <p class="flex-2 text-[#EBE4DF] text-[14px] font-[350] hidden md:block">{{ $t('cart_duration') }}</p>
+              <p class="flex-1 text-[#EBE4DF] text-[14px] font-[350] hidden md:block">{{ $t('cart_price') }}</p>
+              <p class="md:flex-1 text-[#EBE4DF] text-[14px] font-[350] justify-end">{{ $t('cart_action') }}</p>
             </div>
           </div>
 
-          <!-- 🌀 Loop through cart items -->
+          <!-- 🔀 Loop through cart items -->
           <div>
             <template v-for="(item, index) in cartProducts" :key="item.cart_product_id || index">
               <CartItem
@@ -51,9 +53,9 @@
           <CartItemSkeleton v-for="i in 3" :key="i" />
         </div>
 
-        <!-- 🚫 Empty Cart Placeholder -->
+        <!-- ❌ Empty Cart Placeholder -->
         <div v-else class="flex items-center justify-center h-full">
-          <img src="/assets/img/empty-card.svg" alt="empty cart" />
+          <img src="/assets/img/empty-card.svg" :alt="$t('cart_empty_alt')" />
         </div>
       </div>
 
@@ -80,7 +82,7 @@
 // 🔁 Vue
 import { ref, onMounted, computed } from 'vue'
 
-// 🧩 Components
+// 🥩 Components
 import Container from '@/components/base/Container.vue'
 import CartItem from '~/components/cart/CartItem.vue'
 import CartItemGiftCard from '~/components/cart/CartItemGiftCard.vue'
@@ -89,18 +91,18 @@ import EmptyCartIcon from '~/components/icons/EmptyCartIcon.vue'
 import PaymentSummary from '~/components/cart/PaymentSummary.vue'
 import PaymentSummarySkeleton from '~/components/cart/PaymentSummarySkeleton.vue'
 
-// 🧠 Stores
+// 🧪 Stores
 import { useCart } from '~/stores/cart'
 import { useApp } from '~/stores/app'
 import { useMenu } from '~/stores/menu'
 
-// 🧷 Constants
+// 🗷 Constants
 import { COMPONENTS } from '~/data/constants'
 
 // 🔐 Auth middleware
 definePageMeta({ middleware: 'auth' })
 
-// 📦 Store Instances
+// 📆 Store Instances
 const cartModule = useCart()
 const menuModule = useMenu()
 const { setDialogComponent, setDialogShow } = useApp()
@@ -108,13 +110,13 @@ const { setDialogComponent, setDialogShow } = useApp()
 // 📌 Reactive State
 const expandedItems = ref<{ [key: string]: boolean }>({})
 
-// 📥 Fetch cart data
+// 📅 Fetch cart data
 onMounted(() => cartModule.fetchCart())
 
-// 🧮 Cart Products
+// 🛂 Cart Products
 const cartProducts = computed(() => cartModule.getProducts as any[])
 
-// 🧾 Format cart item
+// 🗒️ Format cart item
 const formatCartItem = (item: any) => ({
   ...item,
   id: item.id,
@@ -168,10 +170,10 @@ const editCartItem = (item: any) => {
 // 🧼 Open empty cart confirmation dialog
 const openEmptyCartDialog = () => {
   setDialogComponent(COMPONENTS.CONFIRM_DIALOG, {
-    dialogTitle: 'Remove All Services',
-    message: 'Are you sure you want to remove all of your services from the cart?',
-    confirmText: 'Yes, Remove All',
-    cancelText: 'No, Cancel',
+    dialogTitle: 'cart_remove_all_title',
+    message: 'cart_remove_all_message',
+    confirmText: 'cart_remove_all_confirm',
+    cancelText: 'cart_remove_all_cancel',
     modalMaxWidth: 'max-w-[458px]',
     loading: cartModule.isEmptying,
     confirmButtonClass: 'h-[49px] bg-[#C44E4E] hover:bg-[#913E5D] text-white rounded-[100px] text-[16px]',

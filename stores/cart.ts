@@ -13,6 +13,15 @@ export const useCart = defineStore("cart", {
             params: {
                 promo_code: null,
                 gift_card: null,
+                is_gifted_order: 0,
+                gifted_order_data: {
+                    first_name: '',
+                    last_name: '',
+                    mobile_code: '966',
+                    mobile_number: '',
+                    email: ''
+                },
+                gift_message: ''
             },
             isAddLoading: false,
             isLoading: false,
@@ -98,8 +107,8 @@ export const useCart = defineStore("cart", {
             this.$state.isEmptying = false;
             this.$state.order.loading = false;
         },
-        fetchCart(payload : { promo_code: null , gift_card: null}, options : {disableLoading : false} ) {
-            if(!options?.disableLoading){
+        fetchCart(payload: { promo_code: null, gift_card: null }, options: { disableLoading: false }) {
+            if (!options?.disableLoading) {
                 this.$state.isLoading = true;
             }
             return useApi(`cart`, {
@@ -352,11 +361,32 @@ export const useCart = defineStore("cart", {
         },
         createOrder(payload: any = {}, onSuccess: Function = () => { }, onError: Function = () => { }) {
             this.$state.order.loading = true;
+
+            const body: any = {
+                payment_method_id: this.$state.payment_method_id,
+                is_scheduled: 0,
+                promo_code: this.$state.params?.promo_code ?? null,
+                gift_card: this.$state.params?.gift_card ?? null,
+                is_gifted_order: this.$state.params?.is_gifted_order ?? 0,
+                gift_message: this.$state.params?.gift_message ?? '',
+            }
+
+            // ✅ Include gifted_order_data if it's a gifted order
+            if (this.$state.params?.is_gifted_order === 1 && this.$state.params?.gifted_order_data) {
+                body.gifted_order_data = {
+                    first_name: this.$state.params.gifted_order_data.first_name,
+                    last_name: this.$state.params.gifted_order_data.last_name,
+                    mobile_code: this.$state.params.gifted_order_data.mobile_code,
+                    mobile_number: this.$state.params.gifted_order_data.mobile_number,
+                    email: this.$state.params.gifted_order_data.email
+                }
+            }
+
             return useApi(`orders`, {
                 method: "POST",
                 body: {
-                    payment_method_id: this.$state.payment_method_id,
-                    is_scheduled: 0
+                    ...body,
+                    ...payload
                 }
             },
                 {
@@ -376,6 +406,7 @@ export const useCart = defineStore("cart", {
                     }
                 });
         },
+
 
         openPaymentPopup(payload: any = {}) {
             const url = this.$state.payment?.create_token_url?.url;
