@@ -61,6 +61,7 @@ const bookingsStore = useBookings()
 const form = ref({ date: null, time: null })
 const product_master_id = ref<number | null>(null)
 const order_product_id = ref<number | null>(null)
+const actual_order_id = ref<number | null>(null)
 const availableDates = computed(() => menuModule.getService?.times ?? [])
 
 const selectedDateObject = computed(() =>
@@ -92,11 +93,12 @@ const getCurrentTime = () => selectedDateObject.value?.slots?.find((el: any) => 
 
 const addToCart = () => {
   const time = getCurrentTime()
-  if (!time || !order_product_id.value) {
+  if (!time || !order_product_id.value || !actual_order_id.value) {
     console.error('Missing required data:', {
       time,
       order_product_id: order_product_id.value,
-      product_master_id: product_master_id.value
+      product_master_id: product_master_id.value,
+      actual_order_id: actual_order_id.value
     })
     toast.add({ title: t('select_time_warning'), color: 'error' })
     return
@@ -109,14 +111,15 @@ const addToCart = () => {
   }
 
   console.log('Scheduling gifted order:', {
-    gifted_order_id: props.gifted_order_id,  // Used in URL: gifted-orders/{gifted_order_id}/schedule
+    gifted_order_id: props.gifted_order_id,  // This is the gifted order ID
+    actual_order_id: actual_order_id.value,  // This is the actual order ID used in URL
     requestBody,                             // Contains order_product_id from order details API
-    endpoint: `gifted-orders/${props.gifted_order_id}/schedule`
+    endpoint: `gifted-orders/${actual_order_id.value}/schedule`
   })
 
-  // API: POST gifted-orders/{gifted_order_id}/schedule
+  // API: POST gifted-orders/{order_id}/schedule (using actual order ID, not gifted order ID)
   // Body: { order_product_id: from order details API, start_at, end_at }
-  useApi(`gifted-orders/${props.gifted_order_id}/schedule`, {
+  useApi(`gifted-orders/${actual_order_id.value}/schedule`, {
     method: 'POST',
     body: requestBody
   }, {
@@ -157,6 +160,9 @@ onMounted(async () => {
       throw new Error('Order ID not found in gifted order details')
     }
 
+    // Store the actual order ID for API calls
+    actual_order_id.value = orderId
+
     // Fetch the actual order details using the order_id
     const { data: orderResponse } = await useApi(`orders/${orderId}`, {
       method: 'GET'
@@ -168,14 +174,17 @@ onMounted(async () => {
       const product = orderResponse.value.data.products[0]
 
       // The order_product_id should come from the order details API
-      order_product_id.value = product?.id  // This is the order_product_id from order details
+      order_product_id.value = product?.order_product_id  // Use order_product_id field (939), not id (23)
       product_master_id.value = product?.product_master_id
 
       console.log('Product details from order API:', {
         product: product,
-        order_product_id: order_product_id.value,  // This will be sent to schedule API
+        'product.id': product?.id,                           // This is 23 (not used)
+        'product.order_product_id': product?.order_product_id, // This is 939 (used in API)
+        order_product_id: order_product_id.value,           // This will be sent to schedule API (939)
         product_master_id: product_master_id.value,
-        gifted_order_id: props.gifted_order_id     // This is used in the URL
+        gifted_order_id: props.gifted_order_id,             // This is the gifted order ID (prop)
+        actual_order_id: actual_order_id.value              // This is the actual order ID (used in URL)
       })
 
       if (product_master_id.value) {
