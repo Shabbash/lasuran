@@ -20,13 +20,31 @@ export const useGiftedOrders = defineStore('giftedOrders', {
   : []
 
 
+        console.log('All orders from API:', allOrders)
+        console.log('Looking for gifted_info.id:', giftedId)
+
         const found = allOrders.find((o: any) => o.gifted_info?.id === giftedId)
+        console.log('Found order:', found)
 
         if (!found) throw new Error('Gifted order not found')
 
+        // Check different possible fields for order_id
+        const orderId = found.order_id || found.id || found.order?.id
+        console.log('Order ID candidates:', {
+          'found.order_id': found.order_id,
+          'found.id': found.id,
+          'found.order?.id': found.order?.id,
+          'selected orderId': orderId
+        })
+
+        if (!orderId) {
+          console.error('No order ID found in:', found)
+          throw new Error('Order ID not found in gifted order')
+        }
+
         // 🟡 Fetch full order details using order_id
-        const orderResponse = await useApi(`orders/${found.order_id}`, {})
-        alert(found.order_id)
+        const orderResponse = await useApi(`orders/${orderId}`, {})
+        console.log('Fetching order details for order_id:', orderId)
         const orderDetails = orderResponse.data.value
 
         // 🟢 Combine gifted info + order details

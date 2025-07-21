@@ -171,13 +171,41 @@ async function openScheduleDialog(id : any) {
     // 🟡 Fetch gifted order details before opening dialog
     await giftedOrdersStore.fetchGiftedOrder(props.booking.gifted_info.id)
 
-    appStore.setDialogComponent(COMPONENTS.SCHEDULE_GIFTED_ORDER, {
-      gifted_order_id: props.booking.gifted_info.id,
-      order_product_id: giftedOrdersStore.giftedOrderDetails?.order_product?.id,
-      product_master_id: giftedOrdersStore.giftedOrderDetails?.order_product?.product_master_id
+    const giftedDetails = giftedOrdersStore.giftedOrderDetails
+    console.log('Gifted details in Show component:', giftedDetails)
+
+    // Check different possible fields for order_id
+    const orderId = giftedDetails?.order_id || giftedDetails?.id || giftedDetails?.order?.id
+    console.log('Order ID candidates in Show:', {
+      'giftedDetails.order_id': giftedDetails?.order_id,
+      'giftedDetails.id': giftedDetails?.id,
+      'giftedDetails.order?.id': giftedDetails?.order?.id,
+      'selected orderId': orderId
     })
 
-    appStore.setDialogShow(true)
+    if (!orderId) {
+      console.error('No order ID found in gifted details:', giftedDetails)
+      throw new Error('Order ID not found in gifted order details')
+    }
+
+    // Fetch the actual order details using the order_id to get product_master_id
+    const { data: orderResponse } = await useApi(`orders/${orderId}`, {
+      method: 'GET'
+    })
+
+    if (orderResponse.value?.status && orderResponse.value?.data?.products?.length > 0) {
+      const product = orderResponse.value.data.products[0]
+
+      appStore.setDialogComponent(COMPONENTS.SCHEDULE_GIFTED_ORDER, {
+        gifted_order_id: props.booking.gifted_info.id,
+        order_product_id: product?.id,
+        product_master_id: product?.product_master_id
+      })
+
+      appStore.setDialogShow(true)
+    } else {
+      throw new Error('Product details not found in order')
+    }
   } catch (e) {
     console.error('❌ Failed to open gifted schedule dialog:', e)
   }

@@ -93,42 +93,100 @@ const getCurrentTime = () => selectedDateObject.value?.slots?.find((el: any) => 
 const addToCart = () => {
   const time = getCurrentTime()
   if (!time || !order_product_id.value) {
+    console.error('Missing required data:', {
+      time,
+      order_product_id: order_product_id.value,
+      product_master_id: product_master_id.value
+    })
     toast.add({ title: t('select_time_warning'), color: 'error' })
     return
   }
 
-  useApi(`/gifted-orders/${props.gifted_order_id}/schedule`, {
+  const requestBody = {
+    order_product_id: order_product_id.value,
+    start_at: time.from_date_time,
+    end_at: time.to_date_time
+  }
+
+  console.log('Scheduling gifted order:', {
+    gifted_order_id: props.gifted_order_id,  // Used in URL: gifted-orders/{gifted_order_id}/schedule
+    requestBody,                             // Contains order_product_id from order details API
+    endpoint: `gifted-orders/${props.gifted_order_id}/schedule`
+  })
+
+  // API: POST gifted-orders/{gifted_order_id}/schedule
+  // Body: { order_product_id: from order details API, start_at, end_at }
+  useApi(`gifted-orders/${props.gifted_order_id}/schedule`, {
     method: 'POST',
-    body: {
-      order_product_id: order_product_id.value,
-      start_at: time.from_date_time,
-      end_at: time.to_date_time
-    }
+    body: requestBody
   }, {
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log('Schedule success:', data)
       appStore.setDialogComponent(COMPONENTS.SERVICE_SUCCESS)
       appStore.setDialogShow(true)
     },
     onError: (err) => {
-      toast.add({ title: t('something_went_wrong'), description: err?.response?._data?.message || '', color: 'error' })
+      console.error('Schedule error:', err)
+      toast.add({ title: t('something_went_wrong'), description: err?.message || '', color: 'error' })
     }
   })
 }
 
 onMounted(async () => {
-  try {
-    await giftedOrdersStore.fetchGiftedOrder(props.gifted_order_id)
-    const product = giftedOrdersStore.giftedOrderDetails?.order_product
-    console.log(giftedOrdersStore.giftedOrderDetails)
-    order_product_id.value = product?.id
-    alert(props.gifted_order_id)
-    product_master_id.value = product?.product_master_id
+  console.log('ScheduleGiftedOrder mounted with props:', {
+    gifted_order_id: props.gifted_order_id
+  })
 
-    if (product_master_id.value) {
-      await menuModule.fetchServiceAvailableTimes(product_master_id.value)
-      form.value.date = availableDates.value?.[0]?.date ?? null
+  try {
+    // First fetch the gifted order details
+    await giftedOrdersStore.fetchGiftedOrder(props.gifted_order_id)
+    const giftedDetails = giftedOrdersStore.giftedOrderDetails
+    console.log('Gifted order details:', giftedDetails)
+
+    // Check different possible fields for order_id
+    const orderId = giftedDetails?.order_id || giftedDetails?.id || giftedDetails?.order?.id
+    console.log('Order ID candidates:', {
+      'giftedDetails.order_id': giftedDetails?.order_id,
+      'giftedDetails.id': giftedDetails?.id,
+      'giftedDetails.order?.id': giftedDetails?.order?.id,
+      'selected orderId': orderId
+    })
+
+    if (!orderId) {
+      console.error('No order ID found in gifted details:', giftedDetails)
+      throw new Error('Order ID not found in gifted order details')
+    }
+
+    // Fetch the actual order details using the order_id
+    const { data: orderResponse } = await useApi(`orders/${orderId}`, {
+      method: 'GET'
+    })
+
+    console.log('Order details from API:', orderResponse.value)
+
+    if (orderResponse.value?.status && orderResponse.value?.data?.products?.length > 0) {
+      const product = orderResponse.value.data.products[0]
+
+      // The order_product_id should come from the order details API
+      order_product_id.value = product?.id  // This is the order_product_id from order details
+      product_master_id.value = product?.product_master_id
+
+      console.log('Product details from order API:', {
+        product: product,
+        order_product_id: order_product_id.value,  // This will be sent to schedule API
+        product_master_id: product_master_id.value,
+        gifted_order_id: props.gifted_order_id     // This is used in the URL
+      })
+
+      if (product_master_id.value) {
+        await menuModule.fetchServiceAvailableTimes(product_master_id.value)
+        form.value.date = availableDates.value?.[0]?.date ?? null
+      }
+    } else {
+      throw new Error('Product details not found in order')
     }
   } catch (e) {
+    console.error('Error in onMounted:', e)
     toast.add({ title: t('something_went_wrong'), color: 'error' })
   }
 })
