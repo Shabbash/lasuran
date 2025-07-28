@@ -48,7 +48,7 @@
                     <span class="text-white text-[16px] font-bold leading-normal">{{ customerClass.total_points || '0'
                     }} {{ $t('wallet_points') }}</span>
                     <span class="text-white text-[16px] font-bold leading-normal"><span class="sar-icon">&#xe900;</span>
-                      {{ cashbackBalance }}</span>
+                      {{ customerClass.total_points_value }}</span>
                   </div>
                   <div class="mt-[3px] mb-[7px]">
                     <UProgress v-model="progressValue" :ui="{ slots: { indicator: 'bg-green-500 h-full rounded' } }" />

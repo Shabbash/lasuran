@@ -31,7 +31,7 @@
       </p>
 
       <!-- Phone -->
-      <div v-if="branch.phone" class="flex items-center text-[14px] text-[#5B605C] mb-[10px] gap-[8px]">
+      <div v-if="branch.phone && branch.phone !== 'null'" class="flex items-center text-[14px] text-[#5B605C] mb-[10px] gap-[8px]">
         <span>📞</span>
         <span>{{ branch.phone }}</span>
       </div>

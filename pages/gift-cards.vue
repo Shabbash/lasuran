@@ -3,7 +3,7 @@
     <Banner :loading="isLoading" :opacity="false" :bannerContent="bannerContent" />
 
     <div>
-      <h2 class="text-white mb-[16px] text-[19px] font-normal">Gift Cards</h2>
+      <h2 class="text-white mb-[16px] text-[19px] font-normal">{{ $t('gift_cards_title_gift') }}</h2>
       <!-- <p class="hint text-[#C6C6C7] text-[13px] font-[350] flex items-center gap-[10px] mb-[15px]">
         {{ giftCards[0]?.single_use_message || 'The gift card is valid for one time use only.' }}
       </p> -->
@@ -16,7 +16,7 @@
       <div v-else-if="error" class="text-center py-12">
         <p class="text-red-400 mb-4">{{ error }}</p>
         <button @click="fetchGiftCards" class="bg-[#A0576F] text-white px-4 py-2 rounded-lg hover:bg-[#913E5D]">
-          Try Again
+          {{ $t('try_again') }}
         </button>
       </div>
 
@@ -28,7 +28,7 @@
             <img class="w-full h-full cover" :src="card.card_image" :alt="card.name || 'Gift card image'"
               @error="(e) => (e.target as HTMLImageElement).src = '/assets/img/default-gift-card.png'" />
           </div>
-          <div class="flex items-center justify-between absolute inset-0 px-[17px] py-[15px]">
+          <div class="flex items-center justify-start rtl:justify-end rtl:text-left absolute inset-0 px-[17px] py-[15px]">
             <div class="flex flex-col justify-between h-full">
               <div>
                 <h2 class="text-white text-[15px] font-bold leading-normal">{{ card.title || 'Gift Card' }}</h2>
@@ -49,9 +49,9 @@
 
       <!-- Empty State -->
       <div v-else class="text-center py-12">
-        <p class="text-[#C6C6C7] text-lg mb-4">No gift cards available at the moment</p>
+        <p class="text-[#C6C6C7] text-lg mb-4">{{ $t('no_gift_cards') }}</p>
         <button @click="fetchGiftCards" class="bg-[#A0576F] text-white px-4 py-2 rounded-lg hover:bg-[#913E5D]">
-          Refresh
+          {{ $t('refresh') }}
         </button>
       </div>
     </div>
@@ -62,7 +62,8 @@
       <template #body>
         <div class="bg-decore-modal mx-auto rounded-[30px] overflow-hidden shadow-lg bg-[#EBE4DF] text-[#5F2C3E]">
           <div class="relative px-[28px] mt-[28px] mb-[40px]">
-            <h2 class="text-center text-[23px] font-bold text-[#A0576F] mb-[40px]">Lasuran Gift Card</h2>
+            <h2 class="text-center text-[23px] font-bold text-[#A0576F] mb-[40px]">{{ $t('gift_card_modal_title') }}
+            </h2>
 
             <div v-if="selectedCard" class="relative">
               <div class="w-full h-full">
@@ -70,7 +71,7 @@
                   :alt="selectedCard.name || 'Gift card image'"
                   @error="(e) => (e.target as HTMLImageElement).src = '/assets/img/default-gift-card.png'" />
               </div>
-              <div class="flex items-center justify-between absolute inset-0 px-[17px] py-[15px]">
+              <div class="flex items-center justify-start rtl:justify-end rtl:text-left absolute inset-0 px-[17px] py-[15px]">
                 <div class="flex flex-col justify-between h-full">
                   <div>
                     <h2 class="text-white text-[15px] font-bold leading-normal">{{ selectedCard?.title || 'Gift Card' }}
@@ -80,7 +81,7 @@
                     </h3>
                   </div>
                   <p class="text-white text-[11px] font-bold leading-normal">
-                    expires: {{ selectedCard?.expiry_date || '2025-12-31' }}
+                    {{ $t('expires') }}: {{ selectedCard?.expiry_date || '2025-12-31' }}
                   </p>
                 </div>
                 <!-- <div v-if="selectedCard?.logo">
@@ -97,12 +98,18 @@
             </div>
 
             <div class="text-[#5B605C] mb-[16px] text-[14px] font-[350] leading-[23.128px]"
-              v-html="selectedCard?.description || 'Give the perfect gift with a Lasuran gift card. Valid for all services and products at our salon.'">
+              v-html="selectedCard?.description || $t('gift_card_default_description')">
             </div>
 
-            <p v-if="selectedCard?.single_use_message" class="text-[#5B605C] mb-[16px] text-[12px] font-[350]">
+            <!-- <p v-if="selectedCard?.single_use_message" class="text-[#5B605C] mb-[16px] text-[12px] font-[350]">
+              {{ selectedCard.single_use_message }}
+            </p> -->
+
+            <p v-if="!selectedCard?.redeemed_multiple_times && selectedCard?.single_use_message"
+              class="text-[#5B605C] mb-[16px] text-[12px] font-[350]">
               {{ selectedCard.single_use_message }}
             </p>
+
 
             <div class="flex justify-between items-center gap-[25px] mt-[55px]">
 
@@ -113,7 +120,7 @@
                 :class="selectedCard ? 'bg-[#A0576F]' : 'bg-[#a0576f69]'">
 
                 <PriceIcon />
-                <span>Buy Now: <span class="sar-icon">&#xe900;</span> {{ totalPrice }}</span>
+                <span>{{ $t('buy_now') }}: <span class="sar-icon">&#xe900;</span> {{ totalPrice }}</span>
 
 
               </BaseButton>

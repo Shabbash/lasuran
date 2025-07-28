@@ -22,7 +22,7 @@
               <h3 class="font-medium text-[18px] leading-[100%] text-[#5B605C] mb-[7px] truncate overflow-hidden whitespace-nowrap">
                 {{ service.name }}
               </h3>
-
+              <p class="text-[13px] font-[350] text-[#A0576F] leading-[1.2] mb-[8px]">{{ service.brief_description }}</p>
               <div class="flex justify-between">
                 <!-- Old Price (if discount) -->
                 <p v-if="service.discount_value" class="text-[#A0576F] font-bold text-[12px] leading-[100%] tracking-[-2%] line-through">

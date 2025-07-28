@@ -4,15 +4,26 @@
     item: 'basis-auto ps-0 category-box',
   }">
     <slot :item="item">
-      <UBadge @click="selectItem(item)"
-        :class="{ 'font-medium rounded-full bg-[#E6CDC7A3] text-[#A0576F] px-[19px] py-0 h-[32px] md:h-[56px] cursor-pointer': true, 'active text-[#EBE4DF] bg-[#A0576F]': (getItem(item, 'value') == selectedValue) }">
-        {{ notTransition == "1" ? getItem(item).en : getItem(item) }}
+      <UBadge @click="selectItem(item)" :class="{
+        'font-medium rounded-full bg-[#E6CDC7A3] text-[#A0576F] px-[19px] py-0 h-[32px] md:h-[56px] cursor-pointer': true,
+        'active text-[#EBE4DF] bg-[#A0576F]': (getItem(item, 'value') == selectedValue)
+      }">
+        {{ typeof getItem(item) === 'object' && getItem(item) !== null && getItem(item).en
+          ? (locale === 'ar' ? getItem(item).ar : getItem(item).en)
+          : getItem(item) }}
       </UBadge>
+
+
     </slot>
   </UCarousel>
 </template>
 
 <script lang="ts" setup>
+
+
+import { useI18n } from 'vue-i18n'
+
+const { locale } = useI18n()
 const props = defineProps({
   items: {
     type: Array,
@@ -61,7 +72,7 @@ const selectItem = function (item: any) {
   font-weight: 500;
   line-height: normal;
   padding: 0 25px;
-  border:1px solid var(--Soft-Wave, #BBCACF);
+  border: 1px solid var(--Soft-Wave, #BBCACF);
   color: var(--Soft-Wave, #BBCACF);
   background-color: transparent;
 }
@@ -72,7 +83,7 @@ const selectItem = function (item: any) {
   border-color: var(--Canada-Goose-Eggs, #EBE4DF);
   color: var(--Floral, #A0576F);
 
-  
+
 }
 
 
@@ -102,7 +113,4 @@ const selectItem = function (item: any) {
   background: var(--Canada-Goose-Eggs, #EBE4DF);
   text-transform: capitalize;
 }
-
-
-
 </style>

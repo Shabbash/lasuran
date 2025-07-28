@@ -91,6 +91,7 @@
   "payment_cash": "الدفع عند الاستلام",
   "payment_online": "الدفع الإلكتروني",
   "gift_cards_title": "بطاقاتي",
+  "gift_cards_title_gift": "البطاقات",
   "gift_cards_empty": "لا توجد بطاقات هدية متاحة.",
   "gift_card_default_name": "بطاقة هدية",
   "loading": "جارٍ التحميل ...",
@@ -118,6 +119,7 @@
   "service_type_reservation": "حجز خدمة",
   "my_bookings_title": "حجوزاتي",
   "book_a_table": "احجز طاولة",
+    "book_a_service": "احجز خدمة",
   "booking_number_label": "رقم الحجز",
   "no_of_guests_label": "عدد الضيوف: {count} ضيف",
   "branch_label": "الفرع: {branch}",
@@ -203,7 +205,7 @@
   "menu_profile": "ملفي الشخصي",
   "menu_bookings": "حجوزاتي",
   "menu_wallet": "محفظتي",
-  "menu_gift_cards": "بطاقاتي",
+  "menu_gift_cards": "بطاقة الهدية",
   "menu_tickets": "تذاكري",
   "gift_card_title": "بطاقة هدية: {amount} {currency}",
   "gift_card_description_label": "وصف بطاقة الهدية",
@@ -307,12 +309,22 @@
   "gift_to_label": "إهداء إلى",
   "schedule_gift_button": "تحديد الموعد",
   "select_time_warning": "يرجى اختيار الوقت والتاريخ أولاً",
-"something_went_wrong": "حدث خطأ ما",
-"gifted_order_label": "هدية",
-"gifted_by_label": "مُهدى من",
-"button_accept_gift": "قبول الهدية"
-
-
-
+  "something_went_wrong": "حدث خطأ ما",
+  "gifted_order_label": "هدية",
+  "gifted_by_label": "مُهدى من",
+  "button_accept_gift": "قبول الهدية",
+  "page_title_gift_cards": "بطاقات الهدايا",
+  "gift_cards_error": "حدث خطأ أثناء تحميل بطاقات الهدايا.",
+  "try_again": "أعد المحاولة",
+  "no_gift_cards": "لا توجد بطاقات هدايا متاحة حالياً",
+  "refresh": "تحديث",
+  "gift_card_modal_title": "بطاقة هدية لازوران",
+  "expires": "تنتهي في",
+  "gift_card_default_description": "أهدي أحبّائك بطاقة هدية من لازوران. صالحة لجميع الخدمات والمنتجات في الصالون.",
+  "buy_now": "اشترِ الآن",
+  "profile_first_name": "الاسم الأول",
+"profile_last_name": "اسم العائلة",
+"profile_first_name_placeholder": "ادخل الاسم الأول",
+"profile_last_name_placeholder": "ادخل اسم العائلة"
 
 }

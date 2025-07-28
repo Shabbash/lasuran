@@ -22,8 +22,8 @@
             </div>
           </div>
           <div>
-            <p class="text-white text-[12.97px] font-medium">GIFT CARD</p>
-            <p class="text-white text-[18.53px] font-bold">
+            <p class="text-white text-[12.97px] font-medium text-left">GIFT CARD</p>
+            <p class="text-white text-[18.53px] font-bold text-left">
               {{ props.selectedCard.remaining_amount || props.selectedCard.total }} {{ props.selectedCard.currency }}
             </p>
           </div>

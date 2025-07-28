@@ -12,7 +12,7 @@
             <BaseSlider :items="slider?.items ?? homeStore?.homeData?.data?.sliders" dots :slide-per-row="1"
               :slide-per-row-mobile="1" dots-class="dots-style">
               <template #default="{ item }">
-                <div class=" w-full">
+                <div class=" w-full cursor-pointer">
                   <div class=" w-full overflow-hidden relative rounded-[23px] md:mt-[31px]">
                     <img class="mx-auto h-auto md:h-full w-full object-contain md:object-cover inset-0 relative"
                       :src="item.image_url ?? item.image" />
@@ -34,7 +34,7 @@
             <BaseSlider v-if="widget.items_per_slide == 3" :items="widget.items" :slide-per-row="3"
               :slide-per-row-mobile="2">
               <template #default="{ item }">
-                <div class="bg-[#EBE4DF] rounded-[23px] overflow-hidden " @click="showService(item)">
+                <div class="bg-[#EBE4DF] rounded-[23px] overflow-hidden cursor-pointer" @click="showService(item)">
                   <div class="rounded-[23px] overflow-hidden">
                     <img class="h-[118px] w-full object-cover" :src="item.image_url ?? '/assets/img/imgg2.png'" />
                   </div>
@@ -53,7 +53,7 @@
             </BaseSlider>
             <BaseSlider v-else :items="widget.items" :slide-per-row="4" :slide-per-row-mobile="3">
               <template #default="{ item }">
-                <div class="rounded-[23px] overflow-hidden relative " @click="showService(item)">
+                <div class="rounded-[23px] overflow-hidden relative cursor-pointer" @click="showService(item)">
                   <div class=" h-[140px] rounded-[23px] overflow-hidden">
                     <img class=" h-full w-full object-cover" :src="item.image_url ?? '/assets/img/imgg2.png'" />
                     <div class="absolute inset-0 bg-[linear-gradient(to_bottom,_#1B1B1B00,_#615B59)]">

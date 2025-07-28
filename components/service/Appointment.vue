@@ -13,7 +13,8 @@
         </svg>
       </button>
 
-      <h2 class="text-center text-[23px] font-bold leading-normal text-[#A0576F] mb-[40px]">{{ t('book_services') }}</h2>
+      <h2 class="text-center text-[23px] font-bold leading-normal text-[#A0576F] mb-[40px]">{{ t('book_services') }}
+      </h2>
 
       <!-- <label class="flex items-center gap-[12px] text-[16px] font-normal leading-normal text-[#6B8B9B]">
                   <input type="radio" class="hidden" name="reservation" value="someone-else" v-model="reserveOption" />
@@ -35,7 +36,7 @@
 
       <div class="mb-[12px]">
         <h3 class="text-[17px] font-normal leading-normal text-[#A0576F] mb-[12px]">{{ t('select_date') }}</h3>
-        <UCalendar initial-focus v-model="selectedDate" :is-date-unavailable="isDateUnavailable" />
+        <UCalendar initial-focus v-model="selectedDate" :is-date-unavailable="isDateUnavailable" :locale="'ar-EG'" />
       </div>
 
       <div class="">
@@ -67,7 +68,7 @@
       </BaseButton> -->
 
 
-      <BaseButton @click="addToCart" :loading="cartModule.isAddLoading" :disabled="selectedExtension === ''"
+      <!-- <BaseButton @click="addToCart" :loading="cartModule.isAddLoading" :disabled="selectedExtension === ''"
         class="flex items-center gap-[10px] w-full text-white py-3 rounded-full font-[400] text-[16px] justify-center mt-[35px] transition disabled:bg-[#A0576F] hover:bg-[#913E5D]"
         :class="selectedExtension === '' ? 'bg-[#a0576f69]' : 'bg-[#A0576F]'">
         <PriceIcon />
@@ -76,6 +77,21 @@
           {{ selectedExtension === '' && (!selectedService.price && !computedService?.price)
             ? t('price_upon_selection')
             : (selectedService.price ?? computedService?.price) + ' SAR' }} -
+          {{ isEditing ? t('update') : t('continue') }}
+        </span>
+      </BaseButton> -->
+      <BaseButton @click="addToCart" :loading="cartModule.isAddLoading" :disabled="!selectedExtension"
+        class="flex items-center gap-[10px] w-full text-white py-3 rounded-full font-[400] text-[16px] justify-center mt-[35px] transition disabled:bg-[#A0576F] hover:bg-[#913E5D]"
+        :class="!selectedExtension ? 'bg-[#a0576f69]' : 'bg-[#A0576F]'">
+        <PriceIcon />
+        <span>
+          <template v-if="!selectedExtension && !selectedService.price && !computedService?.price">
+            {{ t('price_upon_selection') }}
+          </template>
+          <template v-else>
+            <span class="sar-icon">&#xe900;</span> {{ selectedService.price ?? computedService?.price ?? 0 }}
+          </template>
+          -
           {{ isEditing ? t('update') : t('continue') }}
         </span>
       </BaseButton>
@@ -109,6 +125,7 @@ import { useMenu } from "~/stores/menu";
 import SelectableSlider from "~/components/base/SelectableSlider.vue";
 import { useI18n } from 'vue-i18n'
 const { t } = useI18n()
+
 
 // Define service type
 interface Service {

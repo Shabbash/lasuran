@@ -5,23 +5,20 @@
       <span>{{ props.card?.single_use_message || $t('gift_card_single_use_message') }}</span>
     </div>
 
-    <Swiper
-      direction="vertical"
-      loop
-      :slides-per-view="1"
-      grab-cursor
-      class="max-h-[210px] w-full max-w-[330px] mx-auto"
-    >
-      <SwiperSlide v-for="(voucher, index) in cards" :key="index">
-        <div class="relative rounded-[14px] overflow-hidden cursor-pointer transition hover:scale-[1.01]" @click="$emit('card-click', voucher)">
-          <img class="w-full" :src="voucher.card_image || '/assets/img/my-gift-card.svg'" :alt="$t('gift_card_image_alt')" />
+    <Swiper direction="vertical" loop :slides-per-view="1" grab-cursor
+      class="max-h-[160px] w-full max-w-[330px] mx-auto">
+      <SwiperSlide v-for="(voucher, index) in cards" :key="index" class="rounded-[14px] -mt-[100px] first:mt-0">
+        <div class="relative h-full rounded-[14px] cursor-pointer transition hover:scale-[1.01]"
+        style="box-shadow: 1.853px 3.706px 18.622px rgba(0, 0, 0, 0.19), 0 -5.559px 11.396px rgba(0, 0, 0, 0.25)"
+          @click="$emit('card-click', voucher)">
+          <img class="w-full h-full" :src="voucher.card_image || '/assets/img/my-gift-card.svg'"
+            :alt="$t('gift_card_image_alt')" />
           <div class="absolute inset-0 px-[15px] py-[15px] flex flex-col justify-between">
             <div class="flex justify-between">
               <div class="max-w-[70px]">
                 <img class="w-full" src="/assets/img/card-laz.svg" :alt="$t('gift_card_logo_alt')" />
               </div>
-              <div
-                class="h-[23px] px-[20px] flex items-center justify-center rounded-[100px] text-[13px]"
+              <div class="h-[23px] px-[20px] flex items-center justify-center rounded-[100px] text-[13px]"
                 :class="getStatusClass(voucher.status)">
                 <span>{{ $t(`gift_card_status_${(voucher.status || 'active').toLowerCase()}`) }}</span>
               </div>
@@ -37,9 +34,13 @@
               </div>
               <div>
                 <p class="text-white text-[12.97px] font-medium">{{ $t('gift_card_label') }}</p>
-                <p class="text-white text-[18.53px] font-bold">
+                <!-- <p class="text-white text-[18.53px] font-bold">
                   {{ voucher.remaining_amount || voucher.price }} {{ voucher.currency || 'SAR' }}
+                </p> -->
+                <p class="text-white text-[18.53px] font-bold">
+                  <span class="sar-icon">&#xe900;</span> {{ voucher.remaining_amount || voucher.price }}
                 </p>
+
               </div>
             </div>
           </div>

@@ -4,7 +4,7 @@
     <div
       class="flex flex-col md:flex-row justify-between items-start md:items-center gap-[20px] pb-7 mb-7 border-b border-[#AD7084]">
       <h1 class="text-lg font-medium text-[#EBE4DF]">{{ $t('my_bookings_title') }}</h1>
-      <BaseButton :label="$t('book_a_table')" @click="navigateTo('/services')"
+      <BaseButton :label="$t('book_a_service')" @click="navigateTo('/services')"
         class="px-6 py-1.5 bg-[#6B8B9B] hover:bg-[#6B8B9B] hover:opacity-[.9] text-white rounded-full text-sm font-medium transition-colors max-w-[175px]" />
     </div>
 
@@ -28,30 +28,36 @@
           </span>
         </div>
 
-        <!-- Booking Info: guests, branch, date, time -->
         <div class="space-y-2">
-          <div class="flex items-center text-sm text-[#EBE4DF] gap-[6px]">
+          <!-- Guests -->
+          <div v-if="Number(booking.guests) > 0" class="flex items-center text-sm text-[#EBE4DF] gap-[6px]">
             <GuestsIcon />
-            <span class="text-[#C6C6C7] text-[15px]">{{ $t('booking_visitors_label', { count: booking.guests })
-              }}</span>
+            <span class="text-[#C6C6C7] text-[15px]">
+              {{ $t('booking_visitors_label', { count: booking.guests }) }}
+            </span>
           </div>
-
-          <div class="flex items-center text-sm text-[#EBE4DF] gap-[6px]">
+          <!-- Branch -->
+          <div v-if="booking.branch" class="flex items-center text-sm text-[#EBE4DF] gap-[6px]">
             <LocationIcon />
-            <span class="text-[#C6C6C7] text-[15px]">{{ $t('booking_branch_label', { name: booking.branch }) }}</span>
+            <span class="text-[#C6C6C7] text-[15px]">
+              {{ $t('booking_branch_label') }}: {{ booking.branch }}
+            </span>
           </div>
 
-          <div class="flex items-center text-sm text-[#EBE4DF] gap-[6px]">
+
+          <!-- Date -->
+          <div v-if="booking.date" class="flex items-center text-sm text-[#EBE4DF] gap-[6px]">
             <CalendarIcon2 />
             <span class="text-[#C6C6C7] text-[15px]">{{ booking.date }}</span>
           </div>
 
-          <div class="flex items-center text-sm text-[#EBE4DF] gap-[6px]">
+          <!-- Time -->
+          <div v-if="booking.time" class="flex items-center text-sm text-[#EBE4DF] gap-[6px]">
             <ClockIcon />
             <span class="text-[#C6C6C7] text-[15px]">{{ booking.time }}</span>
           </div>
 
-          <!-- ✅ Show gifted sender info if user is receiver -->
+          <!-- Gifted Info (if receiver) -->
           <div v-if="booking.gifted_info && booking.gifted_info.is_sender === false && booking.gifted_info.sender_user"
             class="flex items-center text-sm text-[#EBE4DF] gap-[6px]">
             <GiftIcon />
@@ -62,7 +68,6 @@
         </div>
 
 
-        
       </div>
     </div>
 
@@ -125,6 +130,12 @@ import { COMPONENTS } from '~/data/constants';
 import BookingSkeleton from '@/components/skeletons/BookingSkeleton.vue';
 import ConfirmDialog from '@/components/base/ConfirmDialog.vue';
 import BaseButton from '@/components/base/Button.vue';
+import GuestsIcon from '@/components/icons/GuestsIcon.vue';
+import CalendarIcon2 from '@/components/icons/CalendarIcon2.vue';
+import LocationIcon from '@/components/icons/LocationIcon.vue';
+import ClockIcon from '@/components/icons/ClockIcon.vue';
+import GiftIcon from '@/components/icons/GiftIcon.vue';
+
 
 const { t } = useI18n()
 const router = useRouter()
@@ -149,10 +160,10 @@ const bookings = computed(() => {
     id: order.id,
     bookingNumber: order.order_number,
     status: mapApiStatusToUIStatus(order.status.value),
-    guests: order.number_of_users || 1,
-    branch: order.branch_name,
-    date: formatDate(order.date),
-    time: order.time,
+    guests: order.number_of_users > 0 ? order.number_of_users : null,
+    branch: order.branch_name || null,
+    date: order.date ? formatDate(order.date) : null,
+    time: order.time || null,
     rating_status: !order.can_rate,
     _originalData: order,
     is_gifted_order: order.is_gifted_order === 1,
@@ -163,6 +174,7 @@ const bookings = computed(() => {
     gifted_info: order.gifted_info
   }))
 })
+
 
 const filteredBookings = computed(() => {
   if (activeFilter.value === 'all') return bookings.value

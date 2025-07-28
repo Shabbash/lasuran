@@ -5,7 +5,7 @@
 
       <div class="mb-[12px]">
         <h3 class="text-[17px] text-[#A0576F] mb-[12px]">{{ t('select_date') }}</h3>
-        <UCalendar v-model="selectedDate" :is-date-unavailable="isDateUnavailable" />
+        <UCalendar v-model="selectedDate" :is-date-unavailable="isDateUnavailable" :locale="'ar-EG'" />
       </div>
 
       <div>

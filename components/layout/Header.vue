@@ -41,7 +41,8 @@
                     <!-- Language Switch -->
                     <button @click="toggleLocale" class="flex items-center gap-1 text-sm cursor-pointer">
                         <img :src="locale === 'ar' ? '/assets/img/us-flag.svg' : '/assets/img/sa-flag.svg'" alt="flag"
-                            class="w-[29px] h-[20px] rounded-sm" /> <span class="langClass">{{ locale === 'ar' ? 'English' : 'العربية'
+                            class="w-[29px] h-[20px] rounded-sm" /> <span class="langClass">{{ locale === 'ar' ?
+                                'English' : 'العربية'
                             }}</span>
                     </button>
 
@@ -137,7 +138,6 @@
                                 </div>
 
                                 <div class="text-[#EBE4DF] text-sm my-[15px]">
-
                                     <NuxtLink to="/"
                                         class="flex items-center gap-2 px-4 py-[6px] rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
                                         <img src="/assets/img/menu-icons/Group.svg" alt="" class="w-[20px] h-[20px]" />
@@ -147,78 +147,77 @@
                                     <NuxtLink to="/services"
                                         class="flex items-center gap-2 px-4 py-[6px] rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
                                         <img src="/assets/img/menu-icons/Group.svg" alt="" class="w-[20px] h-[20px]" />
-                                        <span class="text-[15px] font-[350] leading-none">{{ $t('menu_services') }}</span>
+                                        <span class="text-[15px] font-[350] leading-none">{{ $t('menu_services')
+                                            }}</span>
                                     </NuxtLink>
 
                                     <NuxtLink to="/branches"
                                         class="flex items-center gap-2 px-4 py-[6px] rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
-                                        <img src="/public/assets/img/menu-icons/Group.svg" alt=""
-                                            class="w-[20px] h-[20px]" />
-                                        <span class="text-[15px] font-[350] leading-none">{{ $t('menu_branches') }}</span>
+                                        <img src="/assets/img/menu-icons/Group.svg" alt="" class="w-[20px] h-[20px]" />
+                                        <span class="text-[15px] font-[350] leading-none">{{ $t('menu_branches')
+                                            }}</span>
                                     </NuxtLink>
 
                                     <NuxtLink to="/gift-cards"
                                         class="flex items-center gap-2 px-4 py-[6px] rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
                                         <img src="/assets/img/menu-icons/Group.svg" alt="" class="w-[20px] h-[20px]" />
-                                        <span class="text-[15px] font-[350] leading-none">{{ $t('menu_gift_cards') }}</span>
+                                        <span class="text-[15px] font-[350] leading-none">{{ $t('menu_gift_cards')
+                                            }}</span>
                                     </NuxtLink>
 
-
-                                    <!-- <NuxtLink to="/shop"
-                                        class="flex items-center gap-2 px-4 py-[6px] rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
-                                        <img src="/assets/img/menu-icons/Group.svg" alt="" class="w-[20px] h-[20px]" />
-                                        <span class="text-[15px] font-[350] leading-none">Shop</span>
-                                    </NuxtLink> -->
-
-                                    <NuxtLink to="/profile?tab=profile" v-if="authModule.isAuthenticated"
+                                    <NuxtLink to="/dashboard/profile" v-if="authModule.isAuthenticated"
                                         class="flex items-center gap-2 px-4 py-[6px] rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
                                         <img src="/assets/img/menu-icons/Layer.svg" alt="" class="w-[20px] h-[20px]" />
-                                        <span class="text-[15px] font-[350] leading-none">{{ $t('menu_my_profile') }}</span>
+                                        <span class="text-[15px] font-[350] leading-none">{{ $t('menu_my_profile')
+                                            }}</span>
                                     </NuxtLink>
 
-
-
-                                    <NuxtLink to="/profile?tab=bookings" v-if="authModule.isAuthenticated"
+                                    <NuxtLink to="/dashboard/bookings" v-if="authModule.isAuthenticated"
                                         class="flex items-center gap-2 px-4 py-[6px] rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
                                         <img src="/assets/img/menu-icons/Frame-5.svg" alt=""
                                             class="w-[20px] h-[20px]" />
-                                        <span class="text-[15px] font-[350] leading-none">{{ $t('menu_my_bookings') }}</span>
+                                        <span class="text-[15px] font-[350] leading-none">{{ $t('menu_my_bookings')
+                                            }}</span>
                                     </NuxtLink>
 
                                     <NuxtLink to="/contact"
                                         class="flex items-center gap-2 px-4 py-[6px] rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
                                         <img src="/assets/img/menu-icons/Group-1.svg" alt=""
                                             class="w-[20px] h-[20px]" />
-                                        <span class="text-[15px] font-[350] leading-none">{{ $t('menu_customer_service') }}</span>
+                                        <span class="text-[15px] font-[350] leading-none">{{ $t('menu_customer_service')
+                                            }}</span>
                                     </NuxtLink>
 
-                                    <NuxtLink to="/profile?tab=wallet" v-if="authModule.isAuthenticated"
+                                    <NuxtLink to="/dashboard/wallet" v-if="authModule.isAuthenticated"
                                         class="flex items-center gap-2 px-4 py-[6px] rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
                                         <img src="/assets/img/menu-icons/Frame-1.svg" alt=""
                                             class="w-[20px] h-[20px]" />
-                                        <span class="text-[15px] font-[350] leading-none">{{ $t('menu_my_wallet') }}</span>
+                                        <span class="text-[15px] font-[350] leading-none">{{ $t('menu_my_wallet')
+                                            }}</span>
                                     </NuxtLink>
 
-                                    <NuxtLink to="/invite" v-if="authModule.isAuthenticated"
+                                    <div @click="openInviteModal" v-if="authModule.isAuthenticated"
                                         class="flex items-center gap-2 px-4 py-[6px] rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
                                         <img src="/assets/img/menu-icons/Frame-3.svg" alt=""
                                             class="w-[20px] h-[20px]" />
-                                        <span class="text-[15px] font-[350] leading-none">{{ $t('menu_invite_friends') }}</span>
-                                    </NuxtLink>
+                                        <span class="text-[15px] font-[350] leading-none">{{ $t('menu_invite_friends')
+                                            }}</span>
+                                    </div>
 
-                                    <NuxtLink to="/gift-cards" v-if="authModule.isAuthenticated"
+                                    <NuxtLink to="/dashboard/gift-cards" v-if="authModule.isAuthenticated"
                                         class="flex items-center gap-2 px-4 py-[6px] rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
                                         <img src="/assets/img/menu-icons/svgexport-17.svg" alt=""
                                             class="w-[20px] h-[20px]" />
-                                        <span class="text-[15px] font-[350] leading-none">{{ $t('menu_my_gift_cards') }}</span>
+                                        <span class="text-[15px] font-[350] leading-none">{{ $t('menu_my_gift_cards')
+                                            }}</span>
                                     </NuxtLink>
 
-
-                                    <NuxtLink to="/profile?tab=tickets" v-if="authModule.isAuthenticated"
+                                    <NuxtLink to="/dashboard/tickets" v-if="authModule.isAuthenticated"
                                         class="flex items-center gap-2 px-4 py-[6px] rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
                                         <img src="/assets/img/menu-icons/Frame-2.svg" alt=""
                                             class="w-[20px] h-[20px]" />
-                                        <span class="text-[15px] font-[350] leading-none">{{ $t('menu_my_tickets') }}</span>
+                                        <span class="text-[15px] font-[350] leading-none">{{ $t('menu_my_tickets')
+                                            }}</span>
                                     </NuxtLink>
 
                                     <div @click="openLegal('terms')"
@@ -231,9 +230,9 @@
                                         class="flex items-center gap-2 px-4 py-[6px] rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
                                         <img src="/assets/img/menu-icons/Layer_1.svg" alt=""
                                             class="w-[20px] h-[20px]" />
-                                        <span class="text-[15px] font-[350] leading-none">{{ $t('menu_privacy') }}</span>
+                                        <span class="text-[15px] font-[350] leading-none">{{ $t('menu_privacy')
+                                            }}</span>
                                     </div>
-
 
                                     <button @click="toggleLocale"
                                         class="flex items-center gap-2 px-4 py-[6px] rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
@@ -243,11 +242,12 @@
                                             {{ appModule.locale === 'ar' ? 'English' : 'العربية' }}
                                         </span>
                                     </button>
-
                                 </div>
+
                             </div>
 
-                            <BaseButton :label="$t('menu_login')" v-if="!authModule?.isAuthenticated" @click="showDialog"
+                            <BaseButton :label="$t('menu_login')" v-if="!authModule?.isAuthenticated"
+                                @click="handleLogin"
                                 class="bg-[#A0576F] text-white rounded-[100px] w-full py-[16px] justify-center text-[18px] font-normal leading-[100%] tracking-[0] border border-[#A0576F] hover:bg-[#913E5D] transition cursor-pointer" />
                             <BaseButton :label="$t('menu_logout')" v-else @click="logout"
                                 class="bg-[#C44E4E] text-white rounded-[100px] w-full py-[16px] justify-center text-[18px] font-normal leading-[100%] tracking-[0] border border-[#A0576F] hover:bg-[#913E5D] transition cursor-pointer" />
@@ -260,7 +260,8 @@
                                 <div class="flex items-center gap-1 text-sm cursor-pointer">
                                     <img src="/public/assets/img/sa-flag.svg" alt="flag"
                                         class="w-[29px] h-[20px] rounded-sm" />
-                                    <span class="langClass">{{ appModule.locale === 'ar' ? 'English' : 'العربية' }}</span>
+                                    <span class="langClass">{{ appModule.locale === 'ar' ? 'English' : 'العربية'
+                                        }}</span>
                                 </div>
 
 
@@ -310,50 +311,25 @@ import { useApp } from '~/stores/app'
 import { useCart } from '~/stores/cart'
 import { useHome } from '~/stores/home'
 import { useAuth } from '~/stores/auth'
+import { useProfile } from '~/stores/profile'
 import { useApi } from '~/composables/useApi'
 import Container from '~/components/base/Container.vue'
 import UserMenu from '~/components/base/UserMenu.vue'
 import LegalDialog from '~/components/base/LegalDialog.vue'
 import { COMPONENTS } from '~/data/constants'
-import { useCookie } from '#imports'
-
 
 // Stores
-
 const appModule = useApp()
 const authModule = useAuth()
 const cartModule = useCart()
 const homeModule = useHome()
+const profileStore = useProfile()
 
 // i18n
-const { t } = useI18n()
-const { locale, setLocaleMessage } = useI18n()
-// const localeCookie = useCookie('i18n_redirected')
+const { t, locale, setLocaleMessage } = useI18n()
 
-const toggleLocale = async () => {
-    const newLocale = appModule.locale === 'ar' ? 'en' : 'ar'
-    const messages = await import(`~/locales/${newLocale}.json`)
-    setLocaleMessage(newLocale, messages.default)
-    locale.value = newLocale
-    appModule.setLocale(newLocale)
-
-      isOpen.value = false
-
-}
-
-
-// const toggleLocale = () => {
-//   const newLocale = locale.value === 'ar' ? 'en' : 'ar'
-// //   locale.value = newLocale
-// appModule.setLocale(newLocale)
-
-// //   localeCookie.value = newLocale  // Save selected locale in cookie
-
-// }
-// if (localeCookie.value) {
-//   locale.value = localeCookie.value
-// }
-
+// Slideover state
+const isOpen = ref(false)
 
 // Dialogs
 const { setDialogComponent, setDialogShow } = useApp()
@@ -363,33 +339,68 @@ const pagesUrls = ref<Record<string, string>>({})
 
 // Fetch legal URLs
 useApi('settings/pages-url', {
-    key: 'pages-url',
-    immediate: true
+  key: 'pages-url',
+  immediate: true
 }, {
-    onSuccess(res) {
-        pagesUrls.value = res.data
-    }
+  onSuccess(res) {
+    pagesUrls.value = res.data
+  }
 })
 
-const openLegal = (type: 'terms' | 'privacy') => {
-    legalUrl.value = type === 'terms' ? pagesUrls.value?.terms_and_condition_url : pagesUrls.value?.privacy_policy_url
-    isOpen.value = false
-    setTimeout(() => showLegalModal.value = true, 150)
+// Toggle Language
+const toggleLocale = async () => {
+  const newLocale = appModule.locale === 'ar' ? 'en' : 'ar'
+  const messages = await import(`~/locales/${newLocale}.json`)
+  setLocaleMessage(newLocale, messages.default)
+  locale.value = newLocale
+  appModule.setLocale(newLocale)
+  isOpen.value = false
 }
 
-// Slideover state
-const isOpen = ref(false)
+// Open Legal Modal
+const openLegal = (type: 'terms' | 'privacy') => {
+  legalUrl.value = type === 'terms' ? pagesUrls.value?.terms_and_condition_url : pagesUrls.value?.privacy_policy_url
+  isOpen.value = false
+  setTimeout(() => showLegalModal.value = true, 150)
+}
+
+// Open Invite Friends Modal
+const openInviteModal = () => {
+  isOpen.value = false
+  setDialogComponent(COMPONENTS.INVITE_FRIENDS, {
+    modalMaxWidth: 'max-w-[430px]'
+  })
+  setDialogShow(true)
+}
+
+// Handle Login
+const handleLogin = () => {
+  setDialogComponent(COMPONENTS.AUTH_WIZARD, {
+    modalMaxWidth: 'max-w-[638px]'
+  })
+  authModule.setStepComponent(COMPONENTS.SEND_OTP_STEP)
+  setDialogShow(true)
+  isOpen.value = false
+}
+
+// Handle Logout
+const logout = () => {
+  authModule.logout()
+  profileStore.clearProfile()
+  localStorage.removeItem('pinia-profile')
+  isOpen.value = false
+}
+
+// Notifications redirect
+const navigateToNotifications = () => {
+  navigateTo({ path: '/notifications' })
+}
 
 // Watch route changes to close slideover
 const route = useRoute()
 watch(() => route.fullPath, () => {
-    isOpen.value = false
+  isOpen.value = false
 })
-
-// Notifications redirect
-const navigateToNotifications = () => {
-    navigateTo({ path: '/notifications' })
-}
 </script>
 
 

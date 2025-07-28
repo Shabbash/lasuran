@@ -43,7 +43,7 @@
           <UButton color="white" variant="link" class="p-0 absolute inset-0 cursor-pointer"></UButton>
           <CalendarIcon />
           <template #content>
-            <UCalendar v-model="calendarDate" />
+            <UCalendar v-model="calendarDate" :locale="'ar-EG'" />
           </template>
         </UPopover>
         <input :placeholder="t('date_of_birth_required')" :value="formattedDateOfBirth" readonly

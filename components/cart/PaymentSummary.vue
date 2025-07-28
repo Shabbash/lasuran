@@ -209,3 +209,10 @@ const proceedToCheckout = () => {
   }
 }
 </script>
+
+<style>
+.summary-input::placeholder {
+  font-size: 12px;
+}
+
+</style>

@@ -21,7 +21,7 @@
           />
         </div>
 
-        <div class="flex items-center justify-between absolute inset-0 px-[17px] py-[15px]">
+        <div class="flex items-center justify-start rtl:justify-end rtl:text-left absolute inset-0 px-[17px] py-[15px]">
           <div class="flex flex-col justify-between h-full">
             <div>
               <h2 class="text-white text-[15px] font-bold leading-normal">
