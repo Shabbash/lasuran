@@ -19,6 +19,7 @@
           <!-- Booking Number with Gift Icon if applicable -->
           <h3 class="text-[#EBE4DF] text-[18px] font-bold flex items-center gap-2">
             {{ $t('booking_no_label') }} {{ booking.bookingNumber }}
+            <GiftIcon v-if="booking.gifted_info" class="w-5 h-5 text-[#FFD700]" />
           </h3>
 
           <!-- Booking Status -->
@@ -65,6 +66,25 @@
               {{ $t('gifted_by_label') }} {{ booking.gifted_info.sender_user.full_name }}
             </span>
           </div>
+
+          <!-- Gifted Info (if sender) -->
+          <div v-if="booking.gifted_info && booking.gifted_info.is_sender === true && booking.gifted_info.receiver_user"
+            class="flex items-center text-sm text-[#EBE4DF] gap-[6px]">
+            <GiftIcon />
+            <span class="text-[#C6C6C7] text-[15px]">
+              {{ $t('gifted_to_label') }} {{ booking.gifted_info.receiver_user.full_name }}
+            </span>
+          </div>
+
+          <!-- Gift Status -->
+          <!-- <div v-if="booking.gifted_info && booking.gifted_info.gifted_status"
+            class="flex items-center text-sm gap-[6px]">
+            <div class="w-2 h-2 rounded-full"
+                 :style="`background-color: ${booking.gifted_info.gifted_status.color}`"></div>
+            <span class="text-[#C6C6C7] text-[15px]">
+              {{ $t('gift_status_label') }}: {{ booking.gifted_info.gifted_status.label }}
+            </span>
+          </div> -->
         </div>
 
 
@@ -263,6 +283,13 @@ async function confirmDeleteBooking() {
 }
 
 function openBookingDetails(booking) {
+  // If booking has gifts, open gift list page instead of modal
+  if (booking.gifted_info) {
+    router.push(`/gift-list?booking_id=${booking.id}`)
+    return
+  }
+
+  // Otherwise, open the normal booking details modal
   selectedBooking.value = booking
   setDialogComponent(COMPONENTS.BOOKING_SHOW, {
     booking,

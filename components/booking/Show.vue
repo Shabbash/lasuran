@@ -198,7 +198,7 @@ async function openScheduleDialog(id : any) {
 
       appStore.setDialogComponent(COMPONENTS.SCHEDULE_GIFTED_ORDER, {
         gifted_order_id: props.booking.gifted_info.id,
-        order_product_id: product?.id,
+        order_product_id: product?.order_product_id,  // Use order_product_id (939), not id (23)
         product_master_id: product?.product_master_id
       })
 
