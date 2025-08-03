@@ -100,7 +100,7 @@
         </div>
 
         <!-- City -->
-        <div>
+        <!-- <div>
           <p class="text-start text-[14px] font-medium text-white mb-3">
             {{ $t('profile_city') }}
           </p>
@@ -119,7 +119,7 @@
               <SelectArrowIcon />
             </div>
           </div>
-        </div>
+        </div> -->
 
         <!-- Gender -->
         <div>
@@ -203,13 +203,13 @@ const formData = reactive({
 })
 
 // Static cities list
-const cities = [
-  { label: "Riyadh", value: "Riyadh" },
-  { label: "Jeddah", value: "Jeddah" },
-  { label: "Mecca", value: "Mecca" },
-  { label: "Medina", value: "Medina" },
-  { label: "Dammam", value: "Dammam" },
-]
+// const cities = [
+//   { label: "Riyadh", value: "Riyadh" },
+//   { label: "Jeddah", value: "Jeddah" },
+//   { label: "Mecca", value: "Mecca" },
+//   { label: "Medina", value: "Medina" },
+//   { label: "Dammam", value: "Dammam" },
+// ]
 
 // Watch profile data and sync form
 watch(() => profileStore.profile, (newProfile) => {
