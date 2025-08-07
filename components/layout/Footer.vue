@@ -4,12 +4,12 @@
             <div class="flex flex-col md:flex-row justify-between items-center mt-[55px]">
                 <ul class="flex justify-between items-center">
                     <li>
-                        <a href="#">
+                        <a href="https://play.google.com/store/apps/details?id=com.jigsaw.lasuran">
                             <img src="/public/assets/img/google-play-badge.svg" alt="">
                         </a>
                     </li>
                     <li>
-                        <a href="#">
+                        <a href="https://apps.apple.com/us/app/lasuran/id6738307980">
                             <img src="/public/assets/img/app-store.svg" alt="">
                         </a>
                     </li>

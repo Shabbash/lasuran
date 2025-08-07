@@ -1,6 +1,6 @@
 <template>
   <div>
-    <SendGiftCard />
+    <!-- <SendGiftCard /> -->
     <div class="p-[24px] pb-[40px] rounded-[16px] border border-[#E7E7E7] bg-[#EBE4DF]">
       <h2 class="text-[#A0576F] mb-[16px] text-[20px] font-medium leading-normal">
         {{ t('payment_details_title') }}

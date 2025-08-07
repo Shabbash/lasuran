@@ -17,9 +17,9 @@
         @click="openBookingDetails(booking)">
         <div class="flex justify-between items-start mb-3">
           <!-- Booking Number with Gift Icon if applicable -->
-          <h3 class="text-[#EBE4DF] text-[18px] font-bold flex items-center gap-2">
+          <h3 class="text-[#EBE4DF] text-[18px] font-bold flex items-center gap-2 max-w-[65%]">
             {{ $t('booking_no_label') }} {{ booking.bookingNumber }}
-            <GiftIcon v-if="booking.gifted_info" class="w-5 h-5 text-[#FFD700]" />
+            <!-- <GiftIcon v-if="booking.gifted_info" class="w-5 h-5 text-[#FFD700]" /> -->
           </h3>
 
           <!-- Booking Status -->

@@ -22,8 +22,9 @@
               <div class="absolute inset-0 px-[16px] py-[20px] flex flex-col justify-between">
                 <div>
                   <div class="flex justify-between mb-[12px]">
-                    <p class="text-white text-end text-[16px] font-bold leading-normal">{{ customerClass.class_level ||
-                      $t('wallet_regular') }}</p>
+                    <p class="text-white text-end text-[16px] font-bold leading-normal">
+  {{ customerClassDetails.name__ml || customerClass.class_level || $t('wallet_regular') }}
+                      </p>
                     <InfoFilledIcon />
                   </div>
                   <div class="flex justify-between w-[70%] md:w-[57%]">
@@ -250,6 +251,7 @@ const walletData = ref(null)
 const transferPoints = ref('')
 const transferMobile = ref('')
 const isTransferring = ref(false)
+const customerClassDetails = computed(() => walletData.value?.customer_class_details || {})
 
 const { setDialogComponent, setDialogShow } = useApp()
 

@@ -1,15 +1,17 @@
 <template>
   <div class="border border-[#AD7084] rounded-[12px] p-[20px] bg-[#A0576F] text-[#C6C6C7]">
-    <div class="flex items-center gap-[15px] text-[12px] text-[#BBCACF] mb-[20px]">
+    <div v-if="props.card?.single_use_message" class="flex items-center gap-[15px] text-[12px] text-[#BBCACF] mb-[20px]">
       <InfoOutlinedIcon />
-      <span>{{ props.card?.single_use_message || $t('gift_card_single_use_message') }}</span>
+      <span>
+        {{ props.card.single_use_message }}
+      </span>
     </div>
 
     <Swiper direction="vertical" loop :slides-per-view="1" grab-cursor
       class="max-h-[160px] w-full max-w-[330px] mx-auto">
       <SwiperSlide v-for="(voucher, index) in cards" :key="index" class="rounded-[14px] -mt-[100px] first:mt-0">
         <div class="relative h-full rounded-[14px] cursor-pointer transition hover:scale-[1.01]"
-        style="box-shadow: 1.853px 3.706px 18.622px rgba(0, 0, 0, 0.19), 0 -5.559px 11.396px rgba(0, 0, 0, 0.25)"
+          style="box-shadow: 1.853px 3.706px 18.622px rgba(0, 0, 0, 0.19), 0 -5.559px 11.396px rgba(0, 0, 0, 0.25)"
           @click="$emit('card-click', voucher)">
           <img class="w-full h-full" :src="voucher.card_image || '/assets/img/my-gift-card.svg'"
             :alt="$t('gift_card_image_alt')" />

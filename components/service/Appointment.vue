@@ -81,7 +81,7 @@
         </span>
       </BaseButton> -->
       <BaseButton @click="addToCart" :loading="cartModule.isAddLoading" :disabled="!form.time || !form.date"
-        class="flex items-center gap-[10px] w-full text-white py-3 rounded-full font-[400] text-[16px] justify-center mt-[35px] transition"
+        class="flex items-center gap-[10px] w-full text-white py-3 rounded-full font-[400] text-[16px] justify-center mt-[35px] transition disabled:bg-[#A0576F] hover:bg-[#913E5D]"
         :class="(!form.time || !form.date) ? 'bg-[#a0576f69] cursor-not-allowed' : 'bg-[#A0576F] hover:bg-[#913E5D]'">
         <PriceIcon />
         <span>

@@ -26,7 +26,8 @@
           <SwiperSlide v-for="(group, index) in giftCards" :key="group.id">
             <div class="gift-card p-[20px] border rounded-[12px] text-[13px] font-[350] cursor-pointer"
               :class="{ active: activeCardIndex === index }" @click="activeCardIndex = index">
-              <p class="text-[17px] font-medium mb-[20px]">{{ t('gift_card_label') }}: {{ group.total }} {{ group.currency }}</p>
+              <p class="text-[17px] font-medium mb-[20px]">{{ t('gift_card_label') }}: {{ group.total }} {{
+                group.currency }}</p>
               <div class="flex justify-between mb-[11px] pb-[11px] border-b">
                 <span>{{ t('gift_card_number_label') }}</span>
                 <span>{{ group.items?.length ?? 1 }}</span>
@@ -35,10 +36,12 @@
                 <span>{{ t('gift_card_purchase_no') }}</span>
                 <span>{{ group.order_number }}</span>
               </div>
-              <div class="flex justify-between">
+              <div v-if="group.items?.[0]?.expiry_date" class="flex justify-between">
                 <span>{{ t('gift_card_expiry_date') }}</span>
-                <span>{{ group.expiry_date || '—' }}</span>
+                <span>{{ group.items[0].expiry_date }}</span>
               </div>
+
+
             </div>
           </SwiperSlide>
         </Swiper>
