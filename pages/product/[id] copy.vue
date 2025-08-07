@@ -1,4 +1,6 @@
 <template>
+
+  
   <h1>Product Details</h1>
 
   <div v-if="loading">Loading...</div>
