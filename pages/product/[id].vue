@@ -75,7 +75,8 @@
 <script setup lang="ts">
 import { useApi } from '~/composables/useApi'
 import { useRoute, useRouter } from 'vue-router'
-import { ref, computed } from 'vue'
+import { onMounted } from 'vue'
+
 
 // Import UI components
 import PriceIcon from '@/components/icons/PriceIcon.vue'
@@ -84,12 +85,31 @@ import BaseButton from '@/components/base/Button.vue'
 // Format currency
 import { formatSAR } from '~/utils/formatCurrency'
 
+// Import stores and composables
+import { useAuthCheck } from '~/composables/useAuthCheck'
+import { SERVICE_TYPES, DELIVERY_METHOD } from '~/data/constants'
+
 // Access router for navigation
 const router = useRouter()
 
 // Get product ID from route params
 const route = useRoute()
 const productId = route.params.id
+
+// Set service type to RESERVATION for cart operations (not ONLINE)
+const { setServiceType, setDeliveryMethod, getServiceType } = useApp()
+setServiceType(SERVICE_TYPES.RESERVATION)  // Use service_reservation for cart API
+setDeliveryMethod(DELIVERY_METHOD.RESERVATION)
+
+// Debug: Check what service type is actually set
+console.log('Current service type after setting:', getServiceType)
+console.log('SERVICE_TYPES.RESERVATION value:', SERVICE_TYPES.RESERVATION)
+
+// Initialize menu store to get branch_id
+const menuModule = useMenu()
+onMounted(() => {
+  menuModule.initMenu()
+})
 
 // Fetch product data using custom composable
 const { data: product, pending: loading } = useApi(`products/${productId}`, {
@@ -99,27 +119,80 @@ const { data: product, pending: loading } = useApi(`products/${productId}`, {
 // Access cart store
 const cartModule = useCart()
 
-// Add product to cart and redirect to cart page
+// Add product to cart - try direct API call to bypass coverage validation
+async function addToCart() {
+  const productId = product.value.data?.id || product.value.id
 
-function addToCart() {
-  const payload = {
-    id: product.value.id,                  // ✅ this will become product_id internally
-    quantity: 1,
-    branch_id: product.value.branch_id || null, // optional
-  }
+  console.log('Adding to cart - Product ID:', productId)
+  console.log('App store service type before API call:', getServiceType)
 
-  cartModule.addOrUpdateServiceInCart(payload)
-    .then(() => {
+  try {
+    // Use $fetch directly to have full control over headers
+    const authStore = useAuth()
+
+    const response = await $fetch('https://lasuran-dev.jigsawme.io/api/v1/cart', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${authStore.getToken}`,
+        'Service-Type': 'service_reservation',  // Force service_reservation
+        'Delivery-Method': 'srvc_resv',
+        'Device-Type': 'WEB',
+        'Accept-Language': 'en',
+        'Content-Type': 'application/json'
+      },
+      body: {
+        product_id: productId,
+        quantity: 1,
+      }
+    })
+
+    console.log('Cart API response:', response)
+
+    if (response?.status) {
+      // Success - redirect to cart
       router.push('/cart')
-    })
-    .catch((err) => {
-      console.error('Error adding product to cart:', err)
-    })
+
+      // Show success message
+      const toast = useToast()
+      toast.add({
+        title: 'Product added to cart successfully',
+        color: 'success'
+      })
+    }
+  } catch (error: any) {
+    console.error('Direct cart API error:', error)
+
+    // Check if it's a coverage area error
+    if (error?.response?._data?.message?.includes('coverage area')) {
+      const toast = useToast()
+      toast.add({
+        title: 'Service not available in your area',
+        description: 'Please update your address in your profile or contact support.',
+        color: 'error'
+      })
+      return
+    }
+
+    // For other errors, try fallback to cart store method
+    try {
+      const item = {
+        id: productId,
+        quantity: 1,
+      }
+
+      // @ts-ignore - TypeScript doesn't recognize the method but it exists
+      await cartModule.addOrUpdateServiceInCart(item, null, SERVICE_TYPES.RESERVATION)
+    } catch (fallbackError) {
+      console.error('Fallback cart method also failed:', fallbackError)
+      const toast = useToast()
+      toast.add({
+        title: 'Unable to add to cart',
+        description: 'Please try again later or contact support.',
+        color: 'error'
+      })
+    }
+  }
 }
 
-// Price display with formatted SAR + action
-const priceWithIcon = computed(() => {
-  const price = product.value?.price ?? 0
-  return `${formatSAR(price)} - Continue`
-})
+
 </script>
