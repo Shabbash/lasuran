@@ -3,7 +3,7 @@
 
 
     <!--     calendar start -->
-    <div class="relative z-[1] pt-[42px] px-[80px] pb-[20px]" v-if="!menuModule.service?.loading">
+    <div class="relative z-[1] pt-[42px] px-[80px] pb-[20px]" v-if="!menuModule.getService?.loading">
       <button @click="onBack"
         class="w-[42px] h-[42px] rounded-full bg-[#A0576F] text-white flex items-center justify-center hover:bg-[#913E5D] transition cursor-pointer fixed top-[24px] start-[28px]">
         <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28" fill="none">
@@ -13,8 +13,7 @@
         </svg>
       </button>
 
-      <h2 class="text-center text-[23px] font-bold leading-normal text-[#A0576F] mb-[40px]">{{ t('book_services') }}
-      </h2>
+      <h2 class="text-center text-[23px] font-bold leading-normal text-[#A0576F] mb-[40px]">{{ t('book_services') }}</h2>
 
       <!-- <label class="flex items-center gap-[12px] text-[16px] font-normal leading-normal text-[#6B8B9B]">
                   <input type="radio" class="hidden" name="reservation" value="someone-else" v-model="reserveOption" />
@@ -36,7 +35,7 @@
 
       <div class="mb-[12px]">
         <h3 class="text-[17px] font-normal leading-normal text-[#A0576F] mb-[12px]">{{ t('select_date') }}</h3>
-        <UCalendar initial-focus v-model="selectedDate" :is-date-unavailable="isDateUnavailable" :locale="'ar-EG'" />
+        <UCalendar initial-focus v-model="selectedDate" :is-date-unavailable="isDateUnavailable" />
       </div>
 
       <div class="">
@@ -68,7 +67,7 @@
       </BaseButton> -->
 
 
-      <!-- <BaseButton @click="addToCart" :loading="cartModule.isAddLoading" :disabled="selectedExtension === ''"
+      <BaseButton @click="addToCart" :loading="cartModule.isAddLoading" :disabled="selectedExtension === ''"
         class="flex items-center gap-[10px] w-full text-white py-3 rounded-full font-[400] text-[16px] justify-center mt-[35px] transition disabled:bg-[#A0576F] hover:bg-[#913E5D]"
         :class="selectedExtension === '' ? 'bg-[#a0576f69]' : 'bg-[#A0576F]'">
         <PriceIcon />
@@ -78,16 +77,6 @@
             ? t('price_upon_selection')
             : (selectedService.price ?? computedService?.price) + ' SAR' }} -
           {{ isEditing ? t('update') : t('continue') }}
-        </span>
-      </BaseButton> -->
-      <BaseButton @click="addToCart" :loading="cartModule.isAddLoading" :disabled="!form.time || !form.date"
-        class="flex items-center gap-[10px] w-full text-white py-3 rounded-full font-[400] text-[16px] justify-center mt-[35px] transition disabled:bg-[#A0576F] hover:bg-[#913E5D]"
-        :class="(!form.time || !form.date) ? 'bg-[#a0576f69] cursor-not-allowed' : 'bg-[#A0576F] hover:bg-[#913E5D]'">
-        <PriceIcon />
-        <span>
-          <span class="sar-icon">&#xe900;</span> {{ (selectedService as any)?.price ?? (computedService as any)?.price ?? 0 }}
-          -
-          {{ t('continue') }}
         </span>
       </BaseButton>
 
@@ -117,12 +106,9 @@ import { CalendarDate, type DateValue } from "@internationalized/date";
 import PriceIcon from '@/components/icons/PriceIcon.vue'
 
 import { useMenu } from "~/stores/menu";
-import { useCart } from "~/stores/cart";
 import SelectableSlider from "~/components/base/SelectableSlider.vue";
 import { useI18n } from 'vue-i18n'
-import { onMounted } from 'vue'
 const { t } = useI18n()
-
 
 // Define service type
 interface Service {
@@ -142,26 +128,26 @@ interface Service {
   [key: string]: any; // Allow other properties
 }
 const cartModule = useCart();
-const availableDates = computed(() => menuModule.service?.times ?? []);
+const availableDates = computed(() => menuModule.getService?.times ?? []);
 
-const selectedDateObject = computed(() => (menuModule.service?.times ?? []).find((el: any) => el.date == form.value.date))
+const selectedDateObject = computed(() => (menuModule.getService?.times ?? []).find((el: any) => el.date == form.value.date))
 const isDateUnavailable = (date: DateValue) => {
   let currentDate = `${date.year}-${date.month <= 9 ? '0' + date.month : date.month}-${date.day <= 9 ? '0' + date.day : date.day}`;
-  let item = (availableDates.value as any[]).find((el: any) => {
+  let item = availableDates.value.find((el: any) => {
     return el.date == currentDate
   });
   console.log('isDateUnavailable', item, currentDate);
-  return !(item as any)?.slots;
+  return !item?.slots;
 }
 const form = ref({
-  date: null as string | null,
-  time: null as string | null,
+  date: null,
+  time: null,
 })
 const menuModule = useMenu();
 
 const selectedDate = computed({
   get() {
-    let date = form.value.date ?? (availableDates.value as any[])?.[0]?.date
+    let date = form.value.date ?? availableDates.value?.[0]?.date
 
     if (!date) return null
 
@@ -196,22 +182,13 @@ const selectedDate = computed({
 //     // return date ? toStructuredDate(date) :null;
 //   }
 // })
-// Fetch available times when component mounts
-onMounted(() => {
-  const serviceId = (menuModule.service?.data as any)?.id || (menuModule.service?.item as any)?.id;
-  if (serviceId) {
-    menuModule.fetchServiceAvailableTimes(serviceId).then(() => {
-      form.value.date = (availableDates.value as any[])?.[0]?.date;
-    }).catch((error) => {
-      console.error('Error fetching available times:', error);
-    });
-  } else {
-    console.warn('No service ID found for fetching available times');
-  }
+menuModule.fetchServiceAvailableTimes().then((availableTimes) => {
+  form.value.date = availableDates.value?.[0]?.date;
+
 });
 
 const getCurrentTime = function () {
-  return ((selectedDateObject.value as any)?.slots ?? []).find((el: any) => el.from == form.value.time);
+  return (selectedDateObject.value?.slots ?? []).find((el: any) => el.from == form.value.time);
 }
 
 const { setDialogComponent }: any = useApp();
@@ -223,10 +200,27 @@ const submitAddToGuest = function () {
 
 const selectedService = ref<Service>({} as Service);
 selectedService.value = menuModule.service.data as Service;
-const computedService = computed(() => menuModule.service?.data ?? menuModule.service?.item);
+const computedService = computed(() => menuModule.getService?.data ?? menuModule.getService?.item);
 const reserveOption = ref('');
 
 // --------------calender start ------//
+const professionals = [
+  { label: 'John Doe', value: 'john' },
+  { label: 'Jane Smith', value: 'jane' }
+]
+
+const selectedExtension = ref(null)
+const selectedProfessional = ref(null)
+const value = ref(new CalendarDate(2022, 2, 3))
+
+
+const times = [
+  { label: '09:30 PM', value: '21:30' },
+  { label: '10:00 PM', value: '22:00' },
+  { label: '10:30 PM', value: '22:30' }
+]
+
+const selectedTime = ref('21:30')
 
 const toast = useToast();
 const addToCart = function () {
@@ -239,16 +233,15 @@ const addToCart = function () {
       start_at: time?.from_date_time,
       end_at: time?.to_date_time,
     }
-    console.log('selectedDateObject.value.slots ', (selectedDateObject.value as any)?.slots, body)
-    cartModule.updateServiceAvailableSlot(body).then((availableSlots: any) => {
+    console.log('selectedDateObject.value.slots ', selectedDateObject.value.slots, body)
+    cartModule.updateServiceAvailableSlot(body).then((availableSlots) => {
       setDialogComponent(COMPONENTS.SERVICE_SUCCESS, {
         modalMaxWidth: '[430px]'
       });
-      cartModule.fetchCart({ promo_code: null, gift_card: null }, { disableLoading: false });
-    }).catch((error: any) => {
-      console.error('Error updating service slot:', error);
-      toast.add({ title: "Something went wrong!", color: 'error' });
-    });
+      cartModule.fetchCart();
+    })
+    // setDialogComponent(COMPONENTS.SERVICE_SUCCESS);
+
   }
 }
 
