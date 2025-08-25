@@ -1,7 +1,7 @@
 <template>
   <div v-if="!homeStore?.isLoading">
     <div class="lg:w-[50%] mb-[20px]">
-    <GiftAlert v-if="showGiftAlert" />
+    <GiftAlert />
 
     </div>
     <div class="flex flex-row-reverse flex-wrap w-full gap-[24px]">

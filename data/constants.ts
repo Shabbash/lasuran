@@ -39,6 +39,7 @@ export const COMPONENTS = {
     LOYALTY_INFO: "LoyaltyInfoDialog",
     GIFTED_ORDER_DIALOG: "GiftedOrderDialog",
     SCHEDULE_GIFTED_ORDER: "ScheduleGiftedOrder",
+    GIFTED_ORDER_DETAILS: 'GiftedOrderDetailsDialog', // NEW
 
 
 }

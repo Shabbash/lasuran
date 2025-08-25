@@ -283,9 +283,14 @@ async function confirmDeleteBooking() {
 }
 
 function openBookingDetails(booking) {
-  // If booking has gifts, open gift list page instead of modal
+  // If booking has gifted_info → open GiftedOrderDetailsDialog
   if (booking.gifted_info) {
-    router.push(`/gift-list?booking_id=${booking.id}`)
+    setDialogComponent(COMPONENTS.GIFTED_ORDER_DETAILS, {
+       booking,
+      gifted_order_id: booking.gifted_info.id ?? undefined,
+      order_id: booking.id
+    })
+    setDialogShow(true, { modalMaxWidth: '900px' })
     return
   }
 

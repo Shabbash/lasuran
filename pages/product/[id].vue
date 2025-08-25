@@ -2,14 +2,14 @@
   <div v-if="!loading"
     class="bg-decore-modal mx-auto rounded-[30px] overflow-hidden shadow-lg bg-[#EBE4DF] text-[#5F2C3E]">
     <!-- Product Layout: Two Columns -->
-    <div class="flex min-h-[480px]">
+    <div class="flex flex-col lg:flex-row min-h-[480px]">
       <!-- Left: Product Image -->
-      <div class="w-[50%]">
+      <div class="lg:w-[50%]">
         <img class="w-full h-full object-cover rounded-[30px]" :src="product.data.image" :alt="product.data.name" />
       </div>
 
       <!-- Right: Product Details -->
-      <div class="w-[50%] flex flex-col justify-between mt-[40px] mx-[40px] relative">
+      <div class="lg:w-[50%] flex flex-col justify-between mt-[40px] mx-[40px] relative">
         <!-- Product Info -->
         <div>
           <!-- Title -->
@@ -45,7 +45,7 @@
 
         <!-- Action Button -->
         <BaseButton @click="addToCart" :loading="cartModule.isAddLoading" :disabled="cartModule.isAddLoading" :class="[
-          'flex items-center gap-[10px] w-full text-white py-3 rounded-full font-[400] text-[16px] justify-center transition cursor-pointer',
+          'flex items-center gap-[10px] w-full text-white py-3 rounded-full font-[400] text-[16px] justify-center transition cursor-pointer mt-[20px] lg:mt-0 ',
           cartModule.isAddLoading ? 'bg-[#a0576f69]' : 'bg-[#A0576F] hover:bg-[#913E5D]',
           !product.data.description ? 'mb-[30px]' : ''
         ]">
