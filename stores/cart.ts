@@ -341,10 +341,10 @@ export const useCart = defineStore("cart", {
                     }
                 });
         },
-        updateServiceAvailableSlot(payload: any, url = null ) {
+        updateServiceAvailableSlot(payload: any, url = null) {
             this.$state.isAddLoading = true;
             const menu = useMenu();
-            let endpoint =  url ?? `cart-products/${menu?.service?.data?.cart_product_id ||  this.$state.products?.[0]?.cart_product_id}/update-time-slot`
+            let endpoint = url ?? `cart-products/${menu?.service?.data?.cart_product_id || this.$state.products?.[0]?.cart_product_id}/update-time-slot`
 
             const appModule = useApp();
 
@@ -411,34 +411,39 @@ export const useCart = defineStore("cart", {
         },
 
 
-        openPaymentPopup(payload: any = {}) {
+        openPaymentPopup(existingWin: Window | null = null) {
             const url = this.$state.payment?.create_token_url?.url;
             if (!url) {
                 console.error('Payment URL not available');
                 return;
             }
 
-            // Reset payment attempts
+            // Reset attempts counter
             this.$state.paymentAttempts = 20;
 
-            // Open payment popup and store it in non-reactive variable
-            paymentWindow = window.open(
-                url,
-                'PaymentPopup',
-                'width=600,height=700,scrollbars=yes,resizable=yes'
-            );
+            // Reuse pre-opened tab if provided, otherwise open a blank tab
+            let win = existingWin && !existingWin.closed
+                ? existingWin
+                : window.open('about:blank', '_blank');
 
-            if (!paymentWindow) {
-                console.error('Failed to open payment window. Please check popup blocker settings.');
+            if (!win) {
+                console.error('Failed to open payment tab. Popup blocker?');
                 return;
             }
 
-            // Start checking payment status every 3 seconds
+            // Navigate the tab to the payment URL
+            win.location.href = url;
+            win.focus();
+
+            // Save reference globally for later (close, polling, etc.)
+            paymentWindow = win;
+
+            // Start polling every 3s for payment status
             paymentInterval = setInterval(() => {
                 this.checkPaymentStatus(paymentWindow);
             }, 3000);
 
-            console.log('Payment window opened successfully, status checking started');
+            console.log('Payment tab opened, status polling started');
         },
 
         async checkPaymentStatus(paymentWin: Window | null) {

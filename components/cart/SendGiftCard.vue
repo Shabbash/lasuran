@@ -34,11 +34,21 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, computed } from 'vue'
+/* =========================
+ * Gift switch logic (strict order):
+ * 1) When turned ON: set is_gifted_order = 1 → refresh cart → then open the dialog.
+ * 2) When turned OFF: reset gifted params → refresh cart (no dialog).
+ * 3) Dialog emits:
+ *    - 'giftConfirmed'  → ensure confirmed, optionally refresh cart again.
+ *    - 'giftNotConfirmed' → if not confirmed, revert the switch.
+ * All comments in English as requested.
+ * ========================= */
+
+import { ref, watch, computed, onMounted, onBeforeUnmount } from 'vue'
+import { useI18n } from 'vue-i18n'
 import { useApp } from '~/stores/app'
 import { useCart } from '~/stores/cart'
 import { COMPONENTS } from '~/data/constants'
-import { useI18n } from 'vue-i18n'
 
 import EditIcon from '@/components/icons/EditIcon.vue'
 import DeleteIcon from '@/components/icons/DeleteIcon.vue'
@@ -48,52 +58,94 @@ const { t } = useI18n()
 const appStore = useApp()
 const cartStore = useCart()
 
+// Local UI state
 const isGifted = ref(cartStore.params?.is_gifted_order === 1)
 const confirmed = ref(false)
 
+// Derived data from cart store
 const giftedOrderData = computed(() => cartStore.params?.gifted_order_data ?? null)
 
-const openGiftDialog = () => {
+/** Open the Gift dialog */
+function openGiftDialog() {
   appStore.setDialogComponent(COMPONENTS.GIFTED_ORDER_DIALOG, {
     modalMaxWidth: 'max-w-[430px]'
   })
   appStore.setDialogShow(true)
 }
 
-
-const clearGiftData = () => {
-  isGifted.value = false
+/** Quiet cart refresh (no spinner) while preserving query params */
+function fetchCartQuiet(): Promise<any> {
+  return cartStore.fetchCart(
+    {
+      promo_code: cartStore.params?.promo_code ?? null,
+      gift_card: cartStore.params?.gift_card ?? null
+    } as any,
+    { disableLoading: true }
+  )
 }
 
-// ✅ Watch switch toggle
-watch(isGifted, (val) => {
-  if (val && !cartStore.params?.gifted_order_data) {
+/** Clear all gifted fields and sync with store */
+function clearGiftParams() {
+  cartStore.params.is_gifted_order = 0
+  cartStore.params.gifted_order_data = null as any
+  cartStore.params.gift_message = null as any
+}
+
+/** Toggle watcher — enforce “refresh cart first, then dialog” when ON */
+watch(isGifted, async (val) => {
+  if (val) {
+    // 1) Mark as gifted in store first
+    cartStore.params.is_gifted_order = 1
+
+    // 2) Refresh cart before opening dialog (ensures summary reflects gift state)
+    await fetchCartQuiet()
+
+    // 3) Open dialog AFTER cart refresh (no popup/dialog before this)
     confirmed.value = false
     openGiftDialog()
-  }
-
-  if (!val) {
-    cartStore.params.is_gifted_order = 0
-    cartStore.params.gifted_order_data = null
-    cartStore.params.gift_message = null
+  } else {
+    // Turned OFF → reset gifted params and refresh immediately
+    clearGiftParams()
+    fetchCartQuiet()
   }
 })
 
-// ✅ Sync isGifted when cart store changes
-watch(() => cartStore.params?.is_gifted_order, (val) => {
-  isGifted.value = val === 1
-})
+/** Keep local switch in sync if store changes elsewhere */
+watch(
+  () => cartStore.params?.is_gifted_order,
+  (val) => {
+    isGifted.value = val === 1
+  }
+)
 
-// ✅ Listen for gift confirm/cancel events
-if (process.client) {
-  window.addEventListener('giftConfirmed', () => {
-    confirmed.value = true
-  })
-
-  window.addEventListener('giftNotConfirmed', () => {
-    if (!confirmed.value) {
-      isGifted.value = false
-    }
-  })
+/** Global events from the dialog */
+function onGiftConfirmed() {
+  // Dialog has validated and set gifted_order_data inside the store
+  confirmed.value = true
+  // Optional: refresh cart again in case totals/messages depend on recipient fields
+  fetchCartQuiet()
 }
+
+function onGiftNotConfirmed() {
+  // If user closed/canceled without confirming, revert the switch
+  if (!confirmed.value) {
+    isGifted.value = false // Will trigger watcher to clear & refresh
+  }
+}
+
+onMounted(() => {
+  if (process.client) {
+    window.addEventListener('giftConfirmed', onGiftConfirmed)
+    window.addEventListener('giftNotConfirmed', onGiftNotConfirmed)
+  }
+})
+
+onBeforeUnmount(() => {
+  if (process.client) {
+    window.removeEventListener('giftConfirmed', onGiftConfirmed)
+    window.removeEventListener('giftNotConfirmed', onGiftNotConfirmed)
+  }
+})
+
+/** Expose to template (icons are imported above and used in template) */
 </script>

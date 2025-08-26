@@ -181,7 +181,7 @@ onMounted(() => {
   }
 })
 
-// Checkout logic
+// ✅ Checkout logic
 const proceedToCheckout = () => {
   if (isProcessing.value) return
   isProcessing.value = true
@@ -197,17 +197,32 @@ const proceedToCheckout = () => {
       isProcessing.value = false
     }, 10000)
 
-    cartModule.createOrder({}, () => {
-      clearTimeout(timeoutId)
-      appModule.setDialogComponent(COMPONENTS.PAYMENT_LOADING)
-      appModule.setDialogShow(true, { dismissible: false, close: false })
-      isProcessing.value = false
-    }, () => {
-      clearTimeout(timeoutId)
-      isProcessing.value = false
-    })
+    cartModule.createOrder(
+      {},
+      (response) => {
+        clearTimeout(timeoutId)
+        isProcessing.value = false
+
+        // Normalize response
+        const r = response?.data ?? response ?? {}
+        const paymentUrl = r?.payment?.create_token_url?.url
+
+        if (paymentUrl) {
+          // ✅ Open payment in new tab (safe from popup blockers)
+          window.open(paymentUrl, "_blank")
+        } else {
+          toast.add({ title: t("error_title"), description: t("missing_payment_url") })
+        }
+      },
+      () => {
+        clearTimeout(timeoutId)
+        isProcessing.value = false
+        toast.add({ title: t("error_title"), description: t("checkout_failed") })
+      }
+    )
   }
 }
+
 </script>
 
 <style>
