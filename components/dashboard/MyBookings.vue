@@ -282,8 +282,9 @@ async function confirmDeleteBooking() {
   }
 }
 
-function openBookingDetails(booking) {
+async function openBookingDetails(booking) {
   // If booking has gifted_info → open GiftedOrderDetailsDialog
+
   if (booking.gifted_info) {
     setDialogComponent(COMPONENTS.GIFTED_ORDER_DETAILS, {
        booking,
@@ -291,8 +292,19 @@ function openBookingDetails(booking) {
       order_id: booking.id
     })
     setDialogShow(true, { modalMaxWidth: '900px' })
+
+    const { data } = await fetchOrder(booking?.id);
+    if (data.value?.data ) booking = data.value?.data;
+
+    setDialogComponent(COMPONENTS.GIFTED_ORDER_DETAILS, {
+      booking,
+      gifted_order_id: booking.gifted_info.id ?? undefined,
+      order_id: booking.id
+    })
     return
   }
+
+
 
   // Otherwise, open the normal booking details modal
   selectedBooking.value = booking
@@ -304,6 +316,24 @@ function openBookingDetails(booking) {
     onCancel: () => openCancelBookingConfirm()
   })
   setDialogShow(true)
+  const { data } = await fetchOrder(booking?.id);
+  if (data.value?.data ) booking = data.value?.data;
+
+  selectedBooking.value = booking
+  setDialogComponent(COMPONENTS.BOOKING_SHOW, {
+    booking,
+    onRate: () => handleRateService(),
+    onViewRating: () => handleViewRating(),
+    onInvoice: () => handleMakeService(),
+    onCancel: () => openCancelBookingConfirm()
+  })
+
+
+  if (booking.gifted_info) {
+
+  } else {
+
+  }
 }
 
 onMounted(async () => {
@@ -314,4 +344,10 @@ onMounted(async () => {
     bookingsStore.fetchOrders()
   }
 })
+
+const fetchOrder =  function (id) {
+  return  useApi(`orders/${id}`, {
+
+  });
+}
 </script>

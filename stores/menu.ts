@@ -180,7 +180,7 @@ export const useMenu = defineStore("menu", {
         },
 
 
-        fetchService(service: any = null) {
+        fetchService(service: any = null, onResponse = null) {
             if (!service) service = this.$state.service.item;
             const params: {} = this.getMenuParams;
             this.$state.service.loading = true;
@@ -204,9 +204,11 @@ export const useMenu = defineStore("menu", {
 
                         this.$state.service.data = cleanedData;
                         this.$state.service.loading = false;
+                        if (onResponse) onResponse();
                     },
                     onError: (err: any) => {
                         this.$state.service.loading = false;
+                        if (onResponse) onResponse();
                     }
                 });
         },
@@ -226,7 +228,8 @@ export const useMenu = defineStore("menu", {
             };
         },
 
-        setService(service: any) {
+        setService(service: any, onResponse:any = null ) {
+
             // Store the editing state and cart_product_id
             const isEditing = service._isEditing === true;
             const cartProductId = service.cart_product_id;
@@ -244,17 +247,19 @@ export const useMenu = defineStore("menu", {
             if (isEditing && cartProductId) {
                 this.$state.service.data = service;
                 this.$state.service.loading = false;
-
                 // Fetch the service details in the background
-                this.fetchServiceForEdit(service);
+                this.fetchServiceForEdit(service,onResponse);
+
             } else {
+                console.log("setService isEditing" , onResponse)
+
                 // For regular operations, fetch the service as usual
-                this.fetchService();
+                this.fetchService(service,onResponse);
             }
         },
 
         // Fetch service details for edit operations without overwriting the editing state
-        fetchServiceForEdit(service: any) {
+        fetchServiceForEdit(service: any, onResponse:any = null ) {
             const params: {} = this.getMenuParams;
 
             return useApi(`products/${service.id}`, {},
@@ -269,8 +274,10 @@ export const useMenu = defineStore("menu", {
                             selectedTime: service.selectedTime || '',
                             date: service.date || ''
                         };
+                        if (onResponse instanceof Function) onResponse();
                     },
                     onError: (err: any) => {
+                        if (onResponse instanceof Function) onResponse();
                         console.error('Error fetching service for edit:', err);
                     }
                 });

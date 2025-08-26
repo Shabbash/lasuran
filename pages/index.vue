@@ -1,8 +1,7 @@
 <template>
   <div v-if="!homeStore?.isLoading">
-    <div class="lg:w-[50%] mb-[20px]">
-    <GiftAlert />
-
+    <div class="lg:w-[50%] mb-[20px]" v-if="!isGiftedOrdersLoading || giftedOrders?.length > 0" >
+        <GiftAlert  v-for="giftedOrder in giftedOrders" :item="giftedOrder"  />
     </div>
     <div class="flex flex-row-reverse flex-wrap w-full gap-[24px]">
 
@@ -148,6 +147,14 @@ const router = useRouter()
 const open = ref(false)
 defineShortcuts({
   o: () => open.value = !open.value
+})
+
+const { data: giftedOrders, pending: isGiftedOrdersLoading ,refresh } = useApi("gifted-orders", {
+  transform:(data: any) => data?.data?.orders ?? []
+});
+
+watch(() => appModule.dialog.show, function (newValue) {
+  if (!newValue) refresh();
 })
 
 // ====== Computed: Home Page Sections ======

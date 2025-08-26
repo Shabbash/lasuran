@@ -40,6 +40,7 @@ export const COMPONENTS = {
     GIFTED_ORDER_DIALOG: "GiftedOrderDialog",
     SCHEDULE_GIFTED_ORDER: "ScheduleGiftedOrder",
     GIFTED_ORDER_DETAILS: 'GiftedOrderDetailsDialog', // NEW
+    SERVICE_APPOINTMENT_SKELETON: 'ServiceAppointmentSkeleton', // NEW
 
 
 }

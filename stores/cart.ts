@@ -341,18 +341,21 @@ export const useCart = defineStore("cart", {
                     }
                 });
         },
-        updateServiceAvailableSlot(payload: any) {
+        updateServiceAvailableSlot(payload: any, url = null ) {
             this.$state.isAddLoading = true;
             const menu = useMenu();
+            let endpoint =  url ?? `cart-products/${menu?.service?.data?.cart_product_id ||  this.$state.products?.[0]?.cart_product_id}/update-time-slot`
 
-            return useApi(`cart-products/${menu?.service?.data?.cart_product_id ?? this.$state.products?.[0]?.cart_product_id}/update-time-slot`, {
+            const appModule = useApp();
+
+            return useApi(endpoint, {
                 method: "POST",
                 body: payload
             },
                 {
                     onSuccess: (data: any) => {
                         this.$state.isAddLoading = false;
-
+                        appModule.dialog.data.booking = data?.data;
                     },
                     onError: (err: any) => {
                         this.$state.isAddLoading = false;

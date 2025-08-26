@@ -105,7 +105,7 @@ definePageMeta({ middleware: 'auth' })
 // 📆 Store Instances
 const cartModule = useCart()
 const menuModule = useMenu()
-const { setDialogComponent, setDialogShow } = useApp()
+const { setDialogComponent, setDialogShow  ,setDialogOptions } = useApp()
 
 // 📌 Reactive State
 const expandedItems = ref<{ [key: string]: boolean }>({})
@@ -164,6 +164,7 @@ const editCartItem = (item: any) => {
   }
   menuModule.setService(serviceData)
   setDialogComponent(COMPONENTS.SERVICE_APPOINTMENT)
+  setDialogOptions({})
   setDialogShow(true)
 }
 
