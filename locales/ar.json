@@ -309,7 +309,7 @@
   "gift_confirm_button": "تأكيد وحفظ",
   "optional": "اختياري",
   "gift_to_label": "إهداء إلى",
-  "schedule_gift_button": "تحديد الموعد",
+  "gift_confirm_order": "تأكيد الطلب",
   "select_time_warning": "يرجى اختيار الوقت والتاريخ أولاً",
   "something_went_wrong": "حدث خطأ ما",
   "gifted_order_label": "هدية",
@@ -340,5 +340,6 @@
   "titles.tickets": "تذاكري",
   "titles.branches": "الفروع",
   "titles.customerservice": "خدمة العملاء",
+  "select_data_time": "تحديد الموعد",
 
 }

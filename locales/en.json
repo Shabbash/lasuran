@@ -309,7 +309,7 @@
   "gift_confirm_button": "Confirm and Save",
   "optional": "Optional",
   "gift_to_label": "Gift to",
-  "button_schedule_gift": "Confirm Order",
+  "gift_confirm_order": "Confirm Order",
   "select_time_warning": "Please select date and time first",
   "something_went_wrong": "Something went wrong",
   "gifted_order_label": "Gift",
@@ -361,4 +361,7 @@
   "titles.tickets": "My Tickets",
   "titles.branches": "Branches",
   "titles.customerservice": "Customer Service",
+  "select_data_time": "Schedule",
+
+  
 }

@@ -1,7 +1,7 @@
 <!-- components/booking/GiftedOrderDetailsDialog.vue -->
 <template>
   <div v-if="bk" class="bg-decore-modal mx-auto rounded-[30px] overflow-hidden shadow-lg bg-[#EBE4DF] text-[#5F2C3E]">
-    <div class="pt-[34px] px-[50px] pb-[30px] relative">
+    <div class="pt-[34px] px-[20px] md:px-[50px] pb-[30px] relative">
       <!-- Header -->
       <h2 class="text-[#A0576F] text-[18px] font-bold leading-normal text-center mb-[20px]">
         {{ t('booking_no_label') }} {{ bk.bookingNumber || bk._originalData?.order_number }}
@@ -78,11 +78,11 @@
         <div class="space-y-[12px] text-[#5B605C] text-[12px] font-[350]">
           <div class="flex justify-between border-b border-b-[#B2B0B0] pb-[12px]">
             <p>{{ t('payment_subtotal_label', { count: bk.guests ?? 1 }) }}</p>
-            <p><span class="sar-icon">&#xe900;</span> {{ bk?.sub_total ??  subtotal }}</p>
+            <p><span class="sar-icon">&#xe900;</span> {{ bk?.sub_total ?? subtotal }}</p>
           </div>
           <div class="flex justify-between border-b border-b-[#B2B0B0] pb-[12px]">
             <p>{{ t('payment_vat_label') }}</p>
-            <p><span class="sar-icon">&#xe900;</span> {{  bk?.tax_amount ??  vat }}</p>
+            <p><span class="sar-icon">&#xe900;</span> {{ bk?.tax_amount ?? vat }}</p>
           </div>
           <div class="flex justify-between border-b border-b-[#B2B0B0] pb-[12px]">
             <p>{{ t('payment_service_cost_label') }}</p>
@@ -100,24 +100,31 @@
 
         <div class="flex justify-between mt-[28px] text-[#A0576F] text-[21px] font-bold">
           <p>{{ t('payment_total_label') }}</p>
-          <p><span class="sar-icon">&#xe900;</span> {{ bk?.total ??  total }}</p>
+          <p><span class="sar-icon">&#xe900;</span> {{ bk?.total ?? total }}</p>
         </div>
       </div>
 
-
-      <div>
+      <div class="flex flex-col gap-[15px]">
         <div v-for="service in bk?.products ?? []">
-          <img :src="service.image"/>
-          <h3> {{ service.name }}</h3>
+          <div class="flex flex-col md:flex-row gap-[5px] mb-[10px] items-center">
+            <div class="flex gap-[15px] items-center flex-4">
+              <div class="flex-1">
+                <img :src="service.image" />
+              </div>
+              <div class="flex-3">
+                <h3 class="font-medium text-[15px] leading-[100%] text-[#5B605C] mb-[15px]"> {{ service.name }}</h3>
+                <h4 class="font-medium text-[13px] leading-[100%] text-[#5B605C]"> {{ service.start_at }} {{
+                  service.end_at }}</h4>
+              </div>
+            </div>
 
-          <h3> {{ service.start_at}} {{ service.end_at }}</h3>
-          <BaseButton @click="onSelectService(service)" v-if="!service.start_at || !service.end_at"
-                      class="w-full h-[50px] bg-transparent hover:bg-transparent text-[#6B8B9B] border border-[#6B8B9B] rounded-full text-[13px] font-medium">
-            {{ t('select_data_time') }}
-          </BaseButton>
+            <BaseButton @click="onSelectService(service)"
+              class="mt-[15px] md:mt-0 flex-1 w-full h-[30px] bg-transparent hover:bg-transparent text-[#6B8B9B] border border-[#6B8B9B] rounded-full text-[13px] font-medium">
+              {{ t('select_data_time') }}
+            </BaseButton>
+          </div>
         </div>
       </div>
-
       <!-- Actions -->
       <div class="flex flex-col space-y-3">
         <!-- Rate -->
@@ -143,10 +150,10 @@
 
         <!-- Schedule Gift (Receiver only and not completed) -->
         <BaseButton v-if="showSchedule" :loading="actionLoading" :disabled="actionLoading" :class="[
-          'w-full h-[50px] text-[#EBE4DF] rounded-full text-[13px] font-medium disabled:bg-[#A0576F]',
+          'mt-[30px] w-full h-[50px] text-[#EBE4DF] rounded-full text-[13px] font-medium disabled:bg-[#A0576F]',
           actionLoading ? 'bg-[#a0576f69]' : 'bg-[#A0576F] hover:bg-[#A0576F]'
         ]" @click="confirmBooking">
-          {{ t('button_schedule_gift') }}
+          {{ t('gift_confirm_order') }}
         </BaseButton>
 
 
@@ -268,7 +275,7 @@ const confirmBooking = function () {
       actionLoading.value = false
       setDialogComponent(COMPONENTS.SERVICE_APPOINTMENT);
       let locale = appModule.locale;
-      appModule.locale =  null;
+      appModule.locale = null;
       appModule.locale = locale;
       setDialogShow(false);
 
