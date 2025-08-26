@@ -62,6 +62,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import Container from '~/components/base/Container.vue'
+import { usePageTitle } from '~/composables/usePageTitle'
 
 // Use API instead of static
 const { data: notifications, pending: loading } = useApi('notifications', {

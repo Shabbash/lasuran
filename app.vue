@@ -33,5 +33,10 @@ const htmlAttrs = computed(() => ({
   dir: appModule.locale === 'ar' ? 'rtl' : 'ltr',
 }))
 
-useHead({ htmlAttrs })
+useHead({
+  htmlAttrs,
+  link: [
+    { rel: 'icon', type: 'image/png', href: '/favicon.svg' }
+  ]
+})
 </script>

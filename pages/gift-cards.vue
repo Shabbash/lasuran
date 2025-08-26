@@ -148,6 +148,8 @@ import BaseButton from '@/components/base/Button.vue'
 import PriceIcon from '@/components/icons/PriceIcon.vue'
 
 import GiftCardSkeleton from '~/components/skeletons/GiftCardSkeleton.vue'
+import { usePageTitle } from '~/composables/usePageTitle'
+usePageTitle("titles.gift-cards")
 
 // Reactive state
 const modalOpen = ref(false)

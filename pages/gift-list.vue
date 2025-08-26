@@ -144,6 +144,7 @@ import LocationIcon from '@/components/icons/LocationIcon.vue'
 import { useApi } from '@/composables/useApi'
 import { useApp } from '@/stores/app'
 import { COMPONENTS } from '@/data/constants'
+import { usePageTitle } from '~/composables/usePageTitle'
 
 const { t } = useI18n()
 const route = useRoute()

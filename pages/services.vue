@@ -73,6 +73,8 @@ import { useMenu } from '~/stores/menu'
 import { useApp } from '~/stores/app'
 import { COMPONENTS, SERVICE_TYPES } from '~/data/constants'
 import { onMounted, ref } from 'vue'
+import { usePageTitle } from '~/composables/usePageTitle'
+usePageTitle("titles.services")
 
 // Define service type
 interface Service {

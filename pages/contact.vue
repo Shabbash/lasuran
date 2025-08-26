@@ -102,6 +102,8 @@ import Banner from '@/components/base/Banner.vue'
 import BaseCard from '@/components/base/Card.vue'
 import Dialog from '@/components/base/Dialog.vue'
 import { useContact } from '@/stores/contact'
+import { usePageTitle } from '~/composables/usePageTitle'
+usePageTitle("titles.customerservice")
 
 // Store
 const contactStore = useContact()

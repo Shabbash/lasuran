@@ -60,6 +60,8 @@ import BranchSkeleton from '@/components/skeletons/BranchSkeleton.vue'
 import { useBranches, type Branch } from '@/stores/branches'
 import { useApp } from '@/stores/app'
 import { COMPONENTS } from '@/data/constants'
+import { usePageTitle } from '~/composables/usePageTitle'
+usePageTitle("titles.branches")
 
 const branchesStore = useBranches()
 const { setDialogComponent, setDialogShow } = useApp()

@@ -346,6 +346,17 @@
   "gifted_to_label": "Gifted to",
   "gift_to": "Gift to",
   "gift_status_label": "Gift Status",
-  "button_accept_gift": "Accept Gift"
-
+  "button_accept_gift": "Accept Gift",
+  "titles.home": "lasuran",
+  "titles.services": "Services",
+  "titles.shop": "Shop",
+  "titles.cart": "Cart",
+  "titles.bookings": "My Bookings",
+  "titles.giftcards": "My Gift Cards",
+  "titles.gift-cards": "Gift Cards",
+  "titles.wallet": "Wallet",
+  "titles.profile": "My Profile",
+  "titles.tickets": "My Tickets",
+  "titles.branches": "Branches",
+  "titles.customerservice": "Customer Service",
 }

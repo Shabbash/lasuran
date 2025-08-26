@@ -95,6 +95,8 @@ import PaymentSummarySkeleton from '~/components/cart/PaymentSummarySkeleton.vue
 import { useCart } from '~/stores/cart'
 import { useApp } from '~/stores/app'
 import { useMenu } from '~/stores/menu'
+import { usePageTitle } from '~/composables/usePageTitle'
+usePageTitle("titles.cart")
 
 // 🗷 Constants
 import { COMPONENTS } from '~/data/constants'

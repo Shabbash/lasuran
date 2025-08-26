@@ -133,6 +133,8 @@ import { useMenu } from '~/stores/menu'
 import { useApp } from '~/stores/app'
 import { useApi } from '~/composables/useApi'
 import { COMPONENTS } from '~/data/constants'
+import { usePageTitle } from '~/composables/usePageTitle'
+usePageTitle('titles.home')
 
 const { t } = useI18n()
 

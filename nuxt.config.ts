@@ -1,18 +1,16 @@
-
 import { resolve } from 'path'
 
-
-// https://nuxt.com/docs/api/configuration/nuxt-config
+// Nuxt configuration file
 export default defineNuxtConfig({
   ssr: false,
   compatibilityDate: '2024-11-01',
 
-  // ✅ Register Nuxt modules
+  // ✅ Register modules
   modules: [
     '@pinia/nuxt',
     'pinia-plugin-persistedstate',
     '@nuxt/ui',
-    '@nuxtjs/i18n' // Enable Nuxt i18n module
+    '@nuxtjs/i18n'
   ],
 
   // ✅ Global CSS files
@@ -24,35 +22,33 @@ export default defineNuxtConfig({
   // ✅ Enable Nuxt Devtools
   devtools: { enabled: true },
 
-  // ✅ Tailwind CSS configuration path
+  // ✅ Tailwind CSS config
   tailwindcss: {
     configPath: '~/tailwind.config.js',
   },
 
-  // ✅ Nuxt i18n configuration
- i18n: {
-  legacy: false,
-  globalInjection: true,
-  defaultLocale: 'en',
-  skipSettingLocaleOnNavigate: true,
-  lazy: true,
-  langDir: resolve('./locales'),
-  detectBrowserLanguage: false,
-  vueI18n: './i18n.config.ts',
-  locales: [
-    {
-      code: 'ar',
-      name: 'Arabic',
-      file: 'ar.json',
-      dir: 'rtl'
-    },
-    {
-      code: 'en',
-      name: 'English',
-      file: 'en.json',
-      dir: 'ltr'
+  // ✅ Global title template (brand suffix/prefix)
+  app: {
+    head: {
+      // Example result: "Services - Lazuran" or "الخدمات - Lazuran"
+      titleTemplate: (title?: string) =>
+        title ? `${title} - Lazuran` : 'Lazuran'
     }
-  ]
-}
+  },
 
+  // ✅ Nuxt i18n configuration
+  i18n: {
+    legacy: false,
+    globalInjection: true,
+    defaultLocale: 'en',
+    skipSettingLocaleOnNavigate: true,
+    lazy: true,
+    langDir: resolve('./locales'),
+    detectBrowserLanguage: false,
+    vueI18n: './i18n.config.ts',
+    locales: [
+      { code: 'ar', name: 'Arabic', file: 'ar.json', dir: 'rtl' },
+      { code: 'en', name: 'English', file: 'en.json', dir: 'ltr' }
+    ]
+  }
 })

@@ -79,6 +79,7 @@ import ProductCard from '@/components/shop/ProductCard.vue'
 import { useProducts } from '@/stores/products'
 import { useApp } from '@/stores/app'
 import { SERVICE_TYPES, COMPONENTS } from '@/data/constants'
+import { usePageTitle } from '~/composables/usePageTitle'
 
 const productsStore = useProducts()
 const { setDialogComponent, setDialogShow, setServiceType } = useApp()
