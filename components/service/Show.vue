@@ -173,7 +173,7 @@ const defaultService = computed<Service>(() => selectedService.value?.products?.
 
 const addToCart = function () {
   const { requireAuth } = useAuthCheck();
-  const { setDialogComponent } = useApp();
+  const { setDialogComponent , setDialogOptions } = useApp();
 
   // Check authentication and proceed only if authenticated
   requireAuth(() => {
@@ -223,6 +223,7 @@ const addToCart = function () {
     // Use the same method for both add and update operations
     // The API will detect if it's an update based on the presence of cart_product_id
     cartModule.addOrUpdateServiceInCart(payload).then(() => {
+      setDialogOptions({});
       setDialogComponent(COMPONENTS.SERVICE_APPOINTMENT, {
         modalMaxWidth: 'max-w-[539px]'
       });

@@ -1,4 +1,6 @@
 {
+  "Gift from {Name}": "Gift from {name}",
+  "{Name} has gifted you these services!": "{name} has gifted you these services!",
   "see_all": "See All",
   "categories": "Categories",
   "copyright": "Copyright © Lasuran All Rights Reserved",
@@ -307,7 +309,7 @@
   "gift_confirm_button": "Confirm and Save",
   "optional": "Optional",
   "gift_to_label": "Gift to",
-  "button_schedule_gift": "Schedule Gift",
+  "button_schedule_gift": "Confirm Order",
   "select_time_warning": "Please select date and time first",
   "something_went_wrong": "Something went wrong",
   "gifted_order_label": "Gift",

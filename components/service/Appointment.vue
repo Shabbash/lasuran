@@ -221,6 +221,7 @@ const times = [
 ]
 
 const selectedTime = ref('21:30')
+const appModule = useApp();
 
 const toast = useToast();
 const addToCart = function () {
@@ -234,19 +235,42 @@ const addToCart = function () {
       end_at: time?.to_date_time,
     }
     console.log('selectedDateObject.value.slots ', selectedDateObject.value.slots, body)
-    cartModule.updateServiceAvailableSlot(body).then((availableSlots) => {
-      setDialogComponent(COMPONENTS.SERVICE_SUCCESS, {
-        modalMaxWidth: '[430px]'
-      });
-      cartModule.fetchCart();
+    let url = null;
+    if (appModule.dialog?.data?.booking?.id) {
+      url = `gifted-orders/${appModule.dialog?.data?.booking?.id}/schedule`;
+      body.order_product_id =appModule.dialog?.data?.service?.order_product_id ??  appModule.dialog?.data?.service?.id
+    }
+      cartModule.updateServiceAvailableSlot(body, url).then((availableSlots) => {
+        if (url && appModule.dialog?.data?.booking?.id) {
+          let booking = appModule.dialog?.data?.booking;
+          setDialogComponent(COMPONENTS.GIFTED_ORDER_DETAILS, {
+            booking,
+            gifted_order_id: booking.gifted_info?.id ?? undefined,
+            order_id: booking.id
+          });
+        } else {
+          setDialogComponent(COMPONENTS.SERVICE_SUCCESS, {
+            modalMaxWidth: '[430px]'
+          });
+          setDialogOptions()
+          cartModule.fetchCart();
+        }
     })
     // setDialogComponent(COMPONENTS.SERVICE_SUCCESS);
 
   }
 }
-
 const onBack = function () {
-  setDialogComponent(COMPONENTS.SERVICE_SHOW);
+  if (appModule.dialog?.data?.booking?.id){
+    let booking = appModule.dialog?.data?.booking;
+    setDialogComponent(COMPONENTS.GIFTED_ORDER_DETAILS, {
+      booking,
+      gifted_order_id: booking.gifted_info.id ?? undefined,
+      order_id: booking.id
+    });
+  } else {
+    setDialogComponent(COMPONENTS.SERVICE_SHOW);
+  }
 }
 
 

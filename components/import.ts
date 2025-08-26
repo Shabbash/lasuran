@@ -26,6 +26,7 @@ import LoyaltyInfoDialog from '@/components/wallet/LoyaltyInfoDialog.vue'
 import GiftedOrderDialog from '@/components/cart/GiftedOrderDialog.vue'
 import ScheduleGiftedOrder from '~/components/cart/ScheduleGiftedOrder.vue'
 import GiftedOrderDetailsDialog from '~/components/booking/GiftedOrderDetailsDialog.vue'; 
+import AppointmentSkeleton from '~/components/service/AppointmentSkeleton.vue';
 
 
 
@@ -56,6 +57,7 @@ const components: {} = {
     [COMPONENTS.GIFTED_ORDER_DIALOG]: GiftedOrderDialog,
     [COMPONENTS.SCHEDULE_GIFTED_ORDER]: ScheduleGiftedOrder,
     [COMPONENTS.GIFTED_ORDER_DETAILS]: GiftedOrderDetailsDialog, 
+    [COMPONENTS.SERVICE_APPOINTMENT_SKELETON]: AppointmentSkeleton,
 
 
 };
