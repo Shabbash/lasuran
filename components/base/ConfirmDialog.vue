@@ -13,14 +13,15 @@
     <div class="space-y-[10px]">
       <BaseButton
         :label="t(confirmText)"
-        :loading="loading"
-        :disabled="loading"
+        :loading="loading || submitting"
+        :disabled="loading || submitting"
         :class="confirmButtonClass"
         @click="handleConfirm"
       />
       <BaseButton
         :label="t(cancelText)"
         :class="cancelButtonClass"
+        :disabled="submitting"
         @click="show = false"
       />
     </div>
@@ -28,8 +29,12 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useApp } from '~/stores/app'
+
 const { t } = useI18n()
+const app = useApp()
 
 const show = defineModel<boolean>('show')
 
@@ -38,15 +43,28 @@ const props = defineProps({
   message: String,
   confirmText: { type: String, default: 'confirm' },
   cancelText: { type: String, default: 'cancel' },
-  loading: { type: Boolean, default: false },
+  loading: { type: Boolean, default: false },        // external loading (kept)
   confirmButtonClass: { type: String, default: '' },
   cancelButtonClass: { type: String, default: '' },
   modalMaxWidth: { type: String, default: 'max-w-[356px]' },
-  onConfirm: Function
+  onConfirm: Function                                   // may be async
 })
 
-const handleConfirm = () => {
-  if (props.onConfirm) props.onConfirm()
-  show.value = false
+// Local submitting flag to lock buttons while confirming
+const submitting = ref(false)
+
+const handleConfirm = async () => {
+  try {
+    app.setPageBlocking(true)      // ✅ ابدأ عرض الـ HomeSkeleton
+    if (props.onConfirm) {
+      await props.onConfirm()      // يدعم async
+    }
+    show.value = false             // اغلق الحوار بعد النجاح
+  } catch (e) {
+    console.error(e)               // بيظل الحوار مفتوح لعرض الخطأ/توست
+  } finally {
+    app.setPageBlocking(false)     // ✅ أوقف الحجب مهما صار
+  }
 }
+
 </script>

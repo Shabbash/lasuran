@@ -1,5 +1,5 @@
 
-import {COMPONENTS} from "~/data/constants";
+import { COMPONENTS } from "~/data/constants";
 import Wizard from "~/components/auth/Wizard.vue";
 import IntroStep from "~/components/auth/IntroStep.vue";
 import CompleteProfileStep from "~/components/auth/CompleteProfile.vue";
@@ -25,25 +25,27 @@ import GiftCardDetails from '@/components/giftcards/GiftCardDetails.vue'
 import LoyaltyInfoDialog from '@/components/wallet/LoyaltyInfoDialog.vue'
 import GiftedOrderDialog from '@/components/cart/GiftedOrderDialog.vue'
 import ScheduleGiftedOrder from '~/components/cart/ScheduleGiftedOrder.vue'
-import GiftedOrderDetailsDialog from '~/components/booking/GiftedOrderDetailsDialog.vue'; 
-import AppointmentSkeleton from '~/components/service/AppointmentSkeleton.vue';
+import GiftedOrderDetailsDialog from '~/components/booking/GiftedOrderDetailsDialog.vue'
+import AppointmentSkeleton from '~/components/service/AppointmentSkeleton.vue'
+import AdressesDialog from '~/components/address/AddressesDialog.vue'
+import AddAddressDialog from '~/components/address/AddAddressDialog.vue'
 
 
 
 const components: {} = {
-    [COMPONENTS.AUTH_WIZARD] : Wizard,
-    [COMPONENTS.INTRO_STEP] : IntroStep,
-    [COMPONENTS.SEND_OTP_STEP] : SendOtpStep,
-    [COMPONENTS.VERIFY_OTP_STEP] : VerifyOtpStep,
-    [COMPONENTS.COMPLETE_PROFILE_STEP] : CompleteProfileStep,
-    [COMPONENTS.SERVICE_SHOW] : ServiceShow,
-    [COMPONENTS.SERVICE_GUEST] : ServiceGuest,
-    [COMPONENTS.SERVICE_APPOINTMENT] : ServiceAppointment,
-    [COMPONENTS.SERVICE_SUCCESS] : ServiceSuccess,
-    [COMPONENTS.PAYMENT_SELECTION] : Selection,
-    [COMPONENTS.PAYMENT_CARDS] : Cards,
-    [COMPONENTS.PAYMENT_CREATE_CARD] : CreateCard,
-    [COMPONENTS.PAYMENT_LOADING] : PaymentLoading,
+    [COMPONENTS.AUTH_WIZARD]: Wizard,
+    [COMPONENTS.INTRO_STEP]: IntroStep,
+    [COMPONENTS.SEND_OTP_STEP]: SendOtpStep,
+    [COMPONENTS.VERIFY_OTP_STEP]: VerifyOtpStep,
+    [COMPONENTS.COMPLETE_PROFILE_STEP]: CompleteProfileStep,
+    [COMPONENTS.SERVICE_SHOW]: ServiceShow,
+    [COMPONENTS.SERVICE_GUEST]: ServiceGuest,
+    [COMPONENTS.SERVICE_APPOINTMENT]: ServiceAppointment,
+    [COMPONENTS.SERVICE_SUCCESS]: ServiceSuccess,
+    [COMPONENTS.PAYMENT_SELECTION]: Selection,
+    [COMPONENTS.PAYMENT_CARDS]: Cards,
+    [COMPONENTS.PAYMENT_CREATE_CARD]: CreateCard,
+    [COMPONENTS.PAYMENT_LOADING]: PaymentLoading,
     [COMPONENTS.CONFIRM_DIALOG]: ConfirmDialog,
     [COMPONENTS.MY_GIFT_CARDS_DIALOG]: MyGiftCardsDialog,
     [COMPONENTS.CHECKOUT_PAYMENT_DIALOG]: CheckoutPaymentDialog,
@@ -56,9 +58,10 @@ const components: {} = {
     [COMPONENTS.LOYALTY_INFO]: LoyaltyInfoDialog,
     [COMPONENTS.GIFTED_ORDER_DIALOG]: GiftedOrderDialog,
     [COMPONENTS.SCHEDULE_GIFTED_ORDER]: ScheduleGiftedOrder,
-    [COMPONENTS.GIFTED_ORDER_DETAILS]: GiftedOrderDetailsDialog, 
+    [COMPONENTS.GIFTED_ORDER_DETAILS]: GiftedOrderDetailsDialog,
     [COMPONENTS.SERVICE_APPOINTMENT_SKELETON]: AppointmentSkeleton,
-
+    [COMPONENTS.ADDRESSES_DIALOG]: AdressesDialog,
+    [COMPONENTS.ADD_ADDRESS]: AddAddressDialog,
 
 };
 export default components;

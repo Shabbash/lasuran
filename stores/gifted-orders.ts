@@ -1,6 +1,20 @@
 import { defineStore } from 'pinia'
 import { useApi } from '~/composables/useApi'
 
+// 🔎 Helper: detect cancelled orders
+function isCancelled(o: any) {
+  if (!o) return false
+  const v = (x: any) => (typeof x === 'string' ? x.toLowerCase() : x)
+
+  return (
+    o?.status?.value === 9 ||                 // backend code for cancelled
+    v(o?.status?.label) === 'order canceled' ||
+    v(o?.status_text) === 'order canceled'   ||
+    v(o?.status?.labels?.en) === 'order canceled' ||
+    v(o?.status?.labels?.ar) === 'order canceled'
+  )
+}
+
 export const useGiftedOrders = defineStore('giftedOrders', {
   state: () => ({
     giftedOrderDetails: null as any,
@@ -15,10 +29,9 @@ export const useGiftedOrders = defineStore('giftedOrders', {
       try {
         // 🟡 Fetch all gifted orders
         const response = await useApi(`gifted-orders`, {})
-       const allOrders = Array.isArray(response.data.value?.data?.orders)
-  ? response.data.value.data.orders
-  : []
-
+        const allOrders = Array.isArray(response.data.value?.data?.orders)
+          ? response.data.value.data.orders.filter((o: any) => !isCancelled(o)) // ✅ hide cancelled
+          : []
 
         console.log('All orders from API:', allOrders)
         console.log('Looking for gifted_info.id:', giftedId)
@@ -34,7 +47,7 @@ export const useGiftedOrders = defineStore('giftedOrders', {
           'found.order_id': found.order_id,
           'found.id': found.id,
           'found.order?.id': found.order?.id,
-          'selected orderId': orderId
+          'selected orderId': orderId,
         })
 
         if (!orderId) {
@@ -51,7 +64,7 @@ export const useGiftedOrders = defineStore('giftedOrders', {
         this.giftedOrderDetails = {
           ...found,
           ...orderDetails,
-          order_product: orderDetails?.products?.[0] || null
+          order_product: orderDetails?.products?.[0] || null,
         }
 
         return this.giftedOrderDetails
@@ -61,6 +74,6 @@ export const useGiftedOrders = defineStore('giftedOrders', {
       } finally {
         this.loading = false
       }
-    }
-  }
+    },
+  },
 })

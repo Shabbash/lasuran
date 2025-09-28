@@ -156,6 +156,12 @@
           {{ t('gift_confirm_order') }}
         </BaseButton>
 
+        <!-- Decline Gift (Receiver only & not completed) -->
+        <BaseButton v-if="showDecline"
+          class="w-full h-[50px] bg-transparent hover:bg-transparent text-[#C44E4E] border border-[#C44E4E] rounded-full text-[13px] font-medium"
+          @click="openDeclineGiftConfirm()">
+          {{ t('button_decline_gift') || 'Decline Gift' }}
+        </BaseButton>
 
         <!-- Cancel: removed in both cases (sender/receiver) by design -->
       </div>
@@ -196,6 +202,7 @@ const { t } = useI18n()
 const authStore = useAuth()
 const appStore = useApp()
 const giftedStore = useGiftedOrders()
+const showDecline = computed(() => isSender.value === false && !isCompleted.value)
 
 // Local state
 const actionLoading = ref(false)
@@ -335,4 +342,71 @@ async function openScheduleDialog() {
     actionLoading.value = false
   }
 }
+
+// Open a confirm dialog before declining a gifted order
+function openDeclineGiftConfirm() {
+  if (!showDecline.value) return;
+
+  appStore.setDialogComponent(COMPONENTS.CONFIRM_DIALOG, {
+    // i18n text
+    dialogTitle: t('gift_decline_title'),
+    message: t('gift_decline_message'),
+    confirmText: t('gift_decline_confirm'),
+    cancelText: t('gift_decline_cancel'),
+
+    modalMaxWidth: 'max-w-[356px]',
+
+    // Buttons style
+    confirmButtonClass: 'h-[49px] bg-[#C44E4E] hover:bg-[#913E5D] text-white rounded-[100px] text-[16px]',
+    cancelButtonClass: 'h-[49px] bg-[#6B8B9B] text-white hover:bg-[#5a7886] rounded-[100px] text-[16px]',
+
+    onConfirm: () => confirmDeclineGift()
+  });
+
+  appStore.setDialogShow(true);
+}
+
+// Actually decline (cancel) the gifted order as receiver
+async function confirmDeclineGift() {
+  try {
+    actionLoading.value = true;
+
+    // Resolve order id (prefer prop -> booking original -> fallback)
+    const orderId =
+      props.order_id ??
+      bk.value?._originalData?.id ??
+      bk.value?.id;
+
+    if (!orderId) throw new Error('Order ID not found');
+
+    // Resolve current user id
+    const userId = authStore.getUser?.id || authStore.getUserId || authStore.user?.id;
+    if (!userId) throw new Error('User ID not found');
+
+    // Call cancel endpoint (GET) with user_id as query
+    const { data: response } = await useApi(`orders/${orderId}/cancel`, {
+      method: 'GET',
+      params: { user_id: userId }
+    });
+
+    // Handle success (backend shapes may vary)
+    const ok = response.value?.success ?? response.value?.status === true ?? true;
+
+    if (ok) {
+      // Close confirm + details dialogs
+      appStore.setDialogShow(false);
+
+      // (Optional) You can refresh bookings outside this dialog
+      // e.g., emit an event or trigger a store fetch at parent level
+      // bookingsStore.fetchOrders()
+    } else {
+      console.error('Decline gift failed:', response.value);
+    }
+  } catch (err) {
+    console.error('❌ Error declining gift:', err);
+  } finally {
+    actionLoading.value = false;
+  }
+}
+
 </script>

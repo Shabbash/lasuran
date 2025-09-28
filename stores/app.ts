@@ -16,7 +16,10 @@ export const useApp = defineStore("app", {
                 component: '',
                 data: {}
             },
+            pageBlocking: false, // page-level skeleton flag
+
         }
+
     },
     getters: {
         getLocale(state: AppState) {
@@ -45,7 +48,7 @@ export const useApp = defineStore("app", {
     },
     actions: {
         setLocale(locale: any) {
-            
+
             this.$state.locale = locale;
         },
         setServiceType(serviceType: string) {
@@ -69,6 +72,13 @@ export const useApp = defineStore("app", {
         setDialogOptions(options: object | []) {
             this.dialog.data = options
         },
+
+        setPageBlocking(val: boolean) {
+            this.pageBlocking = val
+        },
+
     },
-    persist: true,
+    // persist: true,
+      paths: ['locale', 'serviceType', 'deliveryMethod', 'deviceType']
+
 });

@@ -30,13 +30,25 @@
         </div>
 
         <div class="space-y-2">
+
+          <!-- Order Method -->
+          <!-- <div v-if="booking.method" class="flex items-center text-sm text-[#EBE4DF] gap-[6px]">
+            <span class="text-[#C6C6C7] text-[15px]">
+              {{ $t('booking_method_label') }}: {{ booking.method }}
+            </span>
+          </div> -->
+
           <!-- Guests -->
-          <div v-if="Number(booking.guests) > 0" class="flex items-center text-sm text-[#EBE4DF] gap-[6px]">
+          <div class="flex items-center text-sm text-[#EBE4DF] gap-[6px]">
             <GuestsIcon />
             <span class="text-[#C6C6C7] text-[15px]">
-              {{ $t('booking_visitors_label', { count: booking.guests }) }}
+              {{ $t('booking_visitors_label') }}: {{ booking.guests }}
             </span>
           </div>
+
+          
+
+
           <!-- Branch -->
           <div v-if="booking.branch" class="flex items-center text-sm text-[#EBE4DF] gap-[6px]">
             <LocationIcon />
@@ -53,10 +65,10 @@
           </div>
 
           <!-- Time -->
-          <div v-if="booking.time" class="flex items-center text-sm text-[#EBE4DF] gap-[6px]">
+          <!-- <div v-if="booking.time" class="flex items-center text-sm text-[#EBE4DF] gap-[6px]">
             <ClockIcon />
             <span class="text-[#C6C6C7] text-[15px]">{{ booking.time }}</span>
-          </div>
+          </div> -->
 
           <!-- Gifted Info (if receiver) -->
           <div v-if="booking.gifted_info && booking.gifted_info.is_sender === false && booking.gifted_info.sender_user"
@@ -125,7 +137,7 @@
             <!-- Comment Input -->
             <textarea v-model="rating.comment" :readonly="isRatingReadOnly"
               :placeholder="$t('rating_comment_placeholder')"
-              class="w-full h-[170px] p-4 rounded-[23px] border border-[#A0576F] placeholder:text-[#A0576F] text-sm bg-transparent resize-none"
+              class="w-full h-[170px] p-4 rounded-[23px] border border-[#A0576F] placeholder:text-[#a0576f59] text-sm bg-transparent resize-none"
               rows="3" />
             <!-- Submit Button -->
             <button v-if="!isRatingReadOnly" @click="submitRating"
@@ -180,12 +192,13 @@ const bookings = computed(() => {
     id: order.id,
     bookingNumber: order.order_number,
     status: mapApiStatusToUIStatus(order.status.value),
-    guests: order.number_of_users > 0 ? order.number_of_users : null,
+    guests: typeof order.number_of_users === 'number' ? order.number_of_users : 0,
     branch: order.branch_name || null,
     date: order.date ? formatDate(order.date) : null,
     time: order.time || null,
     rating_status: !order.can_rate,
     _originalData: order,
+    method: order.delivery_method || null,
     is_gifted_order: order.is_gifted_order === 1,
     is_gift_pending: order.is_gifted_order === 1 && order.status.value === 1 && !order.is_scheduled,
     gifted_order_id: order.gifted_order_id,
@@ -282,59 +295,90 @@ async function confirmDeleteBooking() {
   }
 }
 
+// async function openBookingDetails(booking) {
+//   // If booking has gifted_info → open GiftedOrderDetailsDialog
+
+//   if (booking.gifted_info) {
+//     setDialogComponent(COMPONENTS.GIFTED_ORDER_DETAILS, {
+//        booking,
+//       gifted_order_id: booking.gifted_info.id ?? undefined,
+//       order_id: booking.id
+//     })
+//     setDialogShow(true, { modalMaxWidth: '900px' })
+
+//     const { data } = await fetchOrder(booking?.id);
+//     if (data.value?.data ) booking = data.value?.data;
+
+//     setDialogComponent(COMPONENTS.GIFTED_ORDER_DETAILS, {
+//       booking,
+//       gifted_order_id: booking.gifted_info.id ?? undefined,
+//       order_id: booking.id
+//     })
+//     return
+//   }
+
+
+
+//   // Otherwise, open the normal booking details modal
+//   selectedBooking.value = booking
+//   setDialogComponent(COMPONENTS.BOOKING_SHOW, {
+//     booking,
+//     onRate: () => handleRateService(),
+//     onViewRating: () => handleViewRating(),
+//     onInvoice: () => handleMakeService(),
+//     onCancel: () => openCancelBookingConfirm()
+//   })
+//   setDialogShow(true)
+//   const { data } = await fetchOrder(booking?.id);
+//   if (data.value?.data ) booking = data.value?.data;
+
+//   selectedBooking.value = booking
+//   setDialogComponent(COMPONENTS.BOOKING_SHOW, {
+//     booking,
+//     onRate: () => handleRateService(),
+//     onViewRating: () => handleViewRating(),
+//     onInvoice: () => handleMakeService(),
+//     onCancel: () => openCancelBookingConfirm()
+//   })
+
+
+//   if (booking.gifted_info) {
+
+//   } else {
+
+//   }
+// }
+
+
 async function openBookingDetails(booking) {
-  // If booking has gifted_info → open GiftedOrderDetailsDialog
+  // Fetch fresh booking data from API
+  const { data } = await fetchOrder(booking?.id);
+  if (data.value?.data) {
+    booking = { ...booking, ...data.value?.data };
+  }
 
   if (booking.gifted_info) {
-    setDialogComponent(COMPONENTS.GIFTED_ORDER_DETAILS, {
-       booking,
-      gifted_order_id: booking.gifted_info.id ?? undefined,
-      order_id: booking.id
-    })
-    setDialogShow(true, { modalMaxWidth: '900px' })
-
-    const { data } = await fetchOrder(booking?.id);
-    if (data.value?.data ) booking = data.value?.data;
-
+    // Gifted booking details
     setDialogComponent(COMPONENTS.GIFTED_ORDER_DETAILS, {
       booking,
       gifted_order_id: booking.gifted_info.id ?? undefined,
       order_id: booking.id
-    })
-    return
-  }
-
-
-
-  // Otherwise, open the normal booking details modal
-  selectedBooking.value = booking
-  setDialogComponent(COMPONENTS.BOOKING_SHOW, {
-    booking,
-    onRate: () => handleRateService(),
-    onViewRating: () => handleViewRating(),
-    onInvoice: () => handleMakeService(),
-    onCancel: () => openCancelBookingConfirm()
-  })
-  setDialogShow(true)
-  const { data } = await fetchOrder(booking?.id);
-  if (data.value?.data ) booking = data.value?.data;
-
-  selectedBooking.value = booking
-  setDialogComponent(COMPONENTS.BOOKING_SHOW, {
-    booking,
-    onRate: () => handleRateService(),
-    onViewRating: () => handleViewRating(),
-    onInvoice: () => handleMakeService(),
-    onCancel: () => openCancelBookingConfirm()
-  })
-
-
-  if (booking.gifted_info) {
-
+    });
+    setDialogShow(true, { modalMaxWidth: '900px' });
   } else {
-
+    // Normal booking details
+    selectedBooking.value = booking;
+    setDialogComponent(COMPONENTS.BOOKING_SHOW, {
+      booking,
+      onRate: () => handleRateService(),
+      onViewRating: () => handleViewRating(),
+      onInvoice: () => handleMakeService(),
+      onCancel: () => openCancelBookingConfirm()
+    });
+    setDialogShow(true);
   }
 }
+
 
 onMounted(async () => {
   if (!authStore.getToken) {
@@ -345,8 +389,8 @@ onMounted(async () => {
   }
 })
 
-const fetchOrder =  function (id) {
-  return  useApi(`orders/${id}`, {
+const fetchOrder = function (id) {
+  return useApi(`orders/${id}`, {
 
   });
 }

@@ -1,6 +1,7 @@
 <template>
 
-  <UCarousel v-slot="{ item }" :dots="dots" :items="items" class="w-full" style="direction: ltr;" :ui="uiOptions">
+  <UCarousel v-slot="{ item }" :dots="dots" :items="items" class="w-full" style="direction: ltr;" :ui="uiOptions"
+    :arrows="arrows">
     <slot :item="item"></slot>
   </UCarousel>
 
@@ -29,7 +30,12 @@ const props = defineProps({
   slidePerRowMobile: {
     type: Number,
     default: 1
-  }
+  },
+  arrows: {
+    type: Boolean,
+    default: false
+  },
+
 });
 
 const uiOptions = computed(() => {

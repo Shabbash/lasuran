@@ -8,12 +8,12 @@
           <div
             class="flex items-center gap-[10px] border border-[#A0576F] rounded-[13px] px-[23px] bg-transparent">
             <input :placeholder="placeholder" :readonly="placeholder.includes('Auto filled')"
-              class="py-[16px] w-full text-[15.38px] font-normal leading-[100%] tracking-[0] text-[#90928F] outline-none placeholder:text-[#A0576F]"
+              class="py-[16px] w-full text-[15.38px] font-normal leading-[100%] tracking-[0] text-[#90928F] outline-none placeholder:text-[#a0576f59]"
               type="text" />
           </div>
         </div>
         <div class="flex items-center gap-[10px] border border-[#A0576F] rounded-[13px] px-[23px] bg-transparent">
-          <textarea class="py-[16px] w-full text-[15.38px] font-normal leading-[100%] tracking-[0] text-[#90928F] outline-none placeholder:text-[#A0576F] h-[180px]" name="" id=""></textarea>
+          <textarea class="py-[16px] w-full text-[15.38px] font-normal leading-[100%] tracking-[0] text-[#90928F] outline-none placeholder:text-[#a0576f59] h-[180px]" name="" id=""></textarea>
         </div>
       </div>
       <button @click="submitAddToGuest" class="bg-[#A0576F] flex align-center gap-[24px] w-full text-white py-3 rounded-full font-[600] text-[16px] justify-center mt-[90px]">

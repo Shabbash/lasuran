@@ -93,25 +93,47 @@ export const useAuth = defineStore("auth", {
                     otp: this.$state.otp,
                 },
             }, {
+
+
+
                 onSuccess: async (data: any) => {
                     this.$state.loading = false;
-                    let response = data.data;
-                    console.log('verifyOtp', response);
+                    const response = data.data;
+
                     if (response.is_completed) {
-                        // this.setStepComponent(COMPONENTS.SEND_OTP_STEP);
-                        this.setAuth({
-                            user: response,
-                            token: response.token,
-                        });
-                        const profileStore = useProfile()
-                        await profileStore.fetchProfile()
+                        this.setAuth({ user: response, token: response.token });
+                        const profileStore = useProfile();
+                        await profileStore.fetchProfile();
                         setDialogShow(false);
 
-
+                        // === Hard redirect to home with refresh ===
+                        if (process.client) {
+                            window.location.replace('/'); // or window.location.assign('/')
+                        }
                     } else {
                         this.setStepComponent(COMPONENTS.COMPLETE_PROFILE_STEP);
                     }
                 },
+
+                // onSuccess: async (data: any) => {
+                //     this.$state.loading = false;
+                //     let response = data.data;
+                //     console.log('verifyOtp', response);
+                //     if (response.is_completed) {
+                //         // this.setStepComponent(COMPONENTS.SEND_OTP_STEP);
+                //         this.setAuth({
+                //             user: response,
+                //             token: response.token,
+                //         });
+                //         const profileStore = useProfile()
+                //         await profileStore.fetchProfile()
+                //         setDialogShow(false);
+
+
+                //     } else {
+                //         this.setStepComponent(COMPONENTS.COMPLETE_PROFILE_STEP);
+                //     }
+                // },
                 onError: (err) => {
                     this.$state.loading = false;
                 }
@@ -128,18 +150,36 @@ export const useAuth = defineStore("auth", {
                 method: "POST",
                 body: payload
             }, {
+
                 onSuccess: async (data: any) => {
                     this.$state.loading = false;
-                    let response = data.data;
-                    this.setAuth({
-                        user: response,
-                        token: response.token,
-                    });
+                    const response = data.data;
 
-                    const profileStore = useProfile()
-                    await profileStore.fetchProfile()
+                    this.setAuth({ user: response, token: response.token });
+                    const profileStore = useProfile();
+                    await profileStore.fetchProfile();
                     setDialogShow(false);
+
+                    // === Hard redirect to home with refresh ===
+                    if (process.client) {
+                        window.location.replace('/'); // or window.location.assign('/')
+                    }
                 },
+
+
+                // onSuccess: async (data: any) => {
+                //     this.$state.loading = false;
+                //     let response = data.data;
+                //     this.setAuth({
+                //         user: response,
+                //         token: response.token,
+                //     });
+
+                //     const profileStore = useProfile()
+                //     await profileStore.fetchProfile()
+                //     setDialogShow(false);
+                // },
+                
                 onError: (err) => {
                     this.$state.loading = false;
                 }
@@ -155,15 +195,34 @@ export const useAuth = defineStore("auth", {
             // Store token in localStorage and cookies for middleware
             this.storeToken(payload.token);
         },
-        forgetAuth() {
-            this.$state.token = '';
-            this.$state.user = {};
 
-            // Clear token from localStorage and cookies
-            this.clearToken();
 
-            navigateTo('/');
+
+        async forgetAuth() {
+            // Clear minimal auth state
+            this.$state.token = ''
+            this.$state.user = {}
+            this.clearToken() // removes 'auth_token' from localStorage + cookie
+
+            // Go to home AND refresh it
+            if (process.client) {
+                // Hard redirect ensures fresh home (no stale SPA state)
+                window.location.replace('/')   // or: window.location.assign('/')
+            } else {
+                // SSR fallback (won't refresh client, but safe on server)
+                await navigateTo('/', { replace: true })
+            }
         },
+
+        // forgetAuth() {
+        //     this.$state.token = '';
+        //     this.$state.user = {};
+
+        //     // Clear token from localStorage and cookies
+        //     this.clearToken();
+
+        //     navigateTo('/');
+        // },
         setStepComponent(step: any) {
             this.$state.step = step;
         },

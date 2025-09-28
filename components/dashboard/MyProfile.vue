@@ -99,6 +99,19 @@
           </div>
         </div>
 
+
+        <!-- Address -->
+        <div>
+          <p class="text-start text-[14px] font-medium text-white mb-3">
+            {{ $t('profile_address') }}
+          </p>
+          <input type="text" :value="addressesStore.preferred?.full_address || ''"
+            :placeholder="$t('profile_address_placeholder')" readonly @click="openAddressModal" class="w-full h-[50px] rounded-[14px] border border-[#EBE4DF] bg-transparent px-4 
+           text-[#BBCACF] placeholder:text-[#D3C9C5] text-[14px] outline-none cursor-pointer" />
+        </div>
+
+        <!-- <div @click="openAddressModal">address</div> -->
+
         <!-- City -->
         <!-- <div>
           <p class="text-start text-[14px] font-medium text-white mb-3">
@@ -179,6 +192,8 @@ import ProfileSkeleton from '@/components/skeletons/ProfileSkeleton.vue'
 import { useApp } from '@/stores/app'
 import { COMPONENTS } from '@/data/constants'
 import { useRouter } from 'vue-router'
+import { useAddresses } from '@/stores/address'
+const addressesStore = useAddresses()
 
 // Store instances
 const profileStore = useProfile()
@@ -272,6 +287,20 @@ const handleImageUpload = (event: Event) => {
     reader.readAsDataURL(file)
   }
 }
+
+
+const openAddressModal = () => {
+  appStore.setDialogComponent(COMPONENTS.ADDRESSES_DIALOG, {
+    modalMaxWidth: 'max-w-[539px]',
+    onSelected: (addr) => {
+      // هنا تتعبّى قيمة الـ input
+      formData.address = addr?.full_address || ''
+    }
+  })
+  appStore.setDialogShow(true)
+}
+
+
 
 // Save profile changes
 const saveProfile = () => {

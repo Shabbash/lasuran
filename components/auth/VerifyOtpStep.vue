@@ -15,7 +15,7 @@
         type="number"
         v-model="form.otp"
         :length="4"
-        :ui="{ base: 'w-[82px] h-[58px] border-[0.5px] border-[#A0576F] bg-transparent' }"
+        :ui="{ base: 'w-[82px] h-[58px] border-[0.5px] border-[#A0576F] bg-transparent text-[#5B605C]' }"
       />
     </div>
 

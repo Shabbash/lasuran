@@ -9,7 +9,7 @@
       <div :class="['flex items-center gap-[10px] rounded-[13px] px-[23px] bg-transparent', errors.first_name ? 'border border-red-500' : 'border border-[#A0576F]']">
         <UserIcon />
         <input :placeholder="t('first_name_required')" v-model="form.first_name"
-          class="py-[16px] w-full text-[15.38px] font-normal text-[#90928F] outline-none placeholder:text-[#A0576F]"
+          class="py-[16px] w-full text-[15.38px] font-normal text-[#90928F] outline-none placeholder:text-[#a0576f59]"
           type="text" />
       </div>
 
@@ -17,7 +17,7 @@
       <div :class="['flex items-center gap-[10px] rounded-[13px] px-[23px] bg-transparent', errors.last_name ? 'border border-red-500' : 'border border-[#A0576F]']">
         <UserIcon />
         <input :placeholder="t('last_name_required')" v-model="form.last_name"
-          class="py-[16px] w-full text-[15.38px] font-normal text-[#90928F] outline-none placeholder:text-[#A0576F]"
+          class="py-[16px] w-full text-[15.38px] font-normal text-[#90928F] outline-none placeholder:text-[#a0576f59]"
           type="text" />
       </div>
 
@@ -25,7 +25,7 @@
       <div class="flex items-center gap-[10px] border border-[#A0576F] rounded-[13px] px-[23px] bg-transparent">
         <MobileIcon />
         <input :placeholder="t('phone_number_auto')" v-model="authModule.getFullOtpMobileNumber" disabled
-          class="py-[16px] text-[15.38px] font-normal text-[#90928F] outline-none placeholder:text-[#A0576F] mobile_number"
+          class="py-[16px] text-[15.38px] font-normal text-[#90928F] outline-none placeholder:text-[#a0576f59] mobile_number"
           type="text"/>
       </div>
 
@@ -33,7 +33,7 @@
       <div class="flex items-center gap-[10px] border border-[#A0576F] rounded-[13px] px-[23px] bg-transparent">
         <EmailIcon />
         <input :placeholder="t('email_address')" v-model="form.email"
-          class="py-[16px] w-full text-[15.38px] font-normal text-[#90928F] outline-none placeholder:text-[#A0576F]"
+          class="py-[16px] w-full text-[15.38px] font-normal text-[#90928F] outline-none placeholder:text-[#a0576f59]"
           type="text" />
       </div>
 
@@ -47,7 +47,7 @@
           </template>
         </UPopover>
         <input :placeholder="t('date_of_birth_required')" :value="formattedDateOfBirth" readonly
-          class="py-[16px] w-full text-[15.38px] font-normal text-[#90928F] outline-none placeholder:text-[#A0576F]"
+          class="py-[16px] w-full text-[15.38px] font-normal text-[#90928F] outline-none placeholder:text-[#a0576f59]"
           type="text" />
       </div>
     </div>

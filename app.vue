@@ -34,9 +34,6 @@ const htmlAttrs = computed(() => ({
 }))
 
 useHead({
-  htmlAttrs,
-  link: [
-    { rel: 'icon', type: 'image/png', href: '/favicon.svg' }
-  ]
+  htmlAttrs
 })
 </script>

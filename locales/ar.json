@@ -326,8 +326,10 @@
   "buy_now": "اشترِ الآن",
   "profile_first_name": "الاسم الأول",
   "profile_last_name": "اسم العائلة",
+  "profile_address": "العنوان",
   "profile_first_name_placeholder": "ادخل الاسم الأول",
   "profile_last_name_placeholder": "ادخل اسم العائلة",
+  "profile_address_placeholder": "العنوان",
   "titles.home": "لاسوران",
   "titles.services": "الخدمات",
   "titles.shop": "المتجر",
@@ -341,5 +343,34 @@
   "titles.branches": "الفروع",
   "titles.customerservice": "خدمة العملاء",
   "select_data_time": "تحديد الموعد",
+  "addresses.title": "عناويني",
+  "addresses.address_label": "العنوان",
+  "addresses.empty": "لا توجد عناوين بعد.",
+  "addresses.add_new": "إضافة عنوان جديد",
+  "addresses.btn_edit_aria": "تعديل العنوان",
+  "addresses.btn_delete_aria": "حذف العنوان",
+  "addresses.add_title": "إضافة عنوان",
+  "addresses.add_subtitle": "يرجى تزويدنا بتفاصيل عنوانك",
+  "addresses.search_placeholder": "ابحث عن عنوان",
+  "addresses.searching": "جارٍ البحث…",
+  "addresses.no_results": "لا توجد نتائج",
+  "addresses.name_placeholder": "اسم العنوان",
+  "addresses.save_button": "حفظ العنوان",
+  "addresses.drag_hint": "اسحب الخريطة إلى الموقع الدقيق",
+  "addresses.saving": "جارٍ الحفظ…",
+    "vip_title": "الخدمة المميّزة",
+  "vip_address_label": "العنوان",
+    "addresses_add_new": "إضافة عنوان جديد",
+    "button_decline_gift": "رفض الهدية",
+    
+  "gift_decline_title": "رفض الهدية",
+  "gift_decline_message": "هل أنت متأكد أنك تريد رفض هذه الهدية؟",
+  "gift_decline_confirm": "نعم، ارفض",
+  "gift_decline_cancel": "لا، احتفظ بها",
+"booking_method_label": "طريقة الحجز"
+
+
+
+
 
 }

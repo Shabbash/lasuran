@@ -32,7 +32,7 @@
           </div>
           <div class="flex justify-between pb-[12px] border-b border-b-[#AD7084]">
             <h3 class="text-[#EBE4DF] text-[13.082px] font-[350]">{{ t('booking_branch_label') }}</h3>
-            <p class="text-[#EBE4DF] text-[13px] font-[350]">{{ booking.branch }}</p>
+            <p class="text-[#EBE4DF] text-[13px] font-[350]">{{ booking.branch.name }}</p>
           </div>
           <div class="flex justify-between pb-[12px] border-b border-b-[#AD7084]">
             <h3 class="text-[#EBE4DF] text-[13.082px] font-[350]">{{ t('booking_time_label') }}</h3>

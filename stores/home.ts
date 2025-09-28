@@ -77,29 +77,29 @@ export const useHome = defineStore("home", {
         sliders(state): Slider[] {
             return state.homeData?.data?.sliders || [];
         },
-        
+
         deliveryMethods(state): DeliveryMethod[] {
-            return state.homeData?.delivery_methods || [];
+            return state.homeData?.data?.delivery_methods || [];
         },
-        
+
         enabledDeliveryMethods(state): DeliveryMethod[] {
-            return state.homeData?.delivery_methods?.filter(method => method.is_enabled) || [];
+            return state.homeData?.data?.delivery_methods?.filter(method => method.is_enabled) || [];
         },
-        
+
         unreadNotifications(state): number {
             return state.homeData?.un_read_notifications || 0;
         },
-        
+
         // Template sections getters
         homeSections(state): TemplateSection[] {
             return state.settingsData?.template_settings?.home || [];
         },
-        
+
         // Get sections by type
         sliderSections(state): TemplateSection[] {
             return state.settingsData?.template_settings?.home?.filter(section => section.type === 'slider') || [];
         },
-        
+
         // Transform sliders for UI compatibility
         transformedSliders(state): any[] {
             return state.homeData?.sliders?.map(slider => ({
@@ -112,7 +112,7 @@ export const useHome = defineStore("home", {
                 to: slider.clickable && slider.url ? 'url' : 'image'
             })) || [];
         },
-        
+
         // Transform template items for UI compatibility
         getTransformedItems: (state) => (sectionId: number) => {
             const section = state.settingsData?.template_settings?.home?.find(s => s.id === sectionId);
@@ -142,9 +142,9 @@ export const useHome = defineStore("home", {
                 });
 
                 if (response.status) {
-                    console.log('home: ',response.data);
+                    console.log('home: ', response.data);
                     this.$state.homeData = response.data;
-                    console.log('state.homeData: ',this.$state.homeData);
+                    console.log('state.homeData: ', this.$state.homeData);
                     return { success: true, data: response.data };
                 } else {
                     throw new Error(response.message || 'Failed to fetch home data');
@@ -179,7 +179,7 @@ export const useHome = defineStore("home", {
 
         async initializeHome() {
             this.$state.isLoading = true;
-            
+
             try {
                 // Fetch both home and settings data
                 const [homeResult, settingsResult] = await Promise.all([

@@ -1,6 +1,8 @@
 <template>
   <div>
     <SendGiftCard />
+
+    <VipService />
     <div class="p-[24px] pb-[40px] rounded-[16px] border border-[#E7E7E7] bg-[#EBE4DF]">
       <h2 class="text-[#A0576F] mb-[16px] text-[20px] font-medium leading-normal">
         {{ t('payment_details_title') }}
@@ -85,6 +87,11 @@ import { useToast } from '#imports'
 import { COMPONENTS } from '~/data/constants'
 import { formatNumber } from '~/utils/helper'
 import SendGiftCard from '@/components/cart/SendGiftCard.vue'
+import { navigateTo } from '#imports'
+
+import VipService from '@/components/cart/VipService.vue'
+import { useAddresses } from '~/stores/address'
+const addresses = useAddresses()
 
 const { t } = useI18n()
 const toast = useToast()
@@ -182,45 +189,114 @@ onMounted(() => {
 })
 
 // ✅ Checkout logic
-const proceedToCheckout = () => {
+const proceedToCheckout = async () => {
   if (isProcessing.value) return
   isProcessing.value = true
 
-  if (cartModule.getPaymentMethods.length > 1) {
-    appModule.setDialogComponent(COMPONENTS.PAYMENT_SELECTION)
-    appModule.setDialogShow(true)
-    isProcessing.value = false
-  } else {
+  try {
+    // ✅ If VIP is enabled and requires an address, force user to pick one
+    const ok = await ensureVipAddressBeforeCheckout()
+    if (!ok) {
+      isProcessing.value = false
+      toast.add({ title: t('error_title'), description: 'Please select an address for VIP service.' })
+      return
+    }
+
+    if (cartModule.getPaymentMethods.length > 1) {
+      appModule.setDialogComponent(COMPONENTS.PAYMENT_SELECTION)
+      appModule.setDialogShow(true)
+      isProcessing.value = false
+      return
+    }
+
     cartModule.setPaymentMethod(cartModule.getPaymentMethods?.[0]?.id)
 
     const timeoutId = setTimeout(() => {
       isProcessing.value = false
     }, 10000)
 
+    // ✅ Merge VIP extras into order body
+    const orderExtras = buildVipExtras()
+
     cartModule.createOrder(
-      {},
+      orderExtras,
       (response) => {
         clearTimeout(timeoutId)
         isProcessing.value = false
 
-        // Normalize response
         const r = response?.data ?? response ?? {}
         const paymentUrl = r?.payment?.create_token_url?.url
 
         if (paymentUrl) {
-          // ✅ Open payment in new tab (safe from popup blockers)
-          window.open(paymentUrl, "_blank")
+          navigateTo({ path: '/secure-payment', query: { url: paymentUrl } })
         } else {
-          toast.add({ title: t("error_title"), description: t("missing_payment_url") })
+          toast.add({ title: t('error_title'), description: t('missing_payment_url') })
         }
       },
       () => {
         clearTimeout(timeoutId)
         isProcessing.value = false
-        toast.add({ title: t("error_title"), description: t("checkout_failed") })
+        toast.add({ title: t('error_title'), description: t('checkout_failed') })
       }
     )
+  } catch (e) {
+    isProcessing.value = false
+    toast.add({ title: t('error_title'), description: t('checkout_failed') })
   }
+}
+
+// Open saved-addresses modal and resolve selected id (or null on cancel)
+const pickExistingAddress = (): Promise<number | null> =>
+  new Promise((resolve) => {
+    appModule.setDialogComponent(COMPONENTS.ADDRESSES_DIALOG, {
+      modalMaxWidth: 'max-w-[539px]',
+      onSelected: (addr: any) => {
+        appModule.setDialogShow(false)
+        resolve(addr?.id ?? null)
+      },
+    })
+    appModule.setDialogShow(true)
+  })
+
+// Ensure we have an address when selected VIP fee requires location
+const ensureVipAddressBeforeCheckout = async (): Promise<boolean> => {
+  const feeId = (cartModule as any).selectedServiceFeeId
+  if (!feeId) return true // VIP not selected
+
+  const fees = (cartModule as any).available_service_fees || []
+  const fee = fees.find((f: any) => f.id === feeId)
+  const needsLocation = fee?.applied_condition === 'trigger_by_location'
+  if (!needsLocation) return true
+
+  if ((cartModule as any).selectedServiceFeeAddressId) return true
+
+  await addresses.fetchAddresses()
+  if (addresses.preferredId) {
+    (cartModule as any).selectedServiceFeeAddressId = addresses.preferredId
+    return true
+  }
+
+  const chosenId = await pickExistingAddress()
+  if (chosenId) {
+    (cartModule as any).selectedServiceFeeAddressId = chosenId
+    return true
+  }
+
+  // User canceled picking an address
+  return false
+}
+
+// Build VIP extras for order/cart payload
+const buildVipExtras = () => {
+  const extras: Record<string, any> = {}
+  const feeId = (cartModule as any).selectedServiceFeeId
+  const addrId = (cartModule as any).selectedServiceFeeAddressId
+
+  if (feeId) {
+    extras['service_fees[0][id]'] = feeId
+    if (addrId) extras['service_fees[0][address_id]'] = addrId
+  }
+  return extras
 }
 
 </script>
@@ -229,5 +305,4 @@ const proceedToCheckout = () => {
 .summary-input::placeholder {
   font-size: 12px;
 }
-
 </style>

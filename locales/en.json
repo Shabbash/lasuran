@@ -326,8 +326,11 @@
   "buy_now": "Buy Now",
   "profile_first_name": "First Name",
   "profile_last_name": "Last Name",
+  "profile_address": "Address",
   "profile_first_name_placeholder": "Enter first name",
   "profile_last_name_placeholder": "Enter last name",
+  "profile_address_placeholder": "Address",
+
   "gift_list_title": "Gift List",
   "items": "items",
   "gift_from": "Gift from",
@@ -362,6 +365,39 @@
   "titles.branches": "Branches",
   "titles.customerservice": "Customer Service",
   "select_data_time": "Schedule",
+  
+  "addresses.title": "My Addresses",
+  "addresses.address_label": "Address",
+  "addresses.empty": "No addresses yet.",
+  "addresses.add_new": "Add a New Address",
+  "addresses.btn_edit_aria": "Edit address",
+  "addresses.btn_delete_aria": "Delete address",
+
+  "addresses.add_title": "Add Address",
+  "addresses.add_subtitle": "Please provide your address details",
+  "addresses.search_placeholder": "Search Address",
+  "addresses.searching": "Searching…",
+  "addresses.no_results": "No results",
+  "addresses.name_placeholder": "Address Name",
+  "addresses.save_button": "Save Address",
+  "addresses.drag_hint": "Drag the map to the exact location",
+  "addresses.saving": "Saving…",
+  "vip_title": "VIP Service",
+  "vip_address_label": "Address",
+    "addresses_add_new": "Add new address",
+    "button_decline_gift": "Decline Gift",
+
+
+  "gift_decline_title": "Decline Gift",
+  "gift_decline_message": "Are you sure you want to decline this gift?",
+  "gift_decline_confirm": "Yes, Decline",
+  "gift_decline_cancel": "No, Keep",
+  "booking_method_label": "Order Method"
+
+
+
+
+
 
   
 }

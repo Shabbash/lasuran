@@ -16,20 +16,23 @@
     </div>
 
     <!-- 🎁 Gifted Info Summary -->
-    <div v-if="giftedOrderData"
+    <!-- <div v-if="giftedOrderData" -->
+
+    <div v-if="isGifted || hasGiftData"
       class="bg-[#EBE4DFE5] mx-[5px] px-[26px] pb-[17px] pt-[62px] rounded-[16px] flex items-center justify-between">
       <div class="text-[#A0576F] text-[15px] font-medium">
-        {{ t('gift_to_label') }}: {{ giftedOrderData.first_name }} {{ giftedOrderData.last_name }}
+        {{ t('gift_to_label') }}: {{ fullName || '-' }}
       </div>
       <div class="flex items-center gap-[7px] justify-end">
         <button class="cursor-pointer" @click="openGiftDialog">
           <EditIcon />
         </button>
-        <button class="cursor-pointer" @click="clearGiftData">
+        <button class="cursor-pointer" @click="clearGiftParams">
           <DeleteIcon />
         </button>
       </div>
     </div>
+
   </div>
 </template>
 
@@ -58,12 +61,20 @@ const { t } = useI18n()
 const appStore = useApp()
 const cartStore = useCart()
 
-// Local UI state
+/* ---------- Local UI state ---------- */
+
+// Reflect current gifted state from the store (1 => ON, 0 => OFF)
 const isGifted = ref(cartStore.params?.is_gifted_order === 1)
+
+// Whether the dialog completed with a confirmed payload
 const confirmed = ref(false)
 
-// Derived data from cart store
-const giftedOrderData = computed(() => cartStore.params?.gifted_order_data ?? null)
+/* ---------- Derived data from store ---------- */
+
+// Current gifted recipient data (safe fallback to empty object)
+const giftedOrderData = computed(() => cartStore.params?.gifted_order_data || {})
+
+/* ---------- Helpers ---------- */
 
 /** Open the Gift dialog */
 function openGiftDialog() {
@@ -85,13 +96,41 @@ function fetchCartQuiet(): Promise<any> {
 }
 
 /** Clear all gifted fields and sync with store */
+// === Add these ===
+const hasGiftData = computed(() => {
+  const d = cartStore.params?.gifted_order_data || {}
+  const msg = (cartStore.params?.gift_message || '').trim()
+  return Boolean(
+    (d.first_name && d.first_name.trim()) ||
+    (d.last_name && d.last_name.trim()) ||
+    (d.mobile_number && d.mobile_number.trim()) ||
+    (d.email && d.email.trim()) ||
+    msg
+  )
+})
+
+const fullName = computed(() => {
+  const d = cartStore.params?.gifted_order_data || {}
+  return [d.first_name, d.last_name].filter(Boolean).join(' ')
+})
+
+// (اختياري) لو ما عندك resetGiftState في الـstore
 function clearGiftParams() {
-  cartStore.params.is_gifted_order = 0
-  cartStore.params.gifted_order_data = null as any
-  cartStore.params.gift_message = null as any
+  if (typeof (cartStore as any).resetGiftState === 'function') {
+    (cartStore as any).resetGiftState()
+  } else {
+    cartStore.params.is_gifted_order = 0
+    cartStore.params.gifted_order_data = {
+      first_name: '', last_name: '', mobile_code: '966', mobile_number: '', email: ''
+    } as any
+    cartStore.params.gift_message = ''
+  }
 }
 
-/** Toggle watcher — enforce “refresh cart first, then dialog” when ON */
+
+/* ---------- Main toggle flow ---------- */
+
+/** Toggle watcher — enforce “refresh cart first, then dialog” when turned ON */
 watch(isGifted, async (val) => {
   if (val) {
     // 1) Mark as gifted in store first
@@ -100,25 +139,27 @@ watch(isGifted, async (val) => {
     // 2) Refresh cart before opening dialog (ensures summary reflects gift state)
     await fetchCartQuiet()
 
-    // 3) Open dialog AFTER cart refresh (no popup/dialog before this)
+    // 3) Open dialog AFTER cart refresh
     confirmed.value = false
     openGiftDialog()
   } else {
-    // Turned OFF → reset gifted params and refresh immediately
+    // Turned OFF → reset gifted params and refresh immediately (no dialog)
     clearGiftParams()
     fetchCartQuiet()
   }
 })
 
-/** Keep local switch in sync if store changes elsewhere */
+/** Keep local switch in sync if store changes elsewhere (avoid feedback loops) */
 watch(
   () => cartStore.params?.is_gifted_order,
   (val) => {
-    isGifted.value = val === 1
+    const next = val === 1
+    if (next !== isGifted.value) isGifted.value = next
   }
 )
 
-/** Global events from the dialog */
+/* ---------- Global events from the dialog ---------- */
+
 function onGiftConfirmed() {
   // Dialog has validated and set gifted_order_data inside the store
   confirmed.value = true
@@ -129,7 +170,7 @@ function onGiftConfirmed() {
 function onGiftNotConfirmed() {
   // If user closed/canceled without confirming, revert the switch
   if (!confirmed.value) {
-    isGifted.value = false // Will trigger watcher to clear & refresh
+    isGifted.value = false // triggers watcher → clears + refreshes
   }
 }
 

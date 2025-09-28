@@ -1,11 +1,11 @@
 <template>
     <Transition name="fade">
-        <div v-if="visible" class="relative p-[18px] rounded-[12px] bg-[#EAC1B7] flex flex-col gap-[10px] mb-2" @click="onBookingClick">
+        <div v-if="visible" class="cursor-pointer relative p-[18px] rounded-[12px] bg-[#EAC1B7] flex flex-col gap-[10px] mb-2" @click="onBookingClick">
 
             <!-- ❌ Close Button -->
-            <button @click="visible = false" class="absolute top-4 end-4 cursor-pointer">
+            <!-- <button @click="visible = false" class="absolute top-4 end-4 cursor-pointer">
                 <XIcon />
-            </button>
+            </button> -->
 
             <!-- 🎁 Top Section -->
             <div class="flex gap-4 items-center">
