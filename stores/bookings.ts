@@ -135,6 +135,8 @@ export const useBookings = defineStore("bookings", {
             currentPage: 1,
             selectedOrder: null as Order | null,
             order: null as Order | null,
+            isLoadingMore: false,
+
         }
     },
 
@@ -152,12 +154,13 @@ export const useBookings = defineStore("bookings", {
         },
 
         hasNextPage(state): boolean {
-            return state.pagination?.next_page_url !== null;
+            return !!state.pagination && state.pagination.current_page < state.pagination.last_page;
         },
 
-        hasPrevPage(state): boolean {
-            return state.pagination?.prev_page_url !== null;
+            hasPrevPage(state): boolean {
+            return !!state.pagination && state.pagination.current_page > 1;
         },
+
 
         getTotalOrders(state): number {
             return state.pagination?.total || 0;
@@ -177,38 +180,52 @@ export const useBookings = defineStore("bookings", {
     },
 
     actions: {
-        fetchOrders(page: number = 1) {
-            this.$state.isLoading = true;
-            this.$state.error = null;
-            this.$state.currentPage = page;
+fetchOrders(page: number = 1, append: boolean = false) {
+  this.$state.error = null;
+  this.$state.currentPage = page;
 
-            return useApi(`orders?page=${page}`, {
-                method: 'GET'
-            }, {
-                onSuccess: (data: any) => {
-                    if (data.status && data?.data) {
-                        this.$state.orders = data.data.orders;
-                        this.$state.pagination = data.data.pagination_options;
-                        this.$state.error = null;
-                    } else {
-                        console.error('Invalid bookings response format:', data);
-                        this.$state.error = 'Invalid response format from server';
-                    }
-                    this.$state.isLoading = false;
-                },
-                onError: (error: any) => {
-                    console.error('Error fetching bookings:', error);
-                    this.$state.error = error?.message || 'Failed to load bookings';
-                    this.$state.isLoading = false;
-                }
-            });
-        },
+  // Use isLoadingMore when appending, isLoading otherwise
+  if (append) this.$state.isLoadingMore = true;
+  else this.$state.isLoading = true;
+
+  return useApi(`orders?page=${page}`, {
+    method: 'GET'
+  }, {
+    onSuccess: (data: any) => {
+      if (data.status && data?.data) {
+        const items = data.data.orders || [];
+        const pg = data.data.pagination_options || null;
+
+        // IMPORTANT: append or replace
+        this.$state.orders = append ? [...this.$state.orders, ...items] : items;
+
+        this.$state.pagination = pg;
+        this.$state.error = null;
+      } else {
+        console.error('Invalid bookings response format:', data);
+        this.$state.error = 'Invalid response format from server';
+      }
+
+      this.$state.isLoading = false;
+      this.$state.isLoadingMore = false;
+    },
+    onError: (error: any) => {
+      console.error('Error fetching bookings:', error);
+      this.$state.error = error?.message || 'Failed to load bookings';
+      this.$state.isLoading = false;
+      this.$state.isLoadingMore = false;
+    }
+  });
+},
+
 
         loadNextPage() {
-            if (this.hasNextPage) {
-                this.fetchOrders(this.currentPage + 1);
-            }
-        },
+  if (this.hasNextPage && this.pagination) {
+    // Append next page instead of replacing
+    this.fetchOrders(this.pagination.current_page + 1, true);
+  }
+},
+
 
         loadPrevPage() {
             if (this.hasPrevPage && this.currentPage > 1) {

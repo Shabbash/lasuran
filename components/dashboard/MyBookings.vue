@@ -103,6 +103,22 @@
       </div>
     </div>
 
+    <!-- Load more / No more -->
+<div class="mt-4 flex justify-center">
+  <button
+    v-if="canLoadMore"
+    @click.stop="loadMore"
+    :disabled="isLoadingMore"
+    class="px-6 py-2 rounded-full bg-[#6B8B9B] text-white text-sm font-medium hover:opacity-90 disabled:opacity-60"
+  >
+    <span v-if="!isLoadingMore">{{ $t('load_more') || 'Load more' }}</span>
+    <span v-else>{{ $t('loading') || 'Loading…' }}</span>
+  </button>
+
+
+</div>
+
+
     <!-- Empty State -->
     <div v-if="showEmptyState" class="flex flex-col items-center justify-center py-16 w-[50%] mx-auto">
       <div class="relative w-28 h-28 mb-6">
@@ -259,6 +275,17 @@ function handleMakeService() {
   }
   modalOpen.value = false
 }
+// --- Load more bindings ---
+const isLoadingMore = computed(() => bookingsStore.isLoadingMore)
+
+const canLoadMore = computed(() => {
+  const p = bookingsStore.pagination
+  return p ? p.current_page < p.last_page : false
+})
+
+const loadMore = () => {
+  bookingsStore.loadNextPage()
+}
 
 function goToServices() {
   router.push('/services')
@@ -385,7 +412,7 @@ onMounted(async () => {
     await authStore.initAuth()
   }
   if (authStore.getToken) {
-    bookingsStore.fetchOrders()
+    bookingsStore.fetchOrders(1, false)
   }
 })
 

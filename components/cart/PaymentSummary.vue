@@ -190,11 +190,12 @@ onMounted(() => {
 
 // ✅ Checkout logic
 const proceedToCheckout = async () => {
+  // Guard against double clicks
   if (isProcessing.value) return
   isProcessing.value = true
 
   try {
-    // ✅ If VIP is enabled and requires an address, force user to pick one
+    // ✅ Ensure VIP address if required
     const ok = await ensureVipAddressBeforeCheckout()
     if (!ok) {
       isProcessing.value = false
@@ -202,24 +203,32 @@ const proceedToCheckout = async () => {
       return
     }
 
+    // ✅ Choose payment method (or open selector)
     if (cartModule.getPaymentMethods.length > 1) {
       appModule.setDialogComponent(COMPONENTS.PAYMENT_SELECTION)
       appModule.setDialogShow(true)
       isProcessing.value = false
       return
     }
-
     cartModule.setPaymentMethod(cartModule.getPaymentMethods?.[0]?.id)
 
     const timeoutId = setTimeout(() => {
+      // Safety: never keep the button stuck if API hangs
       isProcessing.value = false
     }, 10000)
 
-    // ✅ Merge VIP extras into order body
+    // ✅ 1) Build VIP extras (service_fees)
     const orderExtras = buildVipExtras()
 
+    // ✅ 2) IMPORTANT: merge current cart params (promo_code, gift_card, ...)
+    //    with the VIP extras so the backend applies exactly what you previewed.
+    const orderPayload = {
+      ...params.value,   // e.g. promo_code, gift_card, any flags used in fetchCart
+      ...orderExtras     // service_fees[...] (flat +/or JSON array depending on your buildVipExtras)
+    }
+
     cartModule.createOrder(
-      orderExtras,
+      orderPayload,
       (response) => {
         clearTimeout(timeoutId)
         isProcessing.value = false
@@ -244,6 +253,7 @@ const proceedToCheckout = async () => {
     toast.add({ title: t('error_title'), description: t('checkout_failed') })
   }
 }
+
 
 // Open saved-addresses modal and resolve selected id (or null on cancel)
 const pickExistingAddress = (): Promise<number | null> =>

@@ -392,9 +392,9 @@
   "gift_decline_message": "Are you sure you want to decline this gift?",
   "gift_decline_confirm": "Yes, Decline",
   "gift_decline_cancel": "No, Keep",
-  "booking_method_label": "Order Method"
+  "booking_method_label": "Order Method",
 
-
+ "load_more": "Load more",
 
 
 
