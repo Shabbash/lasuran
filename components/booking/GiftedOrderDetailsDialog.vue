@@ -192,6 +192,7 @@ const props = defineProps<{
   booking?: any,
   gifted_order_id?: number,
   order_id?: number,
+  order:any
   onRate?: () => void,
   onViewRating?: () => void,
   onInvoice?: () => void,
@@ -254,9 +255,33 @@ const onSelectService = function (item) {
     image: item.image,
     branch_id: item.branch?.id || item.branch_id,
     date: item.date || '',
+    serviceFee: 18,
     _isEditing: true
   }
-  appModule.dialog.data.service = item;
+// Prepare product master id and service fee ids (VIP support)
+// NOTE: We pass these to the Appointment modal so it can fetch VIP-filtered time slots.
+const productMasterId = item.product_master_id ?? item.product_id ?? item.id
+
+// Extract fee ids from booking original data (VIP case)
+const fees = bk.value?._originalData?.service_fees ?? []
+const serviceFeeIds = fees
+  .filter((fee: any) => Array.isArray(fee.products))
+  .filter((fee: any) =>
+    fee.products?.some((p: any) =>
+      p?.product_master_id === productMasterId ||
+      p?.product_id === item.order_product_id ||
+      p?.product_id === item.id
+    )
+  )
+  .map((fee: any) => Number(fee.id))
+  .filter(Boolean)
+
+// Save service payload into dialog data (so Appointment can read it)
+appModule.dialog.data.service = {
+  ...item,
+  product_master_id: productMasterId,
+  service_fee_ids: 10000
+}
   setDialogComponent(COMPONENTS.SERVICE_APPOINTMENT_SKELETON);
   setDialogShow(true);
   menuModule.setService(serviceData, () => {

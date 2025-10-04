@@ -110,6 +110,8 @@ const form = ref<{ date: string | null; time: string | null }>({ date: null, tim
 const product_master_id = ref<number | null>(null)
 const order_product_id = ref<number | null>(null)
 const actual_order_id = ref<number | null>(null)
+// Holds VIP-related service fee IDs for the current product
+const feeIdsForThisProduct = ref<number[]>([])
 
 // Available dates (after fetchServiceAvailableTimes)
 const availableDates = computed<any[]>(() => menuModule.getService?.times ?? [])
@@ -193,6 +195,7 @@ const confirmSchedule = async () => {
 }
 
 // Initial load: fetch gifted details -> order details -> service slots
+// Initial load: fetch gifted details -> order details -> service slots
 onMounted(async () => {
   try {
     // 1) Fetch gifted order details
@@ -214,9 +217,24 @@ onMounted(async () => {
     order_product_id.value = product?.order_product_id
     product_master_id.value = product?.product_master_id
 
-    // 4) Fetch service available times for the product
+    // 🔽 NEW: extract VIP service fee IDs for this product
+    const serviceFees = orderResponse.value?.data?.service_fees ?? []
+    feeIdsForThisProduct.value = serviceFees
+      .filter((fee: any) => Array.isArray(fee.products))
+      .filter((fee: any) =>
+        fee.products?.some((p: any) =>
+          p?.product_master_id === product_master_id.value ||
+          p?.product_id === order_product_id.value
+        )
+      )
+      .map((fee: any) => Number(fee.id))
+      .filter(Boolean)
+
+    // 4) Fetch service available times for the product (+ pass VIP fee IDs)
     if (product_master_id.value) {
-      await menuModule.fetchServiceAvailableTimes(product_master_id.value)
+      await menuModule.fetchServiceAvailableTimes(product_master_id.value, {
+        feeIds: feeIdsForThisProduct.value.length ? feeIdsForThisProduct.value : null
+      })
       // Auto-select the first day if available
       form.value.date = availableDates.value?.[0]?.date ?? null
       form.value.time = null
@@ -228,4 +246,5 @@ onMounted(async () => {
     initialLoading.value = false
   }
 })
+
 </script>

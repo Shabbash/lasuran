@@ -67,7 +67,8 @@ const onBookingClick = async function () {
     setDialogComponent(COMPONENTS.GIFTED_ORDER_DETAILS, {
       booking,
       gifted_order_id: booking.gifted_info.id ?? undefined,
-      order_id: booking.id
+      order_id: booking.id,
+    
     })
     setDialogShow(true, { modalMaxWidth: '900px' })
     return

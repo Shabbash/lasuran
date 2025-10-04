@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { useCart } from '~/stores/cart'
 
 interface MenuParams {
     category_id: string | number | null;
@@ -282,23 +283,77 @@ export const useMenu = defineStore("menu", {
                     }
                 });
         },
-        fetchServiceAvailableTimes(productMasterId?: number) {
-            this.$state.service.loading = true
+fetchServiceAvailableTimes(
+  productMasterId?: number,
+  opts?: {
+    // Single fee (legacy support)
+    feeId?: number | null;
+    // Multiple fees (VIP: preferred)
+    feeIds?: number[] | null;
+    // Optional: address coupling (if backend uses it)
+    feeAddressId?: number | null;
+  }
+) {
+  this.$state.service.loading = true;
 
-            const id = productMasterId || this.$state.service.data.id
+// Coerce product master id to a plain number
+const rawId =
+  productMasterId ??
+  this.$state.service?.data?.product_master_id ??
+  this.$state.service?.data?.id;
 
-            return useApi(`product-masters/${id}/available-times`, {}, {
-                onSuccess: (data: any) => {
-                    console.log('✅ fetchServiceAvailableTimes success:', data)
-                    this.$state.service.loading = false
-                    this.$state.service.times = data.data
-                },
-                onError: (err: any) => {
-                    console.error('❌ Error fetching available times:', err)
-                    this.$state.service.loading = false
-                }
-            })
-        }
+const pmId =
+  typeof rawId === 'object'
+    ? Number(rawId?.id ?? rawId?.product_master_id)
+    : Number(rawId);
+
+if (!pmId || Number.isNaN(pmId)) {
+  console.error('fetchServiceAvailableTimes: invalid product master id', rawId);
+  this.$state.service.loading = false;
+  return Promise.resolve();
+}
+
+  // Pull defaults from cart store for backward compatibility
+  const cart = useCart();
+  const feeId = opts?.feeId ?? (cart as any).selectedServiceFeeId ?? null;
+  const feeIds = Array.isArray(opts?.feeIds) ? opts!.feeIds! : (feeId ? [feeId] : []);
+  const feeAddressId = opts?.feeAddressId ?? (cart as any).selectedServiceFeeAddressId ?? null;
+
+  // Build query using the same structure your backend already accepts:
+  // service_fees[0][id]=X&service_fees[1][id]=Y ...
+  const sp = new URLSearchParams();
+
+  // Use the flat array format the backend expects: service_fee_ids[]
+if (feeIds.length) {
+  feeIds.forEach((idVal) => idVal && sp.append('service_fee_ids[]', String(idVal)));
+} else if (feeId) {
+  sp.append('service_fee_ids[]', String(feeId));
+}
+
+// Optional: if your backend couples an address id to fees
+if (feeAddressId) {
+  sp.append('service_fee_address_id', String(feeAddressId));
+}
+
+const url = sp.toString()
+  ? `product-masters/${pmId}/available-times?${sp.toString()}`
+  : `product-masters/${pmId}/available-times`;
+  
+  return useApi(url, {}, {
+    onSuccess: (data: any) => {
+      // ✅ Store slots (dates+times)
+      this.$state.service.loading = false;
+      this.$state.service.times = data.data;
+      console.log('✅ fetchServiceAvailableTimes success:', { url, timesCount: data?.data?.length ?? 0 });
+    },
+    onError: (err: any) => {
+      console.error('❌ Error fetching available times:', err);
+      this.$state.service.loading = false;
+    }
+  });
+}
+
+
 
     },
 

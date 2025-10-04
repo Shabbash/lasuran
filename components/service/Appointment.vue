@@ -104,7 +104,7 @@
 import { COMPONENTS } from "~/data/constants";
 import { CalendarDate, type DateValue } from "@internationalized/date";
 import PriceIcon from '@/components/icons/PriceIcon.vue'
-
+import { onMounted } from 'vue'
 import { useMenu } from "~/stores/menu";
 import SelectableSlider from "~/components/base/SelectableSlider.vue";
 import { useI18n } from 'vue-i18n'
@@ -140,9 +140,10 @@ const isDateUnavailable = (date: DateValue) => {
   return !item?.slots;
 }
 const form = ref({
-  date: null,
-  time: null,
+  date: null as string | null,
+  time: null as string | null,
 })
+
 const menuModule = useMenu();
 
 const selectedDate = computed({
@@ -168,7 +169,11 @@ const selectedDate = computed({
     } else {
       form.value.date = date
     }
+    form.value.time = null;
   }
+  // Reset time whenever date changes
+  
+
 })
 // const selectedDate = computed({
 //   set(date: any) {
@@ -182,10 +187,27 @@ const selectedDate = computed({
 //     // return date ? toStructuredDate(date) :null;
 //   }
 // })
-menuModule.fetchServiceAvailableTimes().then((availableTimes) => {
-  form.value.date = availableDates.value?.[0]?.date;
+onMounted(async () => {
+  // Debug quick check (يمكن تشيل اللوج بعد التأكد)
+  console.log('[VIP] effectivePmId:', effectivePmId.value, 'feeIds:', feeIds);
+
+  if (effectivePmId.value) {
+    await menuModule.fetchServiceAvailableTimes(effectivePmId.value, {
+      feeIds: feeIds 
+    });
+  } else {
+    await menuModule.fetchServiceAvailableTimes();
+  }
+
+  form.value.date = availableDates.value?.[0]?.date ?? null;
+  form.value.time = null;
+
+  // Debug: كم يوم رجع؟
+  console.log('[VIP] times count:',appModule.dialog?.data?.booking );
 
 });
+
+
 
 const getCurrentTime = function () {
   return (selectedDateObject.value?.slots ?? []).find((el: any) => el.from == form.value.time);
@@ -222,43 +244,75 @@ const times = [
 
 const selectedTime = ref('21:30')
 const appModule = useApp();
+// const reserveOption = ref('');
+// Read service payload passed from GiftedOrderDetailsDialog (VIP support)
+// Read service payload passed from GiftedOrderDetailsDialog (VIP support)
+const dialogSvc = computed(() => appModule.dialog?.data?.service ?? {});
+const pmId = computed<number | null>(() => dialogSvc.value?.product_master_id ?? null);
+const passedFeeIds = computed<number[]>(() =>
+  Array.isArray(dialogSvc.value?.service_fee_ids) ? dialogSvc.value.service_fee_ids : []
+);
+
+// Fallback chain to ensure we always try a sensible product master id
+const effectivePmId = computed<number | null>(() =>
+  pmId.value
+  ?? (dialogSvc.value?.id ?? null)                               // sometimes id is the product master id
+  ?? (menuModule.getService?.data?.product_master_id ?? null)    // from store data
+  ?? (menuModule.getService?.data?.id ?? null)                   // last resort
+);
+
+const feeIds: number[] = Array.isArray(appModule.dialog?.data?.booking?.service_fees)
+  ? appModule.dialog.data.booking.service_fees.map((f: any) => Number(f.id)).filter(Boolean)
+  : [];
 
 const toast = useToast();
 const addToCart = function () {
   if (reserveOption.value)
     setDialogComponent(COMPONENTS.SERVICE_GUEST);
   else {
-    let time = getCurrentTime();
-    if (!time) return toast.add({ title: "select date and time!", color: 'error' })
-    let body = {
-      start_at: time?.from_date_time,
-      end_at: time?.to_date_time,
-    }
-    console.log('selectedDateObject.value.slots ', selectedDateObject.value.slots, body)
-    let url = null;
-    if (appModule.dialog?.data?.booking?.id) {
-      url = `gifted-orders/${appModule.dialog?.data?.booking?.id}/schedule`;
-      body.order_product_id =appModule.dialog?.data?.service?.order_product_id ??  appModule.dialog?.data?.service?.id
-    }
-      cartModule.updateServiceAvailableSlot(body, url).then((availableSlots) => {
-        if (url && appModule.dialog?.data?.booking?.id) {
-          let booking = appModule.dialog?.data?.booking;
-          setDialogComponent(COMPONENTS.GIFTED_ORDER_DETAILS, {
-            booking,
-            gifted_order_id: booking.gifted_info?.id ?? undefined,
-            order_id: booking.id
-          });
-        } else {
-          setDialogComponent(COMPONENTS.SERVICE_SUCCESS, {
-            modalMaxWidth: '[430px]'
-          });
-          setDialogOptions()
-          cartModule.fetchCart();
-        }
-    })
-    // setDialogComponent(COMPONENTS.SERVICE_SUCCESS);
+  let url: string | null = null;            // <-- عرّف url هنا أول شيء
 
+  const time = getCurrentTime();
+  if (!time) return toast.add({ title: "select date and time!", color: 'error' });
+
+  const body: any = {
+    start_at: time?.from_date_time,
+    end_at: time?.to_date_time,
+  };
+
+  console.log('selectedDateObject.value.slots ', selectedDateObject.value?.slots, body);
+
+  if (appModule.dialog?.data?.booking?.id) {
+    url = `gifted-orders/${appModule.dialog?.data?.booking?.id}/schedule`;
+    body.order_product_id = appModule.dialog?.data?.service?.order_product_id ?? appModule.dialog?.data?.service?.id;
+
+    // لو كنت ممرّر passedFeeIds سابقاً:
+    if (Array.isArray(passedFeeIds?.value) && passedFeeIds.value.length) {
+      body.service_fee_ids = passedFeeIds.value;
+    }
   }
+
+  // لو عندك console.log بيطبع url، خليه بعد ما تعيّن url وليس قبل
+  // console.log('[VIP] scheduling body:', body, 'url:', url);
+
+  cartModule.updateServiceAvailableSlot(body, url).then((availableSlots) => {
+    if (url && appModule.dialog?.data?.booking?.id) {
+      const booking = appModule.dialog?.data?.booking;
+      setDialogComponent(COMPONENTS.GIFTED_ORDER_DETAILS, {
+        booking,
+        gifted_order_id: booking.gifted_info?.id ?? undefined,
+        order_id: booking.id
+      });
+    } else {
+      setDialogComponent(COMPONENTS.SERVICE_SUCCESS, {
+        modalMaxWidth: '[430px]'
+      });
+      setDialogOptions();
+      cartModule.fetchCart();
+    }
+  });
+}
+
 }
 const onBack = function () {
   if (appModule.dialog?.data?.booking?.id){
