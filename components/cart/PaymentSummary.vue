@@ -242,11 +242,7 @@ const proceedToCheckout = async () => {
           toast.add({ title: t('error_title'), description: t('missing_payment_url') })
         }
       },
-      () => {
-        clearTimeout(timeoutId)
-        isProcessing.value = false
-        toast.add({ title: t('error_title'), description: t('checkout_failed') })
-      }
+
     )
   } catch (e) {
     isProcessing.value = false

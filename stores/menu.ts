@@ -288,7 +288,7 @@ fetchServiceAvailableTimes(
   opts?: {
     // Single fee (legacy support)
     feeId?: number | null;
-    // Multiple fees (VIP: preferred)
+    // Multiple fees (preferred)
     feeIds?: number[] | null;
     // Optional: address coupling (if backend uses it)
     feeAddressId?: number | null;
@@ -296,49 +296,45 @@ fetchServiceAvailableTimes(
 ) {
   this.$state.service.loading = true;
 
-// Coerce product master id to a plain number
-const rawId =
-  productMasterId ??
-  this.$state.service?.data?.product_master_id ??
-  this.$state.service?.data?.id;
+  // --- Resolve product master id safely
+  const rawId =
+    productMasterId ??
+    this.$state.service?.data?.product_master_id ??
+    this.$state.service?.data?.id;
 
-const pmId =
-  typeof rawId === 'object'
-    ? Number(rawId?.id ?? rawId?.product_master_id)
-    : Number(rawId);
+  const pmId =
+    typeof rawId === 'object'
+      ? Number(rawId?.id ?? rawId?.product_master_id)
+      : Number(rawId);
 
-if (!pmId || Number.isNaN(pmId)) {
-  console.error('fetchServiceAvailableTimes: invalid product master id', rawId);
-  this.$state.service.loading = false;
-  return Promise.resolve();
-}
+  if (!pmId || Number.isNaN(pmId)) {
+    console.error('fetchServiceAvailableTimes: invalid product master id', rawId);
+    this.$state.service.loading = false;
+    return Promise.resolve();
+  }
 
-  // Pull defaults from cart store for backward compatibility
+  // --- Gather fees from opts or cart store
   const cart = useCart();
   const feeId = opts?.feeId ?? (cart as any).selectedServiceFeeId ?? null;
-  const feeIds = Array.isArray(opts?.feeIds) ? opts!.feeIds! : (feeId ? [feeId] : []);
+  const feeIds = Array.isArray(opts?.feeIds) ? (opts!.feeIds || []) : (feeId ? [feeId] : []);
   const feeAddressId = opts?.feeAddressId ?? (cart as any).selectedServiceFeeAddressId ?? null;
 
-  // Build query using the same structure your backend already accepts:
-  // service_fees[0][id]=X&service_fees[1][id]=Y ...
-  const sp = new URLSearchParams();
+  // --- Build query manually in the format service_fees[0][id]=X
+  const parts: string[] = [];
 
-  // Use the flat array format the backend expects: service_fee_ids[]
-if (feeIds.length) {
-  feeIds.forEach((idVal) => idVal && sp.append('service_fee_ids[]', String(idVal)));
-} else if (feeId) {
-  sp.append('service_fee_ids[]', String(feeId));
-}
+  feeIds.forEach((idVal, index) => {
+    if (idVal != null) {
+      parts.push(`service_fees[${index}][id]=${encodeURIComponent(String(idVal))}`);
+    }
+  });
 
-// Optional: if your backend couples an address id to fees
-if (feeAddressId) {
-  sp.append('service_fee_address_id', String(feeAddressId));
-}
+  if (feeAddressId) {
+    parts.push(`service_fee_address_id=${encodeURIComponent(String(feeAddressId))}`);
+  }
 
-const url = sp.toString()
-  ? `product-masters/${pmId}/available-times?${sp.toString()}`
-  : `product-masters/${pmId}/available-times`;
-  
+  const query = parts.length ? `?${parts.join('&')}` : '';
+  const url = `product-masters/${pmId}/available-times${query}`;
+
   return useApi(url, {}, {
     onSuccess: (data: any) => {
       // ✅ Store slots (dates+times)
