@@ -11,15 +11,16 @@
       />
     </div>
     <!-- Branch / Order Method / Sub-Category -->
+  
     <div class="flex flex-col md:flex-row justify-between md:items-center gap-[20px]">
       <!-- Branch Selector -->
       <USelectMenu
         v-if="showBranchSelect"
         v-model="filters.branch"
-        :items="homeStore.deliveryMethods"
+        :items="deliveryMethods"
         valueKey="id"
         labelKey="name"
-        :placeholder="t('select_branch')"
+        placeholder="select dilvery methodt"
         class="min-w-[300px] rounded-[100px] border border-[#EBE4DF] bg-[#EBE4DF] shadow-[1px_3px_8px_0px_#00000012] backdrop-blur-[25px] h-[32px] md:h-[56px] text-[#A0576F] text-[16px] font-[350] leading-normal ps-[28px]"
         :loading="homeStore.isLoading"
         @update:modelValue="onChange('branch', $event)"
@@ -112,6 +113,12 @@ const filters = ref<{ branch: number | null; order_method: string | null }>({
 const mainCategories = computed(() => menuModule.getMenus || [])
 const subCategories  = computed(() => menuModule.getSubCategories || [])
 const branches       = computed(() => branchesStore.getBranches || [])
+const deliveryMethods = [
+
+  { name: 'Pickup', value: '1' },
+  { name: 'Delivery', value: '2' }
+
+]
 
 /** Normalize delivery methods from multiple possible sources + is_enabled casting */
 const orderMethodItems = computed(() => {

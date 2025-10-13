@@ -8,7 +8,7 @@
       <div class="absolute inset-0 flex flex-col justify-end h-full">
         <!-- Image -->
         <div>
-          <img class="mx-auto h-full object-cover inset-0 relative" src="public/assets/img/product-1.svg" alt="" />
+          <img class="mx-auto h-full object-cover inset-0 relative" :src="category.image" alt="" />
         </div>
 
 
@@ -16,13 +16,20 @@
       </div>
     </div>
     <h3 class="text-white text-center text-[23px] font-medium">
-      Bridal Collection
+     {{ category.name }}
     </h3>
 
   </div>
 </template>
 
 <script setup lang="ts">
+defineProps({
+  category: {
+    type: Object,
+    required: true
+  }
+})
+
 
 </script>
 
