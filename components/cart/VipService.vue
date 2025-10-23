@@ -2,8 +2,11 @@
   <div class="mb-[18px] relative min-h-[47px]">
     <!-- Header row with switch -->
     <div class="flex items-center justify-between bg-[#EBE4DF] rounded-full px-[25px] h-[47px]">
-      <div class="text-[#A0576F] text-[15px] font-[400]">{{ t('vip_title') }}</div>
-
+      
+        <div class="flex items-center gap-[10px]">
+          <VipServiceIcon />
+          <div class="text-[#A0576F] text-[15px] font-[400]">{{ t('vip_title') }}</div>
+          </div>
       <USwitch v-model="isOn" :disabled="isDisabled" :ui="{
         base: 'data-[state=unchecked]:bg-[#BFBFBF] data-[state=checked]:bg-[#D99EB2] h-[22px]',
         thumb: 'bg-[#90928F] data-[state=checked]:bg-[#A0576F]'
@@ -15,9 +18,14 @@
     <!-- Selected address chip (title only) -->
     <div v-if="isOn && selectedAddressTitle"
       class="bg-[#EBE4DFE5] mx-[5px] px-[26px] pb-[12px] pt-[14px] mt-[8px] rounded-[16px] flex items-center justify-between">
-      <div class="text-[#A0576F] text-[15px] font-medium">
-        {{ t('vip_address_label') }}: {{ selectedAddressTitle }}
-      </div>
+      
+      
+        <div class="text-[#A0576F] text-[15px] font-medium">
+          {{ t('vip_address_label') }}: {{ selectedAddressTitle }}
+        </div>
+
+     
+     
       <div class="flex items-center gap-[7px]">
         <button class="cursor-pointer" @click="openAddressPicker" :aria-label="t('addresses.btn_edit_aria')">
           <EditIcon />
@@ -42,6 +50,7 @@ import { useAddresses } from '~/stores/address'
 import { COMPONENTS } from '~/data/constants'
 import EditIcon from '@/components/icons/EditIcon.vue'
 import DeleteIcon from '@/components/icons/DeleteIcon.vue'
+import VipServiceIcon from '@/components/icons/VipServiceIcon.vue'
 
 const { t } = useI18n()
 const appStore = useApp()
