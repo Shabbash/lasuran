@@ -7,6 +7,7 @@ export const SERVICE_TYPES = {
 export const DELIVERY_METHOD = { 
     PICKUP: "pickup",
     RESERVATION: "srvc_resv"
+    
 };
 
 export const DEVICE_TYPES = { 

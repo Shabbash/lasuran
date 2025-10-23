@@ -44,7 +44,7 @@
       </div>
 
       <!-- Delivery details + Branch select -->
-      <div>
+      <div v-if="orderMethod==1">
         <h2 class="text-[#EBE4DF] text-[17px] font-medium leading-normal mb-[16px]">
           Delivery Details
         </h2>
@@ -118,17 +118,22 @@
           </div>
         </div>
       </div>
+      <div v-else>
+        <div>
+          <p class="text-start text-[14px] font-medium text-white mb-3">
+            {{ $t('profile_address') }}
+          </p>
+          <input type="text" :value="addressesStore.preferred?.full_address || ''"
+            :placeholder="$t('profile_address_placeholder')" readonly @click="openAddressModal" class="w-full h-[50px] rounded-[14px] border border-[#EBE4DF] bg-transparent px-4 
+           text-[#BBCACF] placeholder:text-[#D3C9C5] text-[14px] outline-none cursor-pointer" />
+        </div>
+      </div>
     </div>
 
     <!-- Categories (static demo) -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-[20px]">
-      <CategoryCard />
-      <CategoryCard />
-      <CategoryCard />
-      <CategoryCard />
-      <CategoryCard />
-      <CategoryCard />
-      <CategoryCard />
+      <CategoryCard  v-for="subCategory in menuModule.getSubCategories" :key="subCategory.id" :category="subCategory"  @click="goToProduct(subCategory.id)" />
+    
     </div>
   </Container>
 </template>
@@ -152,17 +157,24 @@ import { useBranches } from '@/stores/branches'
 import { useProducts } from '@/stores/products'
 import { useApp } from '@/stores/app'
 import { useMenu } from '~/stores/menu'   // ✅ استيراد صحيح للستـور
+import { SERVICE_TYPES ,DELIVERY_METHOD} from '@/data/constants'
+import { COMPONENTS } from '@/data/constants'
+
+import { useAddresses } from '@/stores/address'
+
 
 /* Constants */
-import { COMPONENTS } from '@/data/constants'
 
 /* Init stores */
 const productsStore = useProducts()
 const homeStore = useHome()
 const branchesStore = useBranches()
 const menuModule = useMenu()   
+const addressesStore = useAddresses()
+const appStore = useApp()
+
            // ✅ انشئ الاستور بعد الاستيراد
-const { setDialogComponent, setDialogShow, setServiceType } = useApp()
+const { setDialogComponent, setDialogShow, setServiceType ,setDeliveryMethod} = useApp()
 
 /* Types */
 type OrderMethod = '1' | '2'
@@ -190,6 +202,16 @@ const genderItems = [
   { label: 'Male', value: 'Male' }
 ]
 
+const formData = reactive({
+  first_name: '',
+  last_name: '',
+  gender: '',
+  date_of_birth: '',
+  address: '',
+  email: ''
+})
+
+
 /* Derive delivery methods from store (reactive) */
 const deliveryMethods = computed(() => homeStore.deliveryMethods)
 
@@ -211,8 +233,23 @@ watch(selectedBranch, async (val) => {
   // حدّث branch_id داخل menu store
   menuModule.$patch({ branch_id: val?.value ?? null })
   // أعد تحميل الـ menus والخدمات بناءً على الفرع
+
   await menuModule.fetchMenus()
   await menuModule.fetchServices()
+  await menuModule.getSubCategories()
+})
+
+// changed delivary method 
+watch(orderMethod , async(val)=>{
+  setDeliveryMethod(val)
+
+ await menuModule.fetchMenus()
+})
+
+onMounted(async () => {
+  setServiceType(SERVICE_TYPES.ONLINE)
+  // set delivery method
+  setDeliveryMethod(DELIVERY_METHOD.PICKUP)
 })
 
 /* Load all required data once */
@@ -220,6 +257,16 @@ onMounted(async () => {
   if (!homeStore.homeData) {
     await homeStore.initializeHome()
   }
+
+  // menu store
+  // set branch_id 
+  await  menuModule.$patch({ branch_id:branchItems.value[0]?.value })
+
+
+
+
+  await menuModule.initMenu()
+
 
   // حمل الفروع
   if (!branchesStore.getBranches.length) {
@@ -234,6 +281,33 @@ onMounted(async () => {
   // شغّل المنيو (بيجيب menus & services) — بعد ما نحدد الفرع
   await menuModule.initMenu()
 })
+
+
+
+const openAddressModal = () => {
+  appStore.setDialogComponent(COMPONENTS.ADDRESSES_DIALOG, {
+    modalMaxWidth: 'max-w-[539px]',
+    onSelected: (addr) => {
+      // هنا تتعبّى قيمة الـ input
+      formData.address = addr?.full_address || ''
+    }
+  })
+  appStore.setDialogShow(true)
+}
+
+const goToProduct= (category_id)=>{
+  console.log('selectedBranch',gender.value)
+  navigateTo({ path: '/shop/products', query: {
+    sub_category_id: category_id , 
+     branch_id: selectedBranch.value.value,
+     // menu_id : gender.value.value,
+     
+
+    } })
+
+
+}
+
 
 
 </script>

@@ -55,9 +55,9 @@ onMounted(async () => {
   if (!homeStore?.home?.sliders?.length || !homeStore?.home?.delivery_methods?.length) {
     await homeStore.initializeHome()
   }
-  if (!branchesStore.getBranches.length && !branchesStore.isLoading) {
-    await branchesStore.fetchBranches()
-  }
+  // if (!branchesStore.getBranches.length && !branchesStore.isLoading) {
+  //   await branchesStore.fetchBranches()
+  // }
 })
 
 const refreshFromQuery = async () => {
