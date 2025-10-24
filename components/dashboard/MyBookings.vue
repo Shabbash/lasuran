@@ -88,6 +88,14 @@
             </span>
           </div>
 
+                 <div v-if="booking.order_service_fee_price && booking.order_service_fee_price > 0"
+            class="flex items-center text-sm text-[#EBE4DF] gap-[6px]">
+            <GiftIcon />
+            <span class="text-[#C6C6C7] text-[15px]">
+           is vip service
+            </span>
+          </div>
+
           <!-- Gift Status -->
           <!-- <div v-if="booking.gifted_info && booking.gifted_info.gifted_status"
             class="flex items-center text-sm gap-[6px]">
