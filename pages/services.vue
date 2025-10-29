@@ -1,5 +1,32 @@
 <template>
   <Container>
+
+  
+    <!-- Services Banner / Slider -->
+    <div v-if="sliders?.length" class="mb-6">
+      <BaseSlider
+        :items="sliders"
+        dots
+        :slide-per-row="1"
+        :slide-per-row-mobile="1"
+        dots-class="dots-style"
+        class="services-slider"
+      >
+        <template #default="{ item }">
+          <div class="w-full cursor-pointer">
+            <div class="w-full overflow-hidden relative rounded-[23px] h-[200px] md:h-[300px]">
+              <img
+                class="mx-auto h-full w-full object-cover inset-0 relative"
+                :src="item.image_url ?? item.image"
+                alt="Banner"
+                @click="handleBannerClick(item)"
+              />
+            </div>
+          </div>
+        </template>
+      </BaseSlider>
+    </div>
+
     <!-- Filters Bar -->
     <ServiceFilters v-model="filters" />
 
@@ -66,14 +93,16 @@
 // Imports
 import Container from '@/components/base/Container.vue'
 import BaseCard from '@/components/base/Card.vue'
+import BaseSlider from '@/components/base/Slider.vue' // ADD
 import ServiceCardSkeleton from '~/components/skeletons/ServiceCardSkeleton.vue'
 import Pagination from '~/components/base/Pagination.vue'
 import ServiceFilters from '~/components/service/ServiceFilters.vue'
 import { useMenu } from '~/stores/menu'
 import { useApp } from '~/stores/app'
-import { COMPONENTS, SERVICE_TYPES,DELIVERY_METHOD } from '~/data/constants'
+import { COMPONENTS, SERVICE_TYPES, DELIVERY_METHOD } from '~/data/constants'
 import { onMounted, ref } from 'vue'
 import { usePageTitle } from '~/composables/usePageTitle'
+import { useHome } from '~/stores/home' // ADD
 
 usePageTitle("titles.services")
 
@@ -90,17 +119,50 @@ interface Service {
 }
 
 // State & Stores
+const homeStore = useHome() 
 const menuModule = useMenu()
-const { setDialogShow, setDialogComponent, setServiceType,setDeliveryMethod } = useApp()
+const { setDialogShow, setDialogComponent, setServiceType, setDeliveryMethod } = useApp()
 const filters = ref({})
+const sliders = ref([])
 
 // Init services on mount
-onMounted(() => {
+onMounted(async () => {
+
+  homeStore.initializeHome()
   setServiceType(SERVICE_TYPES.RESERVATION)
   setDeliveryMethod(DELIVERY_METHOD.RESERVATION)
-
-  menuModule.initMenu()
+  await menuModule.initMenu()
+  getSliders( )
 })
+
+
+function handleBannerClick(item: any) {
+  if (!item?.clickable) return
+  if (item?.url) {
+    window.open(item.url, '_blank') // open in new tab
+  }
+}
+
+
+const getSliders= ()=>{
+
+
+  const params : any ={
+     location :"menu" ,
+     delivery_method_id :7
+
+}
+           useApi("sliders-by-location", { params }, {
+                onSuccess: (data: any) => {
+                              console.log('sliders', data.data.sliders)
+
+            sliders.value= data.data.sliders
+                },
+                onError: (err: any) => {
+                   
+                }
+            });}
+
 
 // Handle pagination
 const loadPage = async (page: number) => {
@@ -118,6 +180,9 @@ function openModal(service: Service) {
 </script>
 
 <style scoped>
+/* (Optional) dots styling if needed later */
+.services-slider :deep(.dots-style) {}
+
 .guest-btn::before {
   content: url('/assets/img/guest.svg');
   height: 22px;
