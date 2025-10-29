@@ -205,7 +205,11 @@ const proceedToCheckout = async () => {
 
     // ✅ Choose payment method (or open selector)
     if (cartModule.getPaymentMethods.length > 1) {
-      appModule.setDialogComponent(COMPONENTS.PAYMENT_SELECTION)
+      appModule.setDialogComponent(COMPONENTS.PAYMENT_SELECTION, {
+
+
+    modalMaxWidth: 'max-w-[539px]',
+    })
       appModule.setDialogShow(true)
       isProcessing.value = false
       return
@@ -217,15 +221,8 @@ const proceedToCheckout = async () => {
       isProcessing.value = false
     }, 10000)
 
-    // ✅ 1) Build VIP extras (service_fees)
-    const orderExtras = buildVipExtras()
+const orderPayload = {}
 
-    // ✅ 2) IMPORTANT: merge current cart params (promo_code, gift_card, ...)
-    //    with the VIP extras so the backend applies exactly what you previewed.
-    const orderPayload = {
-      ...params.value,   // e.g. promo_code, gift_card, any flags used in fetchCart
-      ...orderExtras     // service_fees[...] (flat +/or JSON array depending on your buildVipExtras)
-    }
 
     cartModule.createOrder(
       orderPayload,
@@ -293,17 +290,17 @@ const ensureVipAddressBeforeCheckout = async (): Promise<boolean> => {
 }
 
 // Build VIP extras for order/cart payload
-const buildVipExtras = () => {
-  const extras: Record<string, any> = {}
-  const feeId = (cartModule as any).selectedServiceFeeId
-  const addrId = (cartModule as any).selectedServiceFeeAddressId
+// const buildVipExtras = () => {
+//   const extras: Record<string, any> = {}
+//   const feeId = (cartModule as any).selectedServiceFeeId
+//   const addrId = (cartModule as any).selectedServiceFeeAddressId
 
-  if (feeId) {
-    extras['service_fees[0][id]'] = feeId
-    if (addrId) extras['service_fees[0][address_id]'] = addrId
-  }
-  return extras
-}
+//   if (feeId) {
+//     extras['service_fees[0][id]'] = feeId
+//     if (addrId) extras['service_fees[0][address_id]'] = addrId
+//   }
+//   return extras
+// }
 
 </script>
 

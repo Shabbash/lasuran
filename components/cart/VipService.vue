@@ -86,15 +86,15 @@ function pickDefaultFee() {
   // Choose first fee (or add smarter logic if you have types)
   return cart.available_service_fees?.[0]
 }
-
-function openAddressPicker() {
+function openAddressPicker(feeId?: number) {
   appStore.setDialogComponent(COMPONENTS.ADDRESSES_DIALOG, {
     modalMaxWidth: 'max-w-[539px]',
 
     // when user picks an existing address
     onSelected: async (addr: any) => {
-      if (chosenFeeId.value) {
-        await cart.applyServiceFee(chosenFeeId.value, addr?.id)
+      const idToApply = feeId ?? chosenFeeId.value
+      if (idToApply) {
+        await cart.applyServiceFee(idToApply, addr?.id)
       }
       appStore.setDialogShow(false)
     },
@@ -104,19 +104,16 @@ function openAddressPicker() {
       appStore.setDialogComponent(COMPONENTS.ADD_ADDRESS, {
         modalMaxWidth: 'max-w-[1000px]',
         mode: 'add',
-        // IMPORTANT: after adding, use that new address for VIP immediately
+        // After adding, apply VIP immediately with the new address
         onSave: async (payload: {
           title: string
           full_address: string
           latitude: number
           longitude: number
         }) => {
-          // 1) create address
           const created = await addresses.createAddress(payload)
-          // 2) refresh list to ensure we have the new id
           await addresses.fetchAddresses(true)
 
-          // 3) resolve created id robustly
           const createdId =
             (created as any)?.id
             ?? addresses.items.find(a =>
@@ -124,14 +121,13 @@ function openAddressPicker() {
                 && Math.abs((a.latitude ?? 0) - payload.latitude) < 1e-6
                 && Math.abs((a.longitude ?? 0) - payload.longitude) < 1e-6
               )?.id
-            ?? addresses.sorted?.[0]?.id // last fallback
+            ?? addresses.sorted?.[0]?.id
 
-          // 4) apply VIP with the just-added address
-          if (chosenFeeId.value && createdId) {
-            await cart.applyServiceFee(chosenFeeId.value, createdId)
+          const idToApply = feeId ?? chosenFeeId.value
+          if (idToApply && createdId) {
+            await cart.applyServiceFee(idToApply, createdId)
           }
 
-          // 5) close the add-address modal
           appStore.setDialogShow(false)
         }
       })
@@ -140,8 +136,11 @@ function openAddressPicker() {
 
     // if user closes without selecting/adding -> revert switch if nothing applied
     onCancel: () => {
-      if (!cart.selectedServiceFeeAddressId) {
+      // Only turn switch off if VIP wasn't actually applied (no params.service_fees)
+      if (!(cart.params?.service_fees?.length > 0)) {
         isOn.value = false
+        cart.selectedServiceFeeId = null
+        cart.selectedServiceFeeAddressId = null
       }
     }
   })
@@ -158,11 +157,11 @@ async function enableVip() {
   if (!fee) { isOn.value = false; return }
 
   // Pre-set fee id so the address modal knows what to apply
-  cart.selectedServiceFeeId = fee.id
+  // cart.selectedServiceFeeId = fee.id
 
   if (requiresLocation(fee) && !chosenAddressId.value) {
     // Must pick an address → open modal
-    openAddressPicker()
+openAddressPicker(fee.id)
   } else {
     // Apply immediately (no address needed or already selected)
     await cart.applyServiceFee(fee.id, chosenAddressId.value ?? undefined)
