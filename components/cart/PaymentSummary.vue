@@ -221,7 +221,20 @@ const proceedToCheckout = async () => {
       isProcessing.value = false
     }, 10000)
 
-const orderPayload = {}
+const orderPayload = {
+  payment_method_id: (cartModule as any).selectedPaymentMethodId ?? cartModule.getPaymentMethods?.[0]?.id,
+  is_scheduled: cartModule.params?.is_scheduled ?? 0,
+  promo_code: params.value?.promo_code ?? null,
+  gift_card: params.value?.gift_card ?? null,
+  is_gifted_order: cartModule.params?.is_gifted_order ?? 0,
+  gift_message: cartModule.params?.gift_message ?? '',
+  service_fees: [
+    {
+      id: (cartModule as any).selectedServiceFeeId,
+      address_id: (cartModule as any).selectedServiceFeeAddressId
+    }
+  ]
+}
 
 
     cartModule.createOrder(

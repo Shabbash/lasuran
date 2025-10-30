@@ -547,84 +547,89 @@ export const useCart = defineStore("cart", {
 
         // -------- Order --------
         // -------- Order --------
-        createOrder(
-            payload: any = {},
-            onSuccess: Function = () => { },
-            onError: Function = () => { }
-        ) {
-            this.$state.order.loading = true;
+       createOrder(
+  payload: any = {},
+  onSuccess: Function = () => {},
+  onError: Function = () => {}
+) {
+  this.$state.order.loading = true;
 
-            // Normalize once
-            const msg = (this.$state.params?.gift_message ?? '').trim();
+  // Normalize once
+  const msg = (this.$state.params?.gift_message ?? '').trim();
 
-            // Build base body (top-level message)
-            const body: any = {
-                payment_method_id: this.$state.payment_method_id,
-                is_scheduled: 0,
-                promo_code: this.$state.params?.promo_code ?? null,
-                gift_card: this.$state.params?.gift_card ?? null,
-                is_gifted_order: this.$state.params?.is_gifted_order ?? 0,
-                gift_message: msg // <-- Top-level, new contract
-            };
+  // Build base body (top-level message)
+  const body: any = {
+    payment_method_id: this.$state.payment_method_id,
+    is_scheduled: 0,
+    promo_code: this.$state.params?.promo_code ?? null,
+    gift_card: this.$state.params?.gift_card ?? null,
+    is_gifted_order: this.$state.params?.is_gifted_order ?? 0,
+    gift_message: msg
+  };
 
-            // If gifted order, also mirror message inside gifted_order_data (legacy contract)
-            if (
-                this.$state.params?.is_gifted_order === 1 &&
-                this.$state.params?.gifted_order_data
-            ) {
-                body.gifted_order_data = {
-                    first_name: this.$state.params.gifted_order_data.first_name,
-                    last_name: this.$state.params.gifted_order_data.last_name,
-                    mobile_code: this.$state.params.gifted_order_data.mobile_code,
-                    mobile_number: this.$state.params.gifted_order_data.mobile_number,
-                    email: this.$state.params.gifted_order_data.email,
-                    message: msg // <-- IMPORTANT: mirror here for backends still reading nested message
-                };
-            }
+  // If gifted order, also mirror message inside gifted_order_data (legacy contract)
+  if (
+    this.$state.params?.is_gifted_order === 1 &&
+    this.$state.params?.gifted_order_data
+  ) {
+    body.gifted_order_data = {
+      first_name: this.$state.params.gifted_order_data.first_name,
+      last_name: this.$state.params.gifted_order_data.last_name,
+      mobile_code: this.$state.params.gifted_order_data.mobile_code,
+      mobile_number: this.$state.params.gifted_order_data.mobile_number,
+      email: this.$state.params.gifted_order_data.email,
+      message: msg
+    };
+  }
 
-            // Always include bracketed service_fees
-            const serviceFeesParams = this._serviceFeesAsParams();
+  // ✅ هنا المهم: أرسل service_fees كمصفوفة JSON إذا فيه اختيار
+  if (Array.isArray(this.$state.params?.service_fees) && this.$state.params.service_fees.length) {
+    body.service_fees = this.$state.params.service_fees.map(f => ({
+      id: Number(f.id),
+      ...(f.address_id != null ? { address_id: Number(f.address_id) } : {})
+    }));
+  }
 
-            // Protect against accidental overwrite from external payload
-            const safePayload = { ...payload };
-            if ('gift_message' in safePayload && (safePayload.gift_message == null)) {
-                delete safePayload.gift_message;
-            }
+  // Protect against accidental overwrite from external payload
+  const safePayload = { ...payload };
+  if ('gift_message' in safePayload && (safePayload.gift_message == null)) {
+    delete safePayload.gift_message;
+  }
 
-            // (Optional) DEBUG one-shot:
-            // console.log('[DEBUG] createOrder body:', { ...body, ...serviceFeesParams, ...safePayload });
+  // 👇 لاحظ: ما عاد نستخدم serviceFeesParams هنا (المُقوّسة)
+  // console.debug('[DEBUG] createOrder body:', { ...body, ...safePayload });
 
-            return useApi(
-                `orders`,
-                {
-                    method: 'POST',
-                    body: {
-                        ...body,
-                        ...serviceFeesParams,
-                        ...safePayload
-                    }
-                },
-                {
-                    onSuccess: (data: any) => {
-                        this.$state.order.loading = false;
-                        this.$state.order.data = data.data.order;
-                        this.$state.payment = data.data.payment;
-                        this.$state.confirmation_message = data.data.confirmation_message;
-                        this.$state.saved_cards = data.data.saved_cards ?? [];
+  return useApi(
+    `orders`,
+    {
+      method: 'POST',
+      body: {
+        ...body,
+        ...safePayload
+      }
+    },
+    {
+      onSuccess: (data: any) => {
+        this.$state.order.loading = false;
+        this.$state.order.data = data.data.order;
+        this.$state.payment = data.data.payment;
+        this.$state.confirmation_message = data.data.confirmation_message;
+        this.$state.saved_cards = data.data.saved_cards ?? [];
 
-                        this.resetVipState();
-                        this.resetGiftState();
+        this.resetVipState();
+        this.resetGiftState();
 
-                        onSuccess(data);
-                    },
-                    onError: (err: any) => {
-                        this.$state.order.loading = false;
-                        console.error('Order creation failed:', err);
-                        onError(err);
-                    }
-                }
-            );
-        }
+        onSuccess(data);
+      },
+      onError: (err: any) => {
+        this.$state.order.loading = false;
+        console.error('Order creation failed:', err);
+        onError(err);
+      }
+    }
+  );
+}
+
         ,
 
         openPaymentPopup(existingWin: Window | null = null) {
