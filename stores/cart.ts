@@ -177,6 +177,22 @@ export const useCart = defineStore("cart", {
                 },
                 {
                     onSuccess: (data: any) => {
+
+                        // --- helper: sum service fees from products (fallback when root doesn't provide a total) ---
+const sumServiceFeesFromProducts = (root: any) => {
+  const items = Array.isArray(root?.products) ? root.products : []
+  let sum = 0
+  for (const p of items) {
+    const fees = Array.isArray(p?.service_fees) ? p.service_fees : []
+    for (const f of fees) {
+      // Prefer backend-computed total if present; fallback to value
+      const v = f?.total_fees ?? f?.total ?? f?.value ?? 0
+      sum += Number(v)
+    }
+  }
+  return sum
+}
+
                         // Normalize root
                         const root = data?.data ?? data ?? {};
 
@@ -205,7 +221,9 @@ export const useCart = defineStore("cart", {
                             (root.promo_discount || 0) +
                             (root.extra_discount || 0) +
                             (root.gift_card_discount || 0);
-                        this.$state.service_cost = root.order_service_fees_price || 0;
+                        const rootFees = Number(root?.order_service_fees_price ?? 0)
+                        const productFees = sumServiceFeesFromProducts(root)
+                        this.$state.service_cost = rootFees > 0 ? rootFees : productFees
                         this.$state.total = root.total || 0;
 
                         // -------- Capture available service fees for VIP UI --------
@@ -510,9 +528,12 @@ export const useCart = defineStore("cart", {
                     body: payload
                 },
                 {
-                    onSuccess: (data: any) => {
+                    onSuccess: async (data: any) => {
                         this.$state.isAddLoading = false;
                         (appModule as any).dialog.data.booking = data?.data;
+
+                        await this.fetchCart({}, { disableLoading: true });
+
                     },
                     onError: () => {
                         this.$state.isAddLoading = false;

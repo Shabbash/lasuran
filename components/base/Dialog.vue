@@ -1,18 +1,33 @@
 <template>
-  <UModal v-model:open="show" :class="modalMaxWidth" :ui="{
-    overlay: 'bg-black/47',
-    header: 'border-none justify-between p-0 !p-0 inline-block w-auto absolute end-[28px] top-[24px] min-h-auto z-[2] ',
-    body: 'border-none w-full p-0 !p-0 overflow-y-auto',
-    footer: 'justify-end max-w-[473px] w-full mx-auto p-0',
-    content: `bg-[#EBE4DF] rounded-[30px] ${modalMaxWidth.value} w-full overflow-hidden`
-  }" v-bind="options">
-    <!-- Close -->
+  <UModal
+    v-model:open="show"
+    :class="modalMaxWidth"
+    :ui="{
+      overlay: 'bg-black/47',
+      header: 'border-none justify-between p-0 !p-0 inline-block w-auto absolute end-[28px] top-[24px] min-h-auto z-[2] ',
+      body: 'border-none w-full p-0 !p-0 overflow-y-auto',
+      footer: 'justify-end max-w-[473px] w-full mx-auto p-0',
+      content: `bg-[#EBE4DF] rounded-[30px] ${modalMaxWidth} w-full overflow-hidden`
+    }"
+    v-bind="options"
+  >
+    <!-- Header (we keep it empty, close button is in #close slot) -->
     <template #header></template>
 
-    <template #close v-if="!(options.hasOwnProperty('close') && !options.close)">
+    <!-- Close button -->
+    <template
+      #close
+      v-if="!(options.hasOwnProperty('close') && !options.close)"
+    >
       <slot name="close">
-        <button @click="closeModal"
-          class="w-[42px] h-[42px] rounded-full bg-[#A0576F] text-white flex items-center justify-center hover:bg-[#913E5D] transition cursor-pointer">
+        <button
+          @click="closeModal"
+          :disabled="isOrderProcessing"
+          class="w-[42px] h-[42px] rounded-full bg-[#A0576F] text-white flex items-center justify-center transition"
+          :class="isOrderProcessing
+            ? 'opacity-40 cursor-not-allowed pointer-events-none'
+            : 'hover:bg-[#913E5D] cursor-pointer'"
+        >
           <CloseModalIcon />
         </button>
       </slot>
@@ -30,11 +45,10 @@
   </UModal>
 </template>
 
-
 <script setup lang="ts">
-
-import { computed, ref, watch } from 'vue'
+import { computed } from 'vue'
 import CloseModalIcon from '~/components/icons/CloseModalIcon.vue'
+import { useCart } from '~/stores/cart'
 
 const props = defineProps({
   options: {
@@ -42,22 +56,28 @@ const props = defineProps({
     default: () => ({})
   }
 })
-console.log('props.options', props.options)
-const modalMaxWidth = computed(() => props.options?.modalMaxWidth ?? 'max-w-[638px]')
 
-// Update dynamically once options are passed
-watch(
-  () => props.options,
-  (newVal) => {
-    if (newVal?.modalMaxWidth) {
-      modalMaxWidth.value = newVal.modalMaxWidth
-    }
-  },
-  { immediate: true, deep: true }
+// v-model:show from parent → we forwardه إلى UModal v-model:open
+const show = defineModel<boolean>('show')
+
+// Modal max width comes from options, with a default
+const modalMaxWidth = computed(
+  () => props.options?.modalMaxWidth ?? 'max-w-[638px]'
 )
 
-const show = defineModel('show')
+// Order loading state from cart store
+const cart = useCart()
+const isOrderProcessing = computed(() => cart.isOrderLoading === true)
 
+const emit = defineEmits(['close'])
+
+const closeModal = () => {
+  // ❌ Do not allow closing while order is processing
+  if (isOrderProcessing.value) return
+
+  show.value = false
+  emit('close')
+}
 </script>
 
 <style></style>

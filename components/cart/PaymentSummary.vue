@@ -124,8 +124,28 @@ const params = computed({
 const formattedSubtotal = computed(() => formatNumber(props.subtotal))
 const formattedVat = computed(() => formatNumber(props.vat))
 const formattedDiscount = computed(() => formatNumber(props.discount))
-const formattedServiceCost = computed(() => formatNumber(props.serviceCost))
-const formattedTotal = computed(() => formatNumber(props.total))
+// Always read service cost from the cart store (kept in sync with API)
+const formattedServiceCost = computed(() =>
+  formatNumber((cartModule as any).service_cost ?? 0)
+)
+
+// Always compute the final total on the client for display:
+// total = subtotal + VAT + service fees - discount
+// const formattedTotal = computed(() => {
+//   // Ensure numeric values
+//   const s  = Number(props.subtotal ?? 0)
+//   const v  = Number(props.vat ?? 0)
+//   const d  = Number(props.discount ?? 0)
+//   const sc = Number(props.serviceCost ?? 0)
+
+//   // Clamp to >= 0 and format
+//   const total = Math.max(0, s + v + sc - d)
+//   return formatNumber(total)
+// })
+const formattedTotal = computed(() => {
+  // Always trust the backend total coming from /cart
+  return formatNumber(props.total ?? 0)
+})
 
 // Gift card logic
 const isApplyingGiftCard = computed({
@@ -177,6 +197,13 @@ watch(() => params.value.gift_card, (newVal) => {
     cartModule.fetchCart({ promo_code: params.value.promo_code, gift_card: null }, { disableLoading: true })
   }
 })
+// Refresh cart when VIP fee or its address changes so API recalculates service_cost
+const refreshCartWithVip = async () => {
+  await cartModule.fetchCart({}, { disableLoading: true }) // Store already injects bracketed params
+}
+
+watch(() => (cartModule as any).selectedServiceFeeId, refreshCartWithVip)
+watch(() => (cartModule as any).selectedServiceFeeAddressId, refreshCartWithVip)
 
 // Reset on reload
 onMounted(() => {
@@ -222,18 +249,14 @@ const proceedToCheckout = async () => {
     }, 10000)
 
 const orderPayload = {
+  // Let the store attach service_fees from params.service_fees internally
   payment_method_id: (cartModule as any).selectedPaymentMethodId ?? cartModule.getPaymentMethods?.[0]?.id,
   is_scheduled: cartModule.params?.is_scheduled ?? 0,
   promo_code: params.value?.promo_code ?? null,
   gift_card: params.value?.gift_card ?? null,
   is_gifted_order: cartModule.params?.is_gifted_order ?? 0,
-  gift_message: cartModule.params?.gift_message ?? '',
-  service_fees: [
-    {
-      id: (cartModule as any).selectedServiceFeeId,
-      address_id: (cartModule as any).selectedServiceFeeAddressId
-    }
-  ]
+  gift_message: cartModule.params?.gift_message ?? ''
+  // Do NOT include service_fees here to avoid duplication
 }
 
 
