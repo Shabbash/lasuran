@@ -15,7 +15,7 @@
               :slide-per-row-mobile="1" dots-class="dots-style">
               <template #default="{ item }">
                 <div class="w-full cursor-pointer">
-                  <div class="w-full overflow-hidden relative rounded-[23px] md:mt-[31px]">
+                  <div class="w-full overflow-hidden relative rounded-[23px] md:mt-[31px] h-[272px] md:h-[390px]">
                     <img class="mx-auto h-auto md:h-full w-full object-contain md:object-cover inset-0 relative"
                       :src="item.image_url ?? item.image" />
                   </div>

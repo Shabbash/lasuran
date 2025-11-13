@@ -177,6 +177,22 @@ export const useCart = defineStore("cart", {
                 },
                 {
                     onSuccess: (data: any) => {
+
+                        // --- helper: sum service fees from products (fallback when root doesn't provide a total) ---
+const sumServiceFeesFromProducts = (root: any) => {
+  const items = Array.isArray(root?.products) ? root.products : []
+  let sum = 0
+  for (const p of items) {
+    const fees = Array.isArray(p?.service_fees) ? p.service_fees : []
+    for (const f of fees) {
+      // Prefer backend-computed total if present; fallback to value
+      const v = f?.total_fees ?? f?.total ?? f?.value ?? 0
+      sum += Number(v)
+    }
+  }
+  return sum
+}
+
                         // Normalize root
                         const root = data?.data ?? data ?? {};
 
@@ -205,7 +221,9 @@ export const useCart = defineStore("cart", {
                             (root.promo_discount || 0) +
                             (root.extra_discount || 0) +
                             (root.gift_card_discount || 0);
-                        this.$state.service_cost = root.order_service_fees_price || 0;
+                        const rootFees = Number(root?.order_service_fees_price ?? 0)
+                        const productFees = sumServiceFeesFromProducts(root)
+                        this.$state.service_cost = rootFees > 0 ? rootFees : productFees
                         this.$state.total = root.total || 0;
 
                         // -------- Capture available service fees for VIP UI --------
@@ -510,9 +528,12 @@ export const useCart = defineStore("cart", {
                     body: payload
                 },
                 {
-                    onSuccess: (data: any) => {
+                    onSuccess: async (data: any) => {
                         this.$state.isAddLoading = false;
                         (appModule as any).dialog.data.booking = data?.data;
+
+                        await this.fetchCart({}, { disableLoading: true });
+
                     },
                     onError: () => {
                         this.$state.isAddLoading = false;
@@ -547,84 +568,89 @@ export const useCart = defineStore("cart", {
 
         // -------- Order --------
         // -------- Order --------
-        createOrder(
-            payload: any = {},
-            onSuccess: Function = () => { },
-            onError: Function = () => { }
-        ) {
-            this.$state.order.loading = true;
+       createOrder(
+  payload: any = {},
+  onSuccess: Function = () => {},
+  onError: Function = () => {}
+) {
+  this.$state.order.loading = true;
 
-            // Normalize once
-            const msg = (this.$state.params?.gift_message ?? '').trim();
+  // Normalize once
+  const msg = (this.$state.params?.gift_message ?? '').trim();
 
-            // Build base body (top-level message)
-            const body: any = {
-                payment_method_id: this.$state.payment_method_id,
-                is_scheduled: 0,
-                promo_code: this.$state.params?.promo_code ?? null,
-                gift_card: this.$state.params?.gift_card ?? null,
-                is_gifted_order: this.$state.params?.is_gifted_order ?? 0,
-                gift_message: msg // <-- Top-level, new contract
-            };
+  // Build base body (top-level message)
+  const body: any = {
+    payment_method_id: this.$state.payment_method_id,
+    is_scheduled: 0,
+    promo_code: this.$state.params?.promo_code ?? null,
+    gift_card: this.$state.params?.gift_card ?? null,
+    is_gifted_order: this.$state.params?.is_gifted_order ?? 0,
+    gift_message: msg
+  };
 
-            // If gifted order, also mirror message inside gifted_order_data (legacy contract)
-            if (
-                this.$state.params?.is_gifted_order === 1 &&
-                this.$state.params?.gifted_order_data
-            ) {
-                body.gifted_order_data = {
-                    first_name: this.$state.params.gifted_order_data.first_name,
-                    last_name: this.$state.params.gifted_order_data.last_name,
-                    mobile_code: this.$state.params.gifted_order_data.mobile_code,
-                    mobile_number: this.$state.params.gifted_order_data.mobile_number,
-                    email: this.$state.params.gifted_order_data.email,
-                    message: msg // <-- IMPORTANT: mirror here for backends still reading nested message
-                };
-            }
+  // If gifted order, also mirror message inside gifted_order_data (legacy contract)
+  if (
+    this.$state.params?.is_gifted_order === 1 &&
+    this.$state.params?.gifted_order_data
+  ) {
+    body.gifted_order_data = {
+      first_name: this.$state.params.gifted_order_data.first_name,
+      last_name: this.$state.params.gifted_order_data.last_name,
+      mobile_code: this.$state.params.gifted_order_data.mobile_code,
+      mobile_number: this.$state.params.gifted_order_data.mobile_number,
+      email: this.$state.params.gifted_order_data.email,
+      message: msg
+    };
+  }
 
-            // Always include bracketed service_fees
-            const serviceFeesParams = this._serviceFeesAsParams();
+  // ✅ هنا المهم: أرسل service_fees كمصفوفة JSON إذا فيه اختيار
+  if (Array.isArray(this.$state.params?.service_fees) && this.$state.params.service_fees.length) {
+    body.service_fees = this.$state.params.service_fees.map(f => ({
+      id: Number(f.id),
+      ...(f.address_id != null ? { address_id: Number(f.address_id) } : {})
+    }));
+  }
 
-            // Protect against accidental overwrite from external payload
-            const safePayload = { ...payload };
-            if ('gift_message' in safePayload && (safePayload.gift_message == null)) {
-                delete safePayload.gift_message;
-            }
+  // Protect against accidental overwrite from external payload
+  const safePayload = { ...payload };
+  if ('gift_message' in safePayload && (safePayload.gift_message == null)) {
+    delete safePayload.gift_message;
+  }
 
-            // (Optional) DEBUG one-shot:
-            // console.log('[DEBUG] createOrder body:', { ...body, ...serviceFeesParams, ...safePayload });
+  // 👇 لاحظ: ما عاد نستخدم serviceFeesParams هنا (المُقوّسة)
+  // console.debug('[DEBUG] createOrder body:', { ...body, ...safePayload });
 
-            return useApi(
-                `orders`,
-                {
-                    method: 'POST',
-                    body: {
-                        ...body,
-                        ...serviceFeesParams,
-                        ...safePayload
-                    }
-                },
-                {
-                    onSuccess: (data: any) => {
-                        this.$state.order.loading = false;
-                        this.$state.order.data = data.data.order;
-                        this.$state.payment = data.data.payment;
-                        this.$state.confirmation_message = data.data.confirmation_message;
-                        this.$state.saved_cards = data.data.saved_cards ?? [];
+  return useApi(
+    `orders`,
+    {
+      method: 'POST',
+      body: {
+        ...body,
+        ...safePayload
+      }
+    },
+    {
+      onSuccess: (data: any) => {
+        this.$state.order.loading = false;
+        this.$state.order.data = data.data.order;
+        this.$state.payment = data.data.payment;
+        this.$state.confirmation_message = data.data.confirmation_message;
+        this.$state.saved_cards = data.data.saved_cards ?? [];
 
-                        this.resetVipState();
-                        this.resetGiftState();
+        this.resetVipState();
+        this.resetGiftState();
 
-                        onSuccess(data);
-                    },
-                    onError: (err: any) => {
-                        this.$state.order.loading = false;
-                        console.error('Order creation failed:', err);
-                        onError(err);
-                    }
-                }
-            );
-        }
+        onSuccess(data);
+      },
+      onError: (err: any) => {
+        this.$state.order.loading = false;
+        console.error('Order creation failed:', err);
+        onError(err);
+      }
+    }
+  );
+}
+
         ,
 
         openPaymentPopup(existingWin: Window | null = null) {
