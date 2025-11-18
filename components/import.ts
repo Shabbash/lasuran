@@ -29,6 +29,7 @@ import GiftedOrderDetailsDialog from '~/components/booking/GiftedOrderDetailsDia
 import AppointmentSkeleton from '~/components/service/AppointmentSkeleton.vue'
 import AdressesDialog from '~/components/address/AddressesDialog.vue'
 import AddAddressDialog from '~/components/address/AddAddressDialog.vue'
+import ServiceTypesConflictDIALOG from '@/components/cart/ServiceTypeConflictDialog.vue'
 
 
 
@@ -62,6 +63,7 @@ const components: {} = {
     [COMPONENTS.SERVICE_APPOINTMENT_SKELETON]: AppointmentSkeleton,
     [COMPONENTS.ADDRESSES_DIALOG]: AdressesDialog,
     [COMPONENTS.ADD_ADDRESS]: AddAddressDialog,
+    [COMPONENTS.SERVICE_TYPES_CONFLICT]: ServiceTypesConflictDIALOG
 
 };
 export default components;

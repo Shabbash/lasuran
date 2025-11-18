@@ -44,6 +44,7 @@ export const COMPONENTS = {
     SERVICE_APPOINTMENT_SKELETON: 'ServiceAppointmentSkeleton', 
     ADDRESSES_DIALOG: 'AdressesDialog', 
     ADD_ADDRESS: 'ADD_ADDRESS',
+    SERVICE_TYPES_CONFLICT:'ServiceTypeConflictDialog'
 
 
 }
