@@ -19,10 +19,13 @@
         </div>
 
       </div>
-      <div class="flex flex-1 justify-end">
-        <p class="flex-2 text-[#EBE4DF] text-[14px] font-normal leading-normal hidden md:block">
+      <div class="flex flex-1 justify-end" >
+        <p class="flex-2 text-[#EBE4DF] text-[14px] font-normal leading-normal hidden md:block" v-if="cartModule.getServiceType == SERVICE_TYPES.RESERVATION">
           <span class="block">{{ item.date }}</span>
           <span class="block">{{ item.duration }}</span>
+        </p>
+        <p class="flex-2 text-[#EBE4DF] text-[14px] font-normal leading-normal hidden md:block" v-if="cartModule.getServiceType == SERVICE_TYPES.ONLINE">
+          <span class="block">{{ item.quantity }}</span>
         </p>
 
         <p class="flex-1 text-[#EBE4DF] text-[14px] font-normal leading-normal hidden md:block">
@@ -91,9 +94,17 @@
 import { useI18n } from 'vue-i18n'
 import EditIcon from '~/components/icons/EditIcon.vue'
 import DeleteIcon from '~/components/icons/DeleteIcon.vue'
+import { ca } from '@nuxt/ui/runtime/locale/index.js';
+import { SERVICE_TYPES } from '~/data/constants'
+import { useCart } from '~/stores/cart'
+
+
+
 
 // ✅ Load translation function
 const { t } = useI18n()
+const cartModule = useCart()
+
 
 // ✅ Define props
 defineProps<{
