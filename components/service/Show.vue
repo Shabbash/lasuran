@@ -78,7 +78,7 @@
 import { CalendarDate } from "@internationalized/date";
 import CustomRadio from "~/components/base/CustomRadio.vue";
 import ServiceDetailSkeleton from "~/components/skeletons/ServiceDetailSkeleton.vue";
-import { COMPONENTS } from "~/data/constants";
+import { COMPONENTS, SERVICE_TYPES } from "~/data/constants";
 import PriceIcon from '@/components/icons/PriceIcon.vue'
 import { formatSAR } from '~/utils/formatCurrency'
 
@@ -194,6 +194,14 @@ const addToCart = function () {
     // Get the cart_product_id from the service or our stored value
     const cartProductId = selectedService.value?.cart_product_id || originalCartProductId.value;
 
+  const cartProducts = cartModule.getProducts
+  
+  const existingProduct = cartProducts.find((p: any) => p.service_type != SERVICE_TYPES.ONLINE)
+ 
+  if (existingProduct) {
+    alert('You must clear your cart to add items from a different service type.')
+    return
+  }
     // Check if this is an edit operation
     if (isEditingOperation && cartProductId) {
       // This is an edit operation - ensure we pass the cart_product_id

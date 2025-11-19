@@ -184,39 +184,15 @@ export const useProducts = defineStore("products", {
             this.$state.error = null;
 
             try {
-                console.log('Fetching shop products from API with params:', params);
-
-                // Build the API parameters
-                const apiParams: any = {
-                    // Include filter parameters from the component
-                    branch_id: params.branch_id,
-                    menu_id: params.menu_id,
-                    sub_category_id: params.sub_category_id,
-                    order_method: params.order_method,
-                    // Include existing store filters
-                    category_id: this.selectedCategory,
-                    search: this.searchQuery,
-                };
-
-                // Remove null/undefined values
-                Object.keys(apiParams).forEach(key => {
-                    if (apiParams[key] === null || apiParams[key] === undefined) {
-                        delete apiParams[key];
+                console.log('Fetching shop products from API...');
+                const { data: response, error } = await useApi('products', {
+                    method: 'GET',
+                    params: {
+                        // Remove problematic parameters for now
+                        category_id: this.selectedCategory,
+                        search: this.searchQuery,
+                        ...params
                     }
-                });
-
-                console.log('Final API parameters:', apiParams);
-
-                // Build URL with query parameters
-                const queryString = new URLSearchParams(
-                    Object.entries(apiParams).map(([key, value]) => [key, String(value)])
-                ).toString();
-
-                const endpoint = queryString ? `products?${queryString}` : 'products';
-                console.log('API endpoint with query:', endpoint);
-
-                const { data: response, error } = await useApi(endpoint, {
-                    method: 'GET'
                 });
 
                 console.log('Products API response:', response);

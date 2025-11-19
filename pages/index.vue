@@ -11,8 +11,14 @@
       <div class="w-full lg:w-[calc(50%-12px)]">
         <BaseCard>
           <template #default>
-            <BaseSlider :items="slider?.items ?? homeStore?.homeData?.data?.sliders" dots :slide-per-row="1"
-              :slide-per-row-mobile="1" dots-class="dots-style">
+            <BaseSlider
+  :items="homeSliders?.length ? homeSliders : (slider?.items ?? homeStore?.homeData?.data?.sliders)"
+  dots
+  :slide-per-row="1"
+  :slide-per-row-mobile="1"
+  dots-class="dots-style"
+>
+
               <template #default="{ item }">
                 <div class="w-full cursor-pointer">
                   <div class="w-full overflow-hidden relative rounded-[23px] md:mt-[31px] h-[272px] md:h-[390px]">
@@ -126,6 +132,7 @@ import { storeToRefs } from 'pinia'
 
 usePageTitle('titles.home')
 const { t } = useI18n()
+const homeSliders = ref<any[]>([])
 
 /* ===== Stores ===== */
 const homeStore = useHome()
@@ -220,6 +227,26 @@ const goToSubCategory = (item: any) => {
   router.push({ path: '/services' })
 }
 
+
+const getHomeSliders = () => {
+  const params: any = {
+    location: 'home',
+    // لو الباك إند يحتاج delivery_method_id للهوم، ضيفه هنا
+    // delivery_method_id: 7,
+  }
+
+  useApi('sliders-by-location', { params }, {
+    onSuccess: (data: any) => {
+      console.log('home sliders', data.data.sliders)
+      homeSliders.value = data.data.sliders || []
+    },
+    onError: (err: any) => {
+      console.error('Error fetching home sliders', err)
+      homeSliders.value = []
+    },
+  })
+}
+
 /* ===== Lifecycle ===== */
 onMounted(async () => {
   // Unblock page just in case
@@ -228,6 +255,8 @@ onMounted(async () => {
   // Initialize home scaffolding
   homeStore.initializeHome()
   menuStore.fetchMenus()
+
+    getHomeSliders()
 
   if (!menuStore.menus.data || menuStore.menus.data.length === 0) {
     await menuStore.initMenu()

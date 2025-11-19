@@ -280,6 +280,7 @@ const addToCart = function () {
     end_at: time?.to_date_time,
   };
 
+
   console.log('selectedDateObject.value.slots ', selectedDateObject.value?.slots, body);
 
   if (appModule.dialog?.data?.booking?.id) {
