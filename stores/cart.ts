@@ -116,6 +116,9 @@ export const useCart = defineStore("cart", {
             if (state.products.length === 0) return null;
             // Assume all items in cart have the same service type
             return state.cartServiceType || null;
+        },
+           getServiceType(state) {
+            return state.cartServiceType;
         }
     },
 

@@ -369,7 +369,8 @@
   "gift_decline_cancel": "لا، احتفظ بها",
 "booking_method_label": "طريقة الحجز",
 "load_more": "تحميل المزيد",
-
+"cart_item":"العنصر",
+"cart_quantity":"الكمية"
 
 
 
