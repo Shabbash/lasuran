@@ -16,7 +16,8 @@
     </div>
 
     <div class="grid grid-cols-1 gap-[20px] mt-[30px]">
-      <ShopFilter :showBranchSelect="true" />
+      <ShopFilter :showBranchSelect="true" @goProducts="handleFilterChange" />
+      
     </div>
 
     <div class="grid grid-cols-2 md:grid-cols-4 gap-[20px] mt-[30px]">
@@ -24,6 +25,7 @@
         v-for="p in productsStore.transformedProducts"
         :key="p.id"
         :item="p"
+        @select="openProductModal(p)"
       />
     </div>
   </Container>
@@ -41,6 +43,8 @@ import { useProducts } from '@/stores/products'
 import { useMenu } from '~/stores/menu'
 import { useHome } from '~/stores/home'
 import { useBranches } from '~/stores/branches'
+import { SERVICE_TYPES, COMPONENTS } from '@/data/constants'
+const { setDialogComponent, setDialogShow, setServiceType } = useApp()
 
 const route = useRoute()
 const productsStore = useProducts()
@@ -66,15 +70,61 @@ const refreshFromQuery = async () => {
   const sub_category_id = toNum(route.query.sub_category_id)
   const order_method    = toStr(route.query.order_method)
 
-  menuModule.branch_id       = branch_id
-  menuModule.menu_id         = menu_id
-  menuModule.sub_category_id = sub_category_id
-
-  await productsStore.fetchProducts({
+  console.log('Query parameters received:', {
     branch_id,
     menu_id,
     sub_category_id,
-    order_method // ← غيّرها لـ service_type لو الباك إند يتوقع كده
+    order_method
+  })
+
+  // Set the values in menu store
+  if (branch_id) {
+    menuModule.branch_id = branch_id as any
+  }
+  if (menu_id) {
+    menuModule.menu_id = menu_id as any
+  }
+  if (sub_category_id) {
+    menuModule.sub_category_id = sub_category_id as any
+  }
+
+  // Fetch menus first if branch_id is provided
+  if (branch_id && !menuModule.getMenus?.length) {
+    await menuModule.fetchMenus()
+  }
+
+  // Fetch products with the filter parameters
+  console.log('About to fetch products with params:', {
+    branch_id,
+    menu_id,
+    sub_category_id,
+    order_method
+  })
+
+  await (productsStore as any).fetchProducts({
+    branch_id,
+    menu_id,
+    sub_category_id,
+    order_method
+  })
+}
+const openProductModal = (product: any) => {
+  setDialogComponent(COMPONENTS.SHOP_SHOW, { product })
+  setDialogShow(true)
+}
+
+const handleFilterChange = async (payload: any) => {
+  console.log('Filter changed:', payload)
+
+  // Update the URL with new filter parameters
+  await navigateTo({
+    path: '/shop/products',
+    query: {
+      branch_id: payload.branch,
+      menu_id: payload.menu_id,
+      sub_category_id: payload.sub_category_id,
+      order_method: payload.order_method
+    }
   })
 }
 

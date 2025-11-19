@@ -81,7 +81,6 @@ import ServiceDetailSkeleton from "~/components/skeletons/ServiceDetailSkeleton.
 import { COMPONENTS, SERVICE_TYPES } from "~/data/constants";
 import PriceIcon from '@/components/icons/PriceIcon.vue'
 import { formatSAR } from '~/utils/formatCurrency'
-import { COMPONENTS, SERVICE_TYPES } from '@/data/constants'
 const { setDialogComponent, setDialogShow,setServiceType,setDialogOptions } = useApp()
 import { useI18n } from 'vue-i18n'
 
@@ -182,6 +181,8 @@ const addToCart = function () {
     const serviceType = cartModule.getServiceType
 
 if (serviceType==SERVICE_TYPES.ONLINE) {
+  setServiceType(SERVICE_TYPES.ONLINE);
+
 setDialogComponent(COMPONENTS.SERVICE_TYPES_CONFLICT, {
   currentServiceType: SERVICE_TYPES.RESERVATION ,
   newServiceType: SERVICE_TYPES.ONLINE, 
@@ -206,16 +207,7 @@ setServiceType(SERVICE_TYPES.RESERVATION)
     const isEditingOperation = isEditing.value;
 
     // Get the cart_product_id from the service or our stored value
-    const cartProductId = selectedService.value?.cart_product_id || originalCartProductId.value;
-
-  const cartProducts = cartModule.getProducts
   
-  const existingProduct = cartProducts.find((p: any) => p.service_type != SERVICE_TYPES.ONLINE)
- 
-  if (existingProduct) {
-    alert('You must clear your cart to add items from a different service type.')
-    return
-  }
     // Check if this is an edit operation
     if (isEditingOperation && cartProductId) {
       // This is an edit operation - ensure we pass the cart_product_id
