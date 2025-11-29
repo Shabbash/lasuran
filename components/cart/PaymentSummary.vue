@@ -67,12 +67,32 @@
           <UCheckbox v-model="accepted" />
           <span>{{ t('accept_terms_label') }}</span>
         </div>
+<BaseButton
+  :loading="isProcessing"
+  @click="proceedToCheckout"
+  class="cart-btn flex align-center gap-[24px] w-full text-white py-3 rounded-full font-[600] text-[16px] justify-center bg-[#A0576F] hover:bg-[#913E5D] mt-[35px] disabled:bg-[#A0576F]"
+  :disabled="!accepted || servicesCount === 0"
+>
 
-        <BaseButton :loading="isProcessing" @click="proceedToCheckout"
+  <!-- 🆓 Free order -->
+  <template v-if="isFreeOrder">
+    {{ t('place_order_button_label') }}
+  </template>
+
+  <!-- 💳 Normal paid order -->
+  <template v-else>
+    <span class="sar-icon">&#xe900;</span>
+    {{ t('checkout_button_label', { total: formattedTotal }) }}
+  </template>
+
+</BaseButton>
+
+
+        <!-- <BaseButton :loading="isProcessing" @click="proceedToCheckout"
           class="cart-btn flex align-center gap-[24px] w-full text-white py-3 rounded-full font-[600] text-[16px] justify-center bg-[#A0576F] hover:bg-[#913E5D] mt-[35px] disabled:bg-[#A0576F]"
           :disabled="!accepted || servicesCount === 0">
           <span class="sar-icon">&#xe900;</span> {{ t('checkout_button_label', { total: formattedTotal }) }}
-        </BaseButton>
+        </BaseButton> -->
       </div>
     </div>
   </div>
@@ -214,6 +234,30 @@ onMounted(() => {
     appliedGiftCard.value = null
   }
 })
+// --- Helpers for checkout logic ---
+
+// Get numeric final total from props (fallback to 0 if invalid)
+const getNumericTotal = () => {
+  const raw = props.total ?? 0
+  const n = Number(raw)
+  if (Number.isNaN(n)) return 0
+  return n
+}
+const isFreeOrder = computed(() => getNumericTotal() <= 0)
+
+// Prefer COD as default payment method for free orders, otherwise first method
+const pickDefaultPaymentMethodId = (): number | null => {
+  const methods = cartModule.getPaymentMethods || []
+  if (!methods.length) return null
+
+  // Prefer Cash on Delivery if available
+  const cod = methods.find((m: any) => String(m.code || '').toUpperCase() === 'COD')
+  if (cod?.id) return cod.id
+
+  // Fallback to the first method
+  const first = methods[0]
+  return first?.id ?? null
+}
 
 // ✅ Checkout logic
 const proceedToCheckout = async () => {
@@ -226,21 +270,91 @@ const proceedToCheckout = async () => {
     const ok = await ensureVipAddressBeforeCheckout()
     if (!ok) {
       isProcessing.value = false
-      toast.add({ title: t('error_title'), description: 'Please select an address for VIP service.' })
+      toast.add({
+        title: t('error_title'),
+        description: 'Please select an address for VIP service.'
+      })
       return
     }
+
+    // ✅ Read final total from props (backend value)
+    const total = getNumericTotal()
+
+    // ================================
+    // 🆓 FREE ORDER FLOW (total === 0)
+    // ================================
+    if (total <= 0) {
+      const methodId = pickDefaultPaymentMethodId()
+
+      if (methodId) {
+        cartModule.setPaymentMethod(methodId)
+      }
+
+      const timeoutId = setTimeout(() => {
+        // Safety: never keep the button stuck if API hangs
+        isProcessing.value = false
+      }, 10000)
+
+      const orderPayload = {
+        // Force payment_method_id based on our helper (may be null if none)
+        payment_method_id: methodId ?? null,
+        is_scheduled: cartModule.params?.is_scheduled ?? 0,
+        promo_code: params.value?.promo_code ?? null,
+        gift_card: params.value?.gift_card ?? null,
+        is_gifted_order: cartModule.params?.is_gifted_order ?? 0,
+        gift_message: cartModule.params?.gift_message ?? ''
+        // Do NOT include service_fees here to avoid duplication;
+        // store will attach params.service_fees internally
+      }
+
+      cartModule.createOrder(
+        orderPayload,
+        (response) => {
+          clearTimeout(timeoutId)
+          isProcessing.value = false
+
+          // اختياري: Toast نجاح بسيط
+          toast.add({
+            title: 'Order created successfully',
+            description: 'No payment required for this order.',
+            color: 'success'
+          })
+
+          // حدث السلة بعد إنشاء الطلب
+          cartModule.fetchCart({}, { disableLoading: true })
+
+          // مباشرة لصفحة النجاح (هنا نستخدم صفحة الحجوزات كـ success screen)
+          navigateTo('/dashboard/bookings')
+        },
+        (err) => {
+          clearTimeout(timeoutId)
+          isProcessing.value = false
+          console.error('Free order creation failed:', err)
+          toast.add({
+            title: t('error_title'),
+            description: t('checkout_failed')
+          })
+        }
+      )
+
+      return
+    }
+
+    // ================================
+    // 💳 NORMAL PAID FLOW (total > 0)
+    // ================================
 
     // ✅ Choose payment method (or open selector)
     if (cartModule.getPaymentMethods.length > 1) {
       appModule.setDialogComponent(COMPONENTS.PAYMENT_SELECTION, {
-
-
-    modalMaxWidth: 'max-w-[539px]',
-    })
+        modalMaxWidth: 'max-w-[539px]'
+      })
       appModule.setDialogShow(true)
       isProcessing.value = false
       return
     }
+
+    // If only one method → use it
     cartModule.setPaymentMethod(cartModule.getPaymentMethods?.[0]?.id)
 
     const timeoutId = setTimeout(() => {
@@ -248,17 +362,18 @@ const proceedToCheckout = async () => {
       isProcessing.value = false
     }, 10000)
 
-const orderPayload = {
-  // Let the store attach service_fees from params.service_fees internally
-  payment_method_id: (cartModule as any).selectedPaymentMethodId ?? cartModule.getPaymentMethods?.[0]?.id,
-  is_scheduled: cartModule.params?.is_scheduled ?? 0,
-  promo_code: params.value?.promo_code ?? null,
-  gift_card: params.value?.gift_card ?? null,
-  is_gifted_order: cartModule.params?.is_gifted_order ?? 0,
-  gift_message: cartModule.params?.gift_message ?? ''
-  // Do NOT include service_fees here to avoid duplication
-}
-
+    const orderPayload = {
+      // Let the store attach service_fees from params.service_fees internally
+      payment_method_id:
+        (cartModule as any).selectedPaymentMethodId ??
+        cartModule.getPaymentMethods?.[0]?.id,
+      is_scheduled: cartModule.params?.is_scheduled ?? 0,
+      promo_code: params.value?.promo_code ?? null,
+      gift_card: params.value?.gift_card ?? null,
+      is_gifted_order: cartModule.params?.is_gifted_order ?? 0,
+      gift_message: cartModule.params?.gift_message ?? ''
+      // Do NOT include service_fees here to avoid duplication
+    }
 
     cartModule.createOrder(
       orderPayload,
@@ -270,18 +385,95 @@ const orderPayload = {
         const paymentUrl = r?.payment?.create_token_url?.url
 
         if (paymentUrl) {
-          navigateTo({ path: '/secure-payment', query: { url: paymentUrl } })
+          navigateTo({
+            path: '/secure-payment',
+            query: { url: paymentUrl }
+          })
         } else {
-          toast.add({ title: t('error_title'), description: t('missing_payment_url') })
+          toast.add({
+            title: t('error_title'),
+            description: t('missing_payment_url')
+          })
         }
-      },
-
+      }
     )
   } catch (e) {
     isProcessing.value = false
-    toast.add({ title: t('error_title'), description: t('checkout_failed') })
+    toast.add({
+      title: t('error_title'),
+      description: t('checkout_failed')
+    })
   }
 }
+
+
+// // ✅ Checkout logic
+// const proceedToCheckout = async () => {
+//   // Guard against double clicks
+//   if (isProcessing.value) return
+//   isProcessing.value = true
+
+//   try {
+//     // ✅ Ensure VIP address if required
+//     const ok = await ensureVipAddressBeforeCheckout()
+//     if (!ok) {
+//       isProcessing.value = false
+//       toast.add({ title: t('error_title'), description: 'Please select an address for VIP service.' })
+//       return
+//     }
+
+//     // ✅ Choose payment method (or open selector)
+//     if (cartModule.getPaymentMethods.length > 1) {
+//       appModule.setDialogComponent(COMPONENTS.PAYMENT_SELECTION, {
+
+
+//     modalMaxWidth: 'max-w-[539px]',
+//     })
+//       appModule.setDialogShow(true)
+//       isProcessing.value = false
+//       return
+//     }
+//     cartModule.setPaymentMethod(cartModule.getPaymentMethods?.[0]?.id)
+
+//     const timeoutId = setTimeout(() => {
+//       // Safety: never keep the button stuck if API hangs
+//       isProcessing.value = false
+//     }, 10000)
+
+// const orderPayload = {
+//   // Let the store attach service_fees from params.service_fees internally
+//   payment_method_id: (cartModule as any).selectedPaymentMethodId ?? cartModule.getPaymentMethods?.[0]?.id,
+//   is_scheduled: cartModule.params?.is_scheduled ?? 0,
+//   promo_code: params.value?.promo_code ?? null,
+//   gift_card: params.value?.gift_card ?? null,
+//   is_gifted_order: cartModule.params?.is_gifted_order ?? 0,
+//   gift_message: cartModule.params?.gift_message ?? ''
+//   // Do NOT include service_fees here to avoid duplication
+// }
+
+
+//     cartModule.createOrder(
+//       orderPayload,
+//       (response) => {
+//         clearTimeout(timeoutId)
+//         isProcessing.value = false
+
+//         const r = response?.data ?? response ?? {}
+//         const paymentUrl = r?.payment?.create_token_url?.url
+
+//         if (paymentUrl) {
+//           navigateTo({ path: '/secure-payment', query: { url: paymentUrl } })
+//         } else {
+//           toast.add({ title: t('error_title'), description: t('missing_payment_url') })
+//         }
+//       },
+
+//     )
+//   } catch (e) {
+//     isProcessing.value = false
+//     toast.add({ title: t('error_title'), description: t('checkout_failed') })
+//   }
+// }
 
 
 // Open saved-addresses modal and resolve selected id (or null on cancel)

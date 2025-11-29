@@ -3,12 +3,13 @@
     v-model:open="show"
     :class="modalMaxWidth"
     :ui="{
-      overlay: 'bg-black/47',
+      overlay: 'bg-black/47 ',
       header: 'border-none justify-between p-0 !p-0 inline-block w-auto absolute end-[28px] top-[24px] min-h-auto z-[2] ',
       body: 'border-none w-full p-0 !p-0 overflow-y-auto',
-      footer: 'justify-end max-w-[473px] w-full mx-auto p-0',
-      content: `bg-[#EBE4DF] rounded-[30px] ${modalMaxWidth} w-full overflow-hidden`
+      footer: 'justify-end max-w-[473px] w-full mx-auto p-0 ',
+      content: `bg-[#EBE4DF] rounded-[30px] ${modalMaxWidth} w-full overflow-hidden lasuran-modal`
     }"
+    :prevent-close="disableClose"
     v-bind="options"
   >
     <!-- Header (we keep it empty, close button is in #close slot) -->
@@ -22,9 +23,9 @@
       <slot name="close">
         <button
           @click="closeModal"
-          :disabled="isOrderProcessing"
+          :disabled="disableClose"
           class="w-[42px] h-[42px] rounded-full bg-[#A0576F] text-white flex items-center justify-center transition"
-          :class="isOrderProcessing
+          :class="disableClose
             ? 'opacity-40 cursor-not-allowed pointer-events-none'
             : 'hover:bg-[#913E5D] cursor-pointer'"
         >
@@ -69,11 +70,26 @@ const modalMaxWidth = computed(
 const cart = useCart()
 const isOrderProcessing = computed(() => cart.isOrderLoading === true)
 
+// Control close availability per-modal
+// - disableClose: true  → لا يمكن إغلاق المودال بأي طريقة
+// - lockCloseOnOrderLoading + isOrderProcessing → يمنع الإغلاق فقط أثناء الدفع في المودال الذي يطلب ذلك
+const disableClose = computed(() => {
+  if (props.options?.disableClose === true) {
+    return true
+  }
+
+  if (props.options?.lockCloseOnOrderLoading === true && isOrderProcessing.value) {
+    return true
+  }
+
+  return false
+})
+
 const emit = defineEmits(['close'])
 
 const closeModal = () => {
-  // ❌ Do not allow closing while order is processing
-  if (isOrderProcessing.value) return
+  // Do not allow closing while disabled
+  if (disableClose.value) return
 
   show.value = false
   emit('close')

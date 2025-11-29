@@ -32,7 +32,6 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { COMPONENTS } from '~/data/constants'
 import { useCart } from '~/stores/cart'
 import { useApp } from '~/stores/app'
 import { useToast, navigateTo } from '#imports'
@@ -45,14 +44,18 @@ const selected = ref<number | null>(null)
 
 const paymentMethods = computed(() => cartModule.getPaymentMethods ?? [])
 
-// Disable all buttons while order is loading
-const buttonsDisabled = computed(() => cartModule.isOrderLoading === true)
+// 🌟 حالة إرسال محلية، ما إلها علاقة بالـ store
+const isSubmitting = ref(false)
+
+// Disable all buttons while submitting
+const buttonsDisabled = computed(() => isSubmitting.value)
 
 // Show loading state only on the selected button
 const isLoading = (methodId: number) =>
-  cartModule.isOrderLoading && methodId === selected.value
+  isSubmitting.value && methodId === selected.value
 
 const selectPaymentMethod = (pm: any) => {
+  // لا نسمح بالضغط المتكرر
   if (buttonsDisabled.value) return
 
   selected.value = pm.id
@@ -60,8 +63,13 @@ const selectPaymentMethod = (pm: any) => {
 
   const code = pm.code?.toUpperCase()
 
+  // نبدأ حالة الإرسال
+  isSubmitting.value = true
+
   // Common success handler after createOrder
   const handleSuccess = (response: any) => {
+    isSubmitting.value = false
+
     const r = response?.data ?? response ?? {}
     const paymentUrl = r?.payment?.create_token_url?.url
 
@@ -102,6 +110,8 @@ const selectPaymentMethod = (pm: any) => {
   }
 
   const handleError = (err: any) => {
+    isSubmitting.value = false
+
     console.error('Order creation failed:', err)
     toast?.add({
       title: 'Order failed',
@@ -114,6 +124,7 @@ const selectPaymentMethod = (pm: any) => {
   cartModule.createOrder({}, handleSuccess, handleError)
 }
 </script>
+
 
 <style>
 .online_btn--payment {

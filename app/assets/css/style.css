@@ -161,4 +161,10 @@
     max-height: 120px;
   }
 
+  .lasuran-modal{
+    max-width: 95%;
+    padding: 0 20px;
+
+  }
+
 }

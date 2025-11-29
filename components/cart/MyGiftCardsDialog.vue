@@ -28,7 +28,7 @@
                 {{ card.voucher_group_name || t('gift_card_default_name') }}
               </h2>
               <h3 class="text-white text-[40px] font-bold leading-normal">
-                <span class="sar-icon">&#xe900;</span> {{ card.value }}
+                <span class="sar-icon">&#xe900;</span> {{ card.remaining_amount }}
                 <!-- <span class="text-[20px]">{{ card.currency || '' }}</span> -->
               </h3>
             </div>

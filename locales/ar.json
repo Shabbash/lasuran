@@ -26,7 +26,7 @@
   "not_a_member": "أنت لست عضوًا",
   "login_or_signup_required": "يجب تسجيل الدخول أو إنشاء حساب لاستخدام خدماتنا",
   "enter_mobile_number": "يرجى إدخال رقم الجوال",
-  "mobile_placeholder": "50 XXXX XXXX",
+  "mobile_placeholder": "XXX XXX XXX",
   "i_accept": "أوافق على",
   "terms": "الشروط والأحكام",
   "privacy_policy": "سياسة الخصوصية",
@@ -369,6 +369,7 @@
   "gift_decline_cancel": "لا، احتفظ بها",
 "booking_method_label": "طريقة الحجز",
 "load_more": "تحميل المزيد",
+"place_order_button_label": "إتمام الطلب"
 
 
 

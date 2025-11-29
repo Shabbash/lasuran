@@ -13,7 +13,8 @@ export const useAuth = defineStore("auth", {
             step: COMPONENTS.SEND_OTP_STEP,
             mobile_number: '',
             mobile_code: "966",
-            otp: null
+            otp: null,
+            otpError: null
         }
     },
     getters: {
@@ -58,6 +59,9 @@ export const useAuth = defineStore("auth", {
     },
     actions: {
         sendOtp(payload: any) {
+
+            this.$state.otpError = null;
+            this.$state.otp = null;
             // payload.mobile_number = `${payload.mobile_code}${payload.mobile_number}`;
             this.$state.mobile_number = payload.mobile_number;
             this.$state.mobile_code = payload.mobile_code;
@@ -81,64 +85,62 @@ export const useAuth = defineStore("auth", {
                     }
                 });
         },
-        verifyOtp(payload: { otp: null }) {
-            const { setDialogShow } = useApp();
-            this.$state.loading = true;
-            this.$state.otp = (payload.otp ?? []).join('');
-            return useApi("account/verify-otp", {
-                method: "POST",
-                body: {
-                    mobile_number: `${this.$state.mobile_code}${this.$state.mobile_number}`,
-                    mobile_code: this.$state.mobile_code,
-                    otp: this.$state.otp,
-                },
-            }, {
+verifyOtp(payload: { otp: string[] }) {
+  const { setDialogShow } = useApp()
+  this.$state.otpError = null
+  this.$state.loading = true
+  this.$state.otp = (payload.otp ?? []).join('')
 
+  return useApi(
+    "account/verify-otp",
+    {
+      method: "POST",
+      body: {
+        mobile_number: `${this.$state.mobile_code}${this.$state.mobile_number}`,
+        mobile_code: this.$state.mobile_code,
+        otp: this.$state.otp,
+      },
+    },
+    {
+      onSuccess: async (data: any) => {
+        this.$state.loading = false
+        const response = data.data
 
+        if (response.is_completed) {
+          this.setAuth({ user: response, token: response.token })
+          const profileStore = useProfile()
+          await profileStore.fetchProfile()
+          setDialogShow(false)
 
-                onSuccess: async (data: any) => {
-                    this.$state.loading = false;
-                    const response = data.data;
+          if (process.client) {
+            window.location.replace("/")
+          }
+        } else {
+          this.setStepComponent(COMPONENTS.COMPLETE_PROFILE_STEP)
+        }
+      },
 
-                    if (response.is_completed) {
-                        this.setAuth({ user: response, token: response.token });
-                        const profileStore = useProfile();
-                        await profileStore.fetchProfile();
-                        setDialogShow(false);
+      onError: (err: any) => {
+    this.$state.loading = false;
 
-                        // === Hard redirect to home with refresh ===
-                        if (process.client) {
-                            window.location.replace('/'); // or window.location.assign('/')
-                        }
-                    } else {
-                        this.setStepComponent(COMPONENTS.COMPLETE_PROFILE_STEP);
-                    }
-                },
+    // فقط للمساعدة في الديباج – شوف شكل الخطأ في الكونسول
+    console.error('OTP verify error:', err);
 
-                // onSuccess: async (data: any) => {
-                //     this.$state.loading = false;
-                //     let response = data.data;
-                //     console.log('verifyOtp', response);
-                //     if (response.is_completed) {
-                //         // this.setStepComponent(COMPONENTS.SEND_OTP_STEP);
-                //         this.setAuth({
-                //             user: response,
-                //             token: response.token,
-                //         });
-                //         const profileStore = useProfile()
-                //         await profileStore.fetchProfile()
-                //         setDialogShow(false);
+    // نحاول نقرأ message من أكثر من مكان (حسب طريقة useApi / axios / fetch)
+    const apiMessage =
+        err?.data?.message ||                  // لو useApi رجّع { data: { message } }
+        err?.response?._data?.message ||       // Nuxt useFetch: error.response._data.message
+        err?.response?.data?.message ||        // Axios: error.response.data.message
+        err?.message ||                        // error.message العادي
+        (typeof err === 'string' ? err : null);
 
+    // لو ما لقينا ولا وحدة، fallback لرسالة ثابتة
+    this.$state.otpError = apiMessage || 'Invalid verification code';
+},
+    }
+  )
+},
 
-                //     } else {
-                //         this.setStepComponent(COMPONENTS.COMPLETE_PROFILE_STEP);
-                //     }
-                // },
-                onError: (err) => {
-                    this.$state.loading = false;
-                }
-            });
-        },
         register(payload: {}) {
             const { setDialogShow } = useApp();
             this.$state.loading = true;
@@ -225,6 +227,10 @@ export const useAuth = defineStore("auth", {
         // },
         setStepComponent(step: any) {
             this.$state.step = step;
+            if (step === COMPONENTS.VERIFY_OTP_STEP) {
+                this.$state.otpError = null;
+                this.$state.otp = null;
+            }
         },
 
         // Store token in localStorage and cookies

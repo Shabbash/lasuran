@@ -93,18 +93,6 @@ const selectedSizePrice = computed(() => {
 const totalPrice = computed(() => selectedSizePrice.value * quantity.value)
 
 const addToCart = async () => {
-
-  // get carts products 
-  const cartProducts = cartModule.getProducts
-  
-  const existingProduct = cartProducts.find((p: any) => p.service_type != SERVICE_TYPES.ONLINE)
-
-  if (existingProduct) {
-    alert('You must clear your cart to add items from a different service type.')
-    return
-  }
-
-
   const item = {
     id: props.product.id,
     quantity: quantity.value,

@@ -82,13 +82,13 @@
             <span class="text-[15px] font-[350] leading-none">{{ t('menu_my_tickets') }}</span>
           </NuxtLink>
 
-           <div @click="openLegal('terms')"
+           <div @click="openTerms"
             class="flex items-center gap-2 px-4 py-2 rounded-lg hover:opacity-70 transition cursor-pointer">
             <img src="/assets/img/menu-icons/terms.svg" alt="" class="w-[20px] h-[20px]" />
             <span class="text-[15px] font-[350] leading-none">{{ t('menu_terms') }}</span>
           </div> 
 
-           <div @click="openLegal('privacy')"
+           <div @click="openPrivacy"
             class="flex items-center gap-2 px-4 py-2 rounded-lg hover:opacity-70 transition cursor-pointer">
             <img src="/assets/img/menu-icons/Layer_1.svg" alt="" class="w-[20px] h-[20px]" />
             <span class="text-[15px] font-[350] leading-none">{{ t('menu_privacy') }}</span>
@@ -104,7 +104,6 @@
     </template>
   </UPopover>
 
-  <LegalDialog v-model:show="showLegalModal" :url="legalUrl" />
 </template>
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
@@ -113,7 +112,6 @@ import { useApp } from '~/stores/app'
 import { useAuth } from '~/stores/auth'
 import { COMPONENTS } from '~/data/constants'
 import { useApi } from '~/composables/useApi'
-import LegalDialog from '~/components/base/LegalDialog.vue'
 import { useI18n } from 'vue-i18n'
 
 // i18n composables
@@ -127,21 +125,26 @@ const { setDialogComponent, setDialogShow } = useApp()
 
 // UI state
 const isOpen = ref(false)
-const showLegalModal = ref(false)
-const legalUrl = ref('')
 
 // Load legal pages URLs from API
 const pagesUrls = ref<Record<string, string>>({})
 onMounted(() => {
-  useApi('settings/pages-url', {
-    key: 'pages-url',
-    immediate: true
-  }, {
-    onSuccess(res) {
-      pagesUrls.value = res.data
+  useApi(
+    'settings/pages-url',
+    {
+      key: 'pages-url',
+      immediate: true
+    },
+    {
+      onSuccess: (data: any) => {
+        console.log('pages-url API success:', data)
+        // data = { status, status_code, message, data: { privacy_policy_url, ... } }
+        pagesUrls.value = data?.data || {}
+      }
     }
-  })
+  )
 })
+
 
 // Switch locale dynamically between Arabic and English
 const toggleLocale = async () => {
@@ -158,17 +161,60 @@ const closePopover = () => {
   isOpen.value = false
 }
 
-// Show terms or privacy modal based on type
-const openLegal = (type: 'terms' | 'privacy') => {
-  legalUrl.value = type === 'terms'
-    ? pagesUrls.value?.terms_and_condition_url
-    : pagesUrls.value?.privacy_policy_url
+const openPrivacy = () => {
+  const openWithUrl = (url: string) => {
+    setDialogComponent(COMPONENTS.PRIVACY, { url })
+    setDialogShow(true)
+    closePopover()
+  }
 
-  closePopover()
-  setTimeout(() => {
-    showLegalModal.value = true
-  }, 150)
+  // لو عندنا URL جاهز
+  if (pagesUrls.value?.privacy_policy_url) {
+    openWithUrl(pagesUrls.value.privacy_policy_url)
+    return
+  }
+
+  // لو أول مرة: نجيب من API ونفتح
+  useApi(
+    'settings/pages-url',
+    { key: 'pages-url-on-click' },
+    {
+      onSuccess: (data: any) => {
+        pagesUrls.value = data?.data || {}
+        openWithUrl(pagesUrls.value?.privacy_policy_url || '')
+      }
+    }
+  )
 }
+
+
+const openTerms = () => {
+  const openWithUrl = (url: string) => {
+    setDialogComponent(COMPONENTS.TERMS, { url })
+    setDialogShow(true)
+    closePopover()
+  }
+
+  // If URL already loaded in memory
+  if (pagesUrls.value?.terms_and_condition_url) {
+    openWithUrl(pagesUrls.value.terms_and_condition_url)
+    return
+  }
+
+  // Fallback: fetch from API on click
+  useApi(
+    'settings/pages-url',
+    { key: 'pages-url-terms-on-click' },
+    {
+      onSuccess: (data: any) => {
+        pagesUrls.value = data?.data || {}
+        openWithUrl(pagesUrls.value?.terms_and_condition_url || '')
+      }
+    }
+  )
+}
+
+
 
 // Open login modal
 const handleLogin = () => {

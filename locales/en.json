@@ -26,7 +26,7 @@
   "not_a_member": "You’re Not a Member",
   "login_or_signup_required": "You need to log in or sign up to use our services",
   "enter_mobile_number": "Please enter your mobile number",
-  "mobile_placeholder": "50 XXXX XXXX",
+  "mobile_placeholder": "XXX XXX XXX",
   "i_accept": "I accept",
   "terms": "Terms & Conditions",
   "privacy_policy": "Privacy Policy",
@@ -396,6 +396,7 @@
 
  "load_more": "Load more",
 
+"place_order_button_label": "Place Order"
 
 
 

@@ -55,7 +55,7 @@ export const useCart = defineStore("cart", {
 
             // Order + payment
             order: {
-                loading: true,
+                loading: false,
                 data: {} as any
             },
             payment: {} as any,
@@ -220,7 +220,8 @@ const sumServiceFeesFromProducts = (root: any) => {
                         this.$state.discount =
                             (root.promo_discount || 0) +
                             (root.extra_discount || 0) +
-                            (root.gift_card_discount || 0);
+                            (root.gift_card_discount || 0) +
+                            (root.tier_discount ?? 0);
                         const rootFees = Number(root?.order_service_fees_price ?? 0)
                         const productFees = sumServiceFeesFromProducts(root)
                         this.$state.service_cost = rootFees > 0 ? rootFees : productFees

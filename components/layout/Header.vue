@@ -220,13 +220,13 @@
                                             }}</span>
                                     </NuxtLink>
 
-                                    <div @click="openLegal('terms')"
+                                    <div @click="openTerms"
                                         class="flex items-center gap-2 px-4 py-[6px] rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
                                         <img src="/assets/img/menu-icons/terms.svg" alt="" class="w-[20px] h-[20px]" />
                                         <span class="text-[15px] font-[350] leading-none">{{ $t('menu_terms') }}</span>
                                     </div>
 
-                                    <div @click="openLegal('privacy')"
+                                    <div @click="openPrivacy"
                                         class="flex items-center gap-2 px-4 py-[6px] rounded-lg text-[#A0576F] hover:opacity-70 transition cursor-pointer">
                                         <img src="/assets/img/menu-icons/Layer_1.svg" alt=""
                                             class="w-[20px] h-[20px]" />
@@ -300,7 +300,6 @@
         </div>
     </div>
 
-    <LegalDialog v-model:show="showLegalModal" :url="legalUrl" />
 </template>
 
 <script setup lang="ts">
@@ -315,7 +314,6 @@ import { useProfile } from '~/stores/profile'
 import { useApi } from '~/composables/useApi'
 import Container from '~/components/base/Container.vue'
 import UserMenu from '~/components/base/UserMenu.vue'
-import LegalDialog from '~/components/base/LegalDialog.vue'
 import { COMPONENTS } from '~/data/constants'
 
 // Stores
@@ -333,19 +331,24 @@ const isOpen = ref(false)
 
 // Dialogs
 const { setDialogComponent, setDialogShow } = useApp()
-const showLegalModal = ref(false)
-const legalUrl = ref('')
+
+// Legal pages URLs
 const pagesUrls = ref<Record<string, string>>({})
 
 // Fetch legal URLs
-useApi('settings/pages-url', {
-  key: 'pages-url',
-  immediate: true
-}, {
-  onSuccess(res) {
-    pagesUrls.value = res.data
+useApi(
+  'settings/pages-url',
+  {
+    key: 'pages-url',
+    immediate: true
+  },
+  {
+    onSuccess: (data: any) => {
+      // data = { status, status_code, message, data: {...} }
+      pagesUrls.value = data?.data || {}
+    }
   }
-})
+)
 
 // Toggle Language
 const toggleLocale = async () => {
@@ -357,11 +360,22 @@ const toggleLocale = async () => {
   isOpen.value = false
 }
 
-// Open Legal Modal
-const openLegal = (type: 'terms' | 'privacy') => {
-  legalUrl.value = type === 'terms' ? pagesUrls.value?.terms_and_condition_url : pagesUrls.value?.privacy_policy_url
+// Open Privacy dialog via global dialog system
+const openPrivacy = () => {
+  const url = pagesUrls.value?.privacy_policy_url || ''
+
+  setDialogComponent(COMPONENTS.PRIVACY, { url })
+  setDialogShow(true)
   isOpen.value = false
-  setTimeout(() => showLegalModal.value = true, 150)
+}
+
+// Open Terms dialog via global dialog system
+const openTerms = () => {
+  const url = pagesUrls.value?.terms_and_condition_url || ''
+
+  setDialogComponent(COMPONENTS.TERMS, { url })
+  setDialogShow(true)
+  isOpen.value = false
 }
 
 // Open Invite Friends Modal
@@ -398,9 +412,12 @@ const navigateToNotifications = () => {
 
 // Watch route changes to close slideover
 const route = useRoute()
-watch(() => route.fullPath, () => {
-  isOpen.value = false
-})
+watch(
+  () => route.fullPath,
+  () => {
+    isOpen.value = false
+  }
+)
 </script>
 
 

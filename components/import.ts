@@ -29,6 +29,8 @@ import GiftedOrderDetailsDialog from '~/components/booking/GiftedOrderDetailsDia
 import AppointmentSkeleton from '~/components/service/AppointmentSkeleton.vue'
 import AdressesDialog from '~/components/address/AddressesDialog.vue'
 import AddAddressDialog from '~/components/address/AddAddressDialog.vue'
+import Privacy from '~/components/legal/Privacy.vue'
+import Terms from '~/components/legal/Terms.vue'
 
 
 
@@ -62,6 +64,9 @@ const components: {} = {
     [COMPONENTS.SERVICE_APPOINTMENT_SKELETON]: AppointmentSkeleton,
     [COMPONENTS.ADDRESSES_DIALOG]: AdressesDialog,
     [COMPONENTS.ADD_ADDRESS]: AddAddressDialog,
+    [COMPONENTS.PRIVACY]: Privacy,
+    [COMPONENTS.TERMS]: Terms,
+
 
 };
 export default components;

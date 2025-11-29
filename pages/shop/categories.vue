@@ -300,8 +300,7 @@ const goToProduct= (category_id)=>{
   navigateTo({ path: '/shop/products', query: {
     sub_category_id: category_id , 
      branch_id: selectedBranch.value.value,
-      menu_id : gender.value,
-      order_method: orderMethod.value
+     // menu_id : gender.value.value,
      
 
     } })

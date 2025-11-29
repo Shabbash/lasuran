@@ -1,11 +1,29 @@
 <template>
-  <div class="mb-[18px] relative min-h-[47px]">
+  <div v-if="!isDisabled" class="mb-[18px] relative min-h-[47px]">
     <!-- Header row with switch -->
     <div class="flex items-center justify-between bg-[#EBE4DF] rounded-full px-[25px] h-[47px]">
       
         <div class="flex items-center gap-[10px]">
-          <VipServiceIcon />
-          <div class="text-[#A0576F] text-[15px] font-[400]">{{ t('vip_title') }}</div>
+          <!-- Icon from API -->
+<div
+  v-if="vipFee?.icon"
+  class="w-[24px] h-[24px] flex items-center justify-center"
+>
+  <img
+    :src="vipFee.icon"
+    :alt="vipFee.name || 'VIP Service'"
+    class="w-full h-full object-contain"
+  />
+</div>
+
+<!-- fallback local icon -->
+<VipServiceIcon v-else />
+
+<!-- Name from API -->
+<div class="text-[#A0576F] text-[15px] font-[400]">
+  {{ vipFee?.name || t('vip_title') }}
+</div>
+
           </div>
       <USwitch v-model="isOn" :disabled="isDisabled" :ui="{
         base: 'data-[state=unchecked]:bg-[#BFBFBF] data-[state=checked]:bg-[#D99EB2] h-[22px]',
@@ -61,11 +79,13 @@ const addresses = useAddresses()
 const isOn = ref(false)
 
 // Disable if cart empty or no fees
+// Disable only when cart is empty
 const isDisabled = computed(() => {
   const noItems = (cart.getProductsCount ?? 0) === 0
   const noFees = (cart.available_service_fees?.length ?? 0) === 0
   return noItems || noFees
 })
+
 
 // Selected fee/address from store
 const chosenFeeId = computed(() => cart.selectedServiceFeeId)
@@ -76,6 +96,15 @@ const selectedAddressTitle = computed(() => {
   const a = addresses.byId?.(chosenAddressId.value) || addresses.items?.find(x => x.id === chosenAddressId.value)
   return a?.title || ''
 })
+// Extract the first service fee (or the specific VIP fee later)
+// VIP service fee from API (for now: first available fee)
+const vipFee = computed(() => {
+  return cart.available_service_fees?.[0] ?? null
+})
+
+// Whether we actually have a VIP fee → used to show/hide component
+const hasVip = computed(() => !!vipFee.value)
+
 
 function requiresLocation(fee: any) {
   const cond = fee?.applied_condition ?? fee?.condition
@@ -83,9 +112,10 @@ function requiresLocation(fee: any) {
 }
 
 function pickDefaultFee() {
-  // Choose first fee (or add smarter logic if you have types)
-  return cart.available_service_fees?.[0]
+  // Use the VIP fee computed from API
+  return vipFee.value
 }
+
 function openAddressPicker(feeId?: number) {
   appStore.setDialogComponent(COMPONENTS.ADDRESSES_DIALOG, {
     modalMaxWidth: 'max-w-[539px]',
