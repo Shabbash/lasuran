@@ -184,18 +184,36 @@ export const useProducts = defineStore("products", {
             this.$state.error = null;
 
             try {
-                console.log('Fetching shop products from API...');
+                // ✅ Build clean params object (only non-null values)
+                const cleanParams: any = {};
+
+                if (params.branch_id !== null && params.branch_id !== undefined) {
+                    cleanParams.branch_id = params.branch_id;
+                }
+                if (params.menu_id !== null && params.menu_id !== undefined) {
+                    cleanParams.menu_id = params.menu_id;
+                }
+                if (params.sub_category_id !== null && params.sub_category_id !== undefined) {
+                    cleanParams.sub_category_id = params.sub_category_id;
+                }
+                if (params.order_method !== null && params.order_method !== undefined) {
+                    cleanParams.order_method = params.order_method;
+                }
+                if (this.selectedCategory !== null && this.selectedCategory !== undefined) {
+                    cleanParams.category_id = this.selectedCategory;
+                }
+                if (this.searchQuery) {
+                    cleanParams.search = this.searchQuery;
+                }
+
+                console.log('📡 Fetching shop products with params:', cleanParams);
+
                 const { data: response, error } = await useApi('products', {
                     method: 'GET',
-                    params: {
-                        // Remove problematic parameters for now
-                        category_id: this.selectedCategory,
-                        search: this.searchQuery,
-                        ...params
-                    }
+                    params: cleanParams
                 });
 
-                console.log('Products API response:', response);
+                console.log('✅ Products API response:', response);
                 console.log('Response error:', error);
 
                 if (error.value) {

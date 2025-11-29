@@ -35,10 +35,10 @@
 
 
         <RadioSwitch
-          v-model="gender"
+          v-model="selectedMenu"
           :items="menuItems"
           variant-class="gender-option"
-          title="Gender"
+          title="Select Menu"
           class="mt-[18px]"
         />
       </div>
@@ -46,7 +46,7 @@
       <!-- Delivery details + Branch select -->
       <div v-if="orderMethod==1">
         <h2 class="text-[#EBE4DF] text-[17px] font-medium leading-normal mb-[16px]">
-          Delivery Details
+         Select Branch
         </h2>
         <div class="p-[10px] rounded-[12px] bg-[#EBE4DF]">
           <div class="flex gap-[7px] mb-[6px]">
@@ -178,38 +178,28 @@ const { setDialogComponent, setDialogShow, setServiceType ,setDeliveryMethod} = 
 
 /* Types */
 type OrderMethod = '1' | '2'
-type Gender = 'Female' | 'Male'
 type BranchItem = { label: string; value: number; address?: string; image?: string }
+type MenuItem = { label: string; value: number }
 
 /* State */
 const orderMethod = ref<OrderMethod>('1')
-const menuItems = computed(() =>
+
+// Menu items (Male/Female categories)
+const menuItems = computed<MenuItem[]>(() =>
   menuModule.getMenus.map((m: any) => ({
     label: m.name?.en || m.name || `Menu #${m.id}`,
     value: m.id
   }))
 )
 
-const gender = ref(menuItems.value[0])
+// Selected menu (Male/Female category) - will be set after data loads
+const selectedMenu = ref<MenuItem | null>(null)
 
 /* Options */
 const orderMethodItems = [
   { label: 'Pickup', value: '1' },
   { label: 'Delivery', value: '2' }
 ]
-const genderItems = [
-  { label: 'Female', value: 'Female' },
-  { label: 'Male', value: 'Male' }
-]
-
-const formData = reactive({
-  first_name: '',
-  last_name: '',
-  gender: '',
-  date_of_birth: '',
-  address: '',
-  email: ''
-})
 
 
 /* Derive delivery methods from store (reactive) */
@@ -230,82 +220,161 @@ const selectedBranch = ref<BranchItem | null>(null)
 
 /* ربط اختيار الفرع مع menu.store */
 watch(selectedBranch, async (val) => {
-  // حدّث branch_id داخل menu store
-  menuModule.$patch({ branch_id: val?.value ?? null })
-  // أعد تحميل الـ menus والخدمات بناءً على الفرع
+  if (!val?.value) return
 
+  console.log('🏢 Branch selection changed to:', val)
+
+  // حدّث branch_id داخل menu store
+  // @ts-ignore
+  menuModule.$patch({ branch_id: val.value })
+
+  // أعد تحميل الـ menus والخدمات بناءً على الفرع
   await menuModule.fetchMenus()
+
+  // Update selected menu after menus are loaded
+  if (menuItems.value.length > 0) {
+    selectedMenu.value = menuItems.value[0]
+  }
+
+  // @ts-ignore
   await menuModule.fetchServices()
-  await menuModule.getSubCategories()
+
+  // @ts-ignore
+  console.log('✅ Branch data updated, subcategories:', menuModule.getSubCategories)
 })
 
-// changed delivary method 
-watch(orderMethod , async(val)=>{
-  setDeliveryMethod(val)
+// Watch for menu selection changes (Male/Female categories)
+watch(selectedMenu, async (val) => {
+  if (val?.value) {
+    console.log('📝 Menu selection changed to:', val)
 
- await menuModule.fetchMenus()
+    // Update menu_id in store
+    // @ts-ignore
+    menuModule.$patch({ menu_id: val.value })
+
+    // Set default category and subcategory for the selected menu
+    // @ts-ignore
+    menuModule.setDefaultCategory()
+    // @ts-ignore
+    menuModule.setDefaultSubCategory()
+
+    // Fetch services for the selected menu
+    // @ts-ignore
+    await menuModule.fetchServices()
+
+    // Note: getSubCategories is a getter, not a function
+    // It will automatically update when category_id changes
+    // @ts-ignore
+    console.log('✅ Subcategories updated:', menuModule.getSubCategories)
+  }
+})
+
+// Changed delivery method
+watch(orderMethod, async (val) => {
+  // Map order method to correct delivery method constant
+  const deliveryMethodMap = {
+    '1': DELIVERY_METHOD.PICKUP,
+    '2': DELIVERY_METHOD.PICKUP  // أو DELIVERY_METHOD.DELIVERY لو موجود
+  }
+
+  setDeliveryMethod(deliveryMethodMap[val] || DELIVERY_METHOD.PICKUP)
+  await menuModule.fetchMenus()
 })
 
 onMounted(async () => {
-  setServiceType(SERVICE_TYPES.ONLINE)
-  // set delivery method
-  setDeliveryMethod(DELIVERY_METHOD.PICKUP)
+  // ✅ Only set service type if cart is empty or cart service type is already ONLINE
+  const cartStore = useCart()
+  // @ts-ignore
+  const currentCartServiceType = cartStore.cartServiceType
+
+  // If cart is empty or already has ONLINE products, set to ONLINE
+  if (!currentCartServiceType || currentCartServiceType === SERVICE_TYPES.ONLINE) {
+    // @ts-ignore
+    setServiceType(SERVICE_TYPES.ONLINE)
+    // @ts-ignore
+    setDeliveryMethod(DELIVERY_METHOD.PICKUP)
+  } else {
+    // Cart has different service type (e.g., RESERVATION), don't override
+    console.log('Cart has different service type, not overriding:', currentCartServiceType)
+  }
 })
 
 /* Load all required data once */
 onMounted(async () => {
+  // 1. Load home data first
   if (!homeStore.homeData) {
+    // @ts-ignore
     await homeStore.initializeHome()
   }
 
-  // menu store
-  // set branch_id 
-  await  menuModule.$patch({ branch_id:branchItems.value[0]?.value })
-
-
-
-
-  await menuModule.initMenu()
-
-
-  // حمل الفروع
+  // 2. Load branches
   if (!branchesStore.getBranches.length) {
     await branchesStore.fetchBranches()
   }
 
-  // حدّد فرع افتراضي
+  // 3. Set default branch
   if (!selectedBranch.value && branchItems.value.length) {
     selectedBranch.value = branchItems.value[0]
   }
 
-  // شغّل المنيو (بيجيب menus & services) — بعد ما نحدد الفرع
+  // 4. Set branch_id in menu store BEFORE calling initMenu
+  if (selectedBranch.value?.value) {
+    // @ts-ignore
+    menuModule.$patch({ branch_id: selectedBranch.value.value })
+    console.log('✅ Set branch_id before initMenu:', selectedBranch.value.value)
+  } else {
+    console.warn('⚠️ No branch selected, cannot initialize menu')
+    return
+  }
+
+  // 5. Initialize menu (fetch menus & services) - WAIT for it to complete
+  // This will call fetchMenus() with the branch_id we just set
   await menuModule.initMenu()
+
+  // 6. Set default menu after menus are loaded
+  if (menuItems.value.length > 0 && !selectedMenu.value) {
+    selectedMenu.value = menuItems.value[0]
+    console.log('✅ Set default menu:', selectedMenu.value)
+  }
 })
 
 
 
 const openAddressModal = () => {
+  // @ts-ignore
   appStore.setDialogComponent(COMPONENTS.ADDRESSES_DIALOG, {
     modalMaxWidth: 'max-w-[539px]',
-    onSelected: (addr) => {
-      // هنا تتعبّى قيمة الـ input
-      formData.address = addr?.full_address || ''
+    onSelected: (addr: any) => {
+      // Address is automatically saved in addressesStore
+      console.log('Address selected:', addr)
     }
   })
+  // @ts-ignore
   appStore.setDialogShow(true)
 }
 
-const goToProduct= (category_id)=>{
-  console.log('selectedBranch',gender.value)
-  navigateTo({ path: '/shop/products', query: {
-    sub_category_id: category_id , 
-     branch_id: selectedBranch.value.value,
-     // menu_id : gender.value.value,
-     
+const goToProduct = (category_id: any) => {
+  console.log('Selected menu:', selectedMenu.value)
+  console.log('Selected branch:', selectedBranch.value)
 
-    } })
+  const query: any = {
+    sub_category_id: category_id,
+  }
 
+  // Add branch_id if selected
+  if (selectedBranch.value?.value) {
+    query.branch_id = selectedBranch.value.value
+  }
 
+  // Add menu_id if selected (Male/Female categories)
+  if (selectedMenu.value?.value) {
+    query.menu_id = selectedMenu.value.value
+  }
+
+  navigateTo({
+    path: '/shop/products',
+    query
+  })
 }
 
 

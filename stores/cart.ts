@@ -217,6 +217,14 @@ const sumServiceFeesFromProducts = (root: any) => {
                         this.$state.message = root.message || "";
                         this.$state.cartServiceType = root.service_type || null;
 
+                        // ✅ Update app store service type based on cart service type
+                        if (root.service_type) {
+                            const appStore = useApp();
+                            // @ts-ignore
+                            appStore.setServiceType(root.service_type);
+                            console.log('Updated app service type from cart:', root.service_type);
+                        }
+
                         // Pricing
                         this.$state.subtotal = root.sub_total || 0;
                         this.$state.vat = root.tax_amount || 0;

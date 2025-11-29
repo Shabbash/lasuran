@@ -117,13 +117,17 @@ definePageMeta({ middleware: 'auth' })
 // 📆 Store Instances
 const cartModule = useCart()
 const menuModule = useMenu()
-const { setDialogComponent, setDialogShow  ,setDialogOptions } = useApp()
+const getCookie = useCookie('service_type')
+const { setDialogComponent, setDialogShow  ,setDialogOptions,setServiceType } = useApp()
 
 // 📌 Reactive State
 const expandedItems = ref<{ [key: string]: boolean }>({})
 
 // 📅 Fetch cart data
-onMounted(() => cartModule.fetchCart())
+onMounted(() => {
+  setServiceType(getCookie.value)
+  cartModule.fetchCart()
+})
 
 // 🛂 Cart Products
 const cartProducts = computed(() => cartModule.getProducts as any[])

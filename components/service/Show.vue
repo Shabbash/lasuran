@@ -87,6 +87,9 @@ import { useI18n } from 'vue-i18n'
 // Access translation function
 const { t } = useI18n()
 
+// init cookie service type
+const  setCookie  = useCookie('service_type')
+
 const priceWithIcon = computed(() => {
   const price = selectedService.value.price ?? 0;
 
@@ -194,6 +197,7 @@ return
 }
 
 setServiceType(SERVICE_TYPES.RESERVATION)
+setCookie.value = SERVICE_TYPES.RESERVATION
 
     // Create the payload with all necessary data
     const payload = {

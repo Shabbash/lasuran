@@ -43,25 +43,42 @@ import { useProducts } from '@/stores/products'
 import { useMenu } from '~/stores/menu'
 import { useHome } from '~/stores/home'
 import { useBranches } from '~/stores/branches'
-import { SERVICE_TYPES, COMPONENTS } from '@/data/constants'
-const { setDialogComponent, setDialogShow, setServiceType } = useApp()
+import { useCart } from '~/stores/cart'
+import { SERVICE_TYPES, COMPONENTS, DELIVERY_METHOD } from '@/data/constants'
+const { setServiceType, setDeliveryMethod } = useApp()
 
 const route = useRoute()
 const productsStore = useProducts()
 const menuModule = useMenu()
 const homeStore = useHome()
 const branchesStore = useBranches()
+const cartStore = useCart()
 
 const toNum = (v: any) => (v != null ? Number(v) : null)
 const toStr = (v: any) => (typeof v === 'string' ? v : (v ?? null))
 
 onMounted(async () => {
-  if (!homeStore?.home?.sliders?.length || !homeStore?.home?.delivery_methods?.length) {
+  // ✅ Set service type to ONLINE for shop products
+  // @ts-ignore
+  const currentCartServiceType = cartStore.cartServiceType
+
+  // Only set service type if cart is empty or already has ONLINE products
+  if (!currentCartServiceType || currentCartServiceType === SERVICE_TYPES.ONLINE) {
+    // @ts-ignore
+    setServiceType(SERVICE_TYPES.ONLINE)
+    // @ts-ignore
+    setDeliveryMethod(DELIVERY_METHOD.PICKUP)
+    console.log('✅ Set service type to ONLINE for shop products')
+  } else {
+    console.log('⚠️ Cart has different service type, not overriding:', currentCartServiceType)
+  }
+
+  // Load home data if needed
+  // @ts-ignore
+  if (!homeStore?.homeData?.sliders?.length || !homeStore?.deliveryMethods?.length) {
+    // @ts-ignore
     await homeStore.initializeHome()
   }
-  // if (!branchesStore.getBranches.length && !branchesStore.isLoading) {
-  //   await branchesStore.fetchBranches()
-  // }
 })
 
 const refreshFromQuery = async () => {
@@ -89,6 +106,7 @@ const refreshFromQuery = async () => {
   }
 
   // Fetch menus first if branch_id is provided
+  // @ts-ignore
   if (branch_id && !menuModule.getMenus?.length) {
     await menuModule.fetchMenus()
   }
@@ -109,8 +127,11 @@ const refreshFromQuery = async () => {
   })
 }
 const openProductModal = (product: any) => {
-  setDialogComponent(COMPONENTS.SHOP_SHOW, { product })
-  setDialogShow(true)
+  const appStore = useApp()
+  // @ts-ignore
+  appStore.setDialogComponent(COMPONENTS.SHOP_SHOW, { product })
+  // @ts-ignore
+  appStore.setDialogShow(true)
 }
 
 const handleFilterChange = async (payload: any) => {

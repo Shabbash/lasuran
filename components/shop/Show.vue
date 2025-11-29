@@ -77,6 +77,8 @@ const cartModule = useCart()
 const quantity = ref(1)
 const selectedSize = ref('30ml')
 
+const setCookie = useCookie('service_type')
+
 // Dynamic sizes and pricing
 const sizes = computed(() => {
   const base = parseFloat(props.product?.price) || 100
@@ -131,6 +133,7 @@ const addToCart = async () => {
 
 
   setServiceType(SERVICE_TYPES.ONLINE)
+  setCookie.value = SERVICE_TYPES.ONLINE
 
 
   const item = {
