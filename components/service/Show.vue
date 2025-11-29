@@ -78,14 +78,17 @@
 import { CalendarDate } from "@internationalized/date";
 import CustomRadio from "~/components/base/CustomRadio.vue";
 import ServiceDetailSkeleton from "~/components/skeletons/ServiceDetailSkeleton.vue";
-import { COMPONENTS } from "~/data/constants";
+import { COMPONENTS, SERVICE_TYPES } from "~/data/constants";
 import PriceIcon from '@/components/icons/PriceIcon.vue'
 import { formatSAR } from '~/utils/formatCurrency'
-
+const { setDialogComponent, setDialogShow,setServiceType,setDialogOptions } = useApp()
 import { useI18n } from 'vue-i18n'
 
 // Access translation function
 const { t } = useI18n()
+
+// init cookie service type
+const  setCookie  = useCookie('service_type')
 
 const priceWithIcon = computed(() => {
   const price = selectedService.value.price ?? 0;
@@ -173,12 +176,28 @@ const defaultService = computed<Service>(() => selectedService.value?.products?.
 
 const addToCart = function () {
   const { requireAuth } = useAuthCheck();
-  const { setDialogComponent , setDialogOptions } = useApp();
 
   // Check authentication and proceed only if authenticated
   requireAuth(() => {
     // User is authenticated, proceed with cart operation
     console.log('User authenticated, proceeding with cart operation');
+    const serviceType = cartModule.getServiceType
+
+if (serviceType==SERVICE_TYPES.ONLINE) {
+  setServiceType(SERVICE_TYPES.ONLINE);
+
+setDialogComponent(COMPONENTS.SERVICE_TYPES_CONFLICT, {
+  currentServiceType: SERVICE_TYPES.RESERVATION ,
+  newServiceType: SERVICE_TYPES.ONLINE, 
+  onClearCart: handleClearCart,
+
+
+})
+return
+}
+
+setServiceType(SERVICE_TYPES.RESERVATION)
+setCookie.value = SERVICE_TYPES.RESERVATION
 
     // Create the payload with all necessary data
     const payload = {
@@ -192,8 +211,7 @@ const addToCart = function () {
     const isEditingOperation = isEditing.value;
 
     // Get the cart_product_id from the service or our stored value
-    const cartProductId = selectedService.value?.cart_product_id || originalCartProductId.value;
-
+  
     // Check if this is an edit operation
     if (isEditingOperation && cartProductId) {
       // This is an edit operation - ensure we pass the cart_product_id
@@ -239,6 +257,23 @@ const addToCart = function () {
   });
 };
 
+const handleClearCart = () => {
+  setDialogComponent(COMPONENTS.CONFIRM_DIALOG, {
+    dialogTitle: 'cart_remove_all_title',
+    message: 'cart_remove_all_message',
+    confirmText: 'cart_remove_all_confirm',
+    cancelText: 'cart_remove_all_cancel',
+    modalMaxWidth: 'max-w-[458px]',
+    loading: cartModule.isEmptying,
+    confirmButtonClass: 'h-[49px] bg-[#C44E4E] hover:bg-[#913E5D] text-white rounded-[100px] text-[16px]',
+    cancelButtonClass: 'h-[49px] bg-[#6B8B9B] text-white hover:bg-[#5a7886] rounded-[100px] text-[16px]',
+    onConfirm: async () => {
+      await cartModule.emptyCart()
+      setDialogShow(false)
+    }
+  })
+  setDialogShow(true)
+}
 
 
 // Function removed as it was unused

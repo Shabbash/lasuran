@@ -116,6 +116,9 @@ export const useCart = defineStore("cart", {
             if (state.products.length === 0) return null;
             // Assume all items in cart have the same service type
             return state.cartServiceType || null;
+        },
+           getServiceType(state) {
+            return state.cartServiceType;
         }
     },
 
@@ -213,6 +216,14 @@ const sumServiceFeesFromProducts = (root: any) => {
                         this.$state.sub_title = root.cart_title_sub_message || "";
                         this.$state.message = root.message || "";
                         this.$state.cartServiceType = root.service_type || null;
+
+                        // ✅ Update app store service type based on cart service type
+                        if (root.service_type) {
+                            const appStore = useApp();
+                            // @ts-ignore
+                            appStore.setServiceType(root.service_type);
+                            console.log('Updated app service type from cart:', root.service_type);
+                        }
 
                         // Pricing
                         this.$state.subtotal = root.sub_total || 0;

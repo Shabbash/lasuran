@@ -31,6 +31,7 @@ import AdressesDialog from '~/components/address/AddressesDialog.vue'
 import AddAddressDialog from '~/components/address/AddAddressDialog.vue'
 import Privacy from '~/components/legal/Privacy.vue'
 import Terms from '~/components/legal/Terms.vue'
+import ServiceTypesConflictDIALOG from '@/components/cart/ServiceTypeConflictDialog.vue'
 
 
 
@@ -67,6 +68,7 @@ const components: {} = {
     [COMPONENTS.PRIVACY]: Privacy,
     [COMPONENTS.TERMS]: Terms,
 
+    [COMPONENTS.SERVICE_TYPES_CONFLICT]: ServiceTypesConflictDIALOG
 
 };
 export default components;

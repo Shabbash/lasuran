@@ -19,6 +19,14 @@
   dots-class="dots-style"
 >
 
+            <BaseSlider
+  :items="homeSliders?.length ? homeSliders : (slider?.items ?? homeStore?.homeData?.data?.sliders)"
+  dots
+  :slide-per-row="1"
+  :slide-per-row-mobile="1"
+  dots-class="dots-style"
+>
+
               <template #default="{ item }">
                 <div class="w-full cursor-pointer">
                   <div class="w-full overflow-hidden relative rounded-[23px] md:mt-[31px] h-[272px] md:h-[390px]">

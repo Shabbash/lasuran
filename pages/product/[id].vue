@@ -96,14 +96,25 @@ const router = useRouter()
 const route = useRoute()
 const productId = route.params.id
 
-// Set service type to RESERVATION for cart operations (not ONLINE)
-const { setServiceType, setDeliveryMethod, getServiceType } = useApp()
-setServiceType(SERVICE_TYPES.RESERVATION)  // Use service_reservation for cart API
-setDeliveryMethod(DELIVERY_METHOD.RESERVATION)
+// Access cart store
+const cartModule = useCart()
 
-// Debug: Check what service type is actually set
-console.log('Current service type after setting:', getServiceType)
-console.log('SERVICE_TYPES.RESERVATION value:', SERVICE_TYPES.RESERVATION)
+// Set service type to ONLINE for online store products
+const { setServiceType, setDeliveryMethod } = useApp()
+
+// ✅ Only set service type if cart is empty or cart service type is already ONLINE
+const currentCartServiceType = cartModule.cartServiceType
+
+// If cart is empty or already has ONLINE products, set to ONLINE
+if (!currentCartServiceType || currentCartServiceType === SERVICE_TYPES.ONLINE) {
+  // @ts-ignore
+  setServiceType(SERVICE_TYPES.ONLINE)  // Use online_store for products
+  // @ts-ignore
+  setDeliveryMethod(DELIVERY_METHOD.PICKUP)  // Use pickup for online store
+} else {
+  // Cart has different service type (e.g., RESERVATION), don't override
+  console.log('Cart has different service type, not overriding:', currentCartServiceType)
+}
 
 // Initialize menu store to get branch_id
 const menuModule = useMenu()
@@ -116,82 +127,22 @@ const { data: product, pending: loading } = useApi(`products/${productId}`, {
   method: 'GET',
 })
 
-// Access cart store
-const cartModule = useCart()
-
-// Add product to cart - try direct API call to bypass coverage validation
+// Add product to cart using cart store
 async function addToCart() {
   const productId = product.value.data?.id || product.value.id
 
   console.log('Adding to cart - Product ID:', productId)
-  console.log('App store service type before API call:', getServiceType)
 
-  try {
-    // Use $fetch directly to have full control over headers
-    const authStore = useAuth()
-
-    const response = await $fetch('https://lasuran-dev.jigsawme.io/api/v1/cart', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${authStore.getToken}`,
-        'Service-Type': 'service_reservation',  // Force service_reservation
-        'Delivery-Method': 'srvc_resv',
-        'Device-Type': 'WEB',
-        'Accept-Language': 'en',
-        'Content-Type': 'application/json'
-      },
-      body: {
-        product_id: productId,
-        quantity: 1,
-      }
-    })
-
-    console.log('Cart API response:', response)
-
-    if (response?.status) {
-      // Success - redirect to cart
-      router.push('/cart')
-
-      // Show success message
-      const toast = useToast()
-      toast.add({
-        title: 'Product added to cart successfully',
-        color: 'success'
-      })
-    }
-  } catch (error: any) {
-    console.error('Direct cart API error:', error)
-
-    // Check if it's a coverage area error
-    if (error?.response?._data?.message?.includes('coverage area')) {
-      const toast = useToast()
-      toast.add({
-        title: 'Service not available in your area',
-        description: 'Please update your address in your profile or contact support.',
-        color: 'error'
-      })
-      return
-    }
-
-    // For other errors, try fallback to cart store method
-    try {
-      const item = {
-        id: productId,
-        quantity: 1,
-      }
-
-      // @ts-ignore - TypeScript doesn't recognize the method but it exists
-      await cartModule.addOrUpdateServiceInCart(item, null, SERVICE_TYPES.RESERVATION)
-    } catch (fallbackError) {
-      console.error('Fallback cart method also failed:', fallbackError)
-      const toast = useToast()
-      toast.add({
-        title: 'Unable to add to cart',
-        description: 'Please try again later or contact support.',
-        color: 'error'
-      })
-    }
+  const item = {
+    id: productId,
+    quantity: 1,
   }
+
+  // @ts-ignore - TypeScript doesn't recognize the method but it exists
+  await cartModule.addOrUpdateServiceInCart(item, null, SERVICE_TYPES.ONLINE)
+
+  // Redirect to cart after adding
+  router.push('/cart')
 }
 
 

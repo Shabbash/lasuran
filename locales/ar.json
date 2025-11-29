@@ -370,7 +370,8 @@
 "booking_method_label": "طريقة الحجز",
 "load_more": "تحميل المزيد",
 "place_order_button_label": "إتمام الطلب"
-
+"cart_item":"العنصر",
+"cart_quantity":"الكمية"
 
 
 

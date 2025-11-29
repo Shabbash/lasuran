@@ -65,6 +65,11 @@ const uiMerged = computed(() => ({
     color: #fff;
 }
 
+  .menu-option:has(span[data-state="checked"]) label {
+    background-color: #6B8B9B;
+    color: #fff;
+}
+
   .ordermethod-option:has(span[data-state="checked"]) label {
     background-color: #A0576F;
     color: #fff;

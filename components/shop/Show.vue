@@ -63,7 +63,8 @@ import SelectableSlider from '@/components/base/SelectableSlider.vue'
 import OutlineStarIcon2 from '@/components/icons/OutlineStarIcon2.vue'
 import ShopIcon from '@/components/icons/ShopIcon.vue'
 import { useCart } from '@/stores/cart'
-import { SERVICE_TYPES } from '@/data/constants'
+import { COMPONENTS, SERVICE_TYPES } from '@/data/constants'
+const { setDialogComponent, setDialogShow,setServiceType } = useApp()
 
 const props = defineProps({
   product: {
@@ -75,6 +76,8 @@ const props = defineProps({
 const cartModule = useCart()
 const quantity = ref(1)
 const selectedSize = ref('30ml')
+
+const setCookie = useCookie('service_type')
 
 // Dynamic sizes and pricing
 const sizes = computed(() => {
@@ -92,7 +95,47 @@ const selectedSizePrice = computed(() => {
 
 const totalPrice = computed(() => selectedSizePrice.value * quantity.value)
 
+
+ 
+const handleClearCart = () => {
+  setDialogComponent(COMPONENTS.CONFIRM_DIALOG, {
+    dialogTitle: 'cart_remove_all_title',
+    message: 'cart_remove_all_message',
+    confirmText: 'cart_remove_all_confirm',
+    cancelText: 'cart_remove_all_cancel',
+    modalMaxWidth: 'max-w-[458px]',
+    loading: cartModule.isEmptying,
+    confirmButtonClass: 'h-[49px] bg-[#C44E4E] hover:bg-[#913E5D] text-white rounded-[100px] text-[16px]',
+    cancelButtonClass: 'h-[49px] bg-[#6B8B9B] text-white hover:bg-[#5a7886] rounded-[100px] text-[16px]',
+    onConfirm: async () => {
+      await cartModule.emptyCart()
+      setDialogShow(false)
+    }
+  })
+  setDialogShow(true)
+}
+
 const addToCart = async () => {
+
+  // get carts products 
+  const serviceType = cartModule.getServiceType
+
+  if (serviceType==SERVICE_TYPES.RESERVATION) {
+  setDialogComponent(COMPONENTS.SERVICE_TYPES_CONFLICT, {
+    currentServiceType: SERVICE_TYPES.RESERVATION,
+    newServiceType: SERVICE_TYPES.ONLINE, 
+    onClearCart: handleClearCart,
+
+ 
+  })
+  return
+  }
+
+
+  setServiceType(SERVICE_TYPES.ONLINE)
+  setCookie.value = SERVICE_TYPES.ONLINE
+
+
   const item = {
     id: props.product.id,
     quantity: quantity.value,

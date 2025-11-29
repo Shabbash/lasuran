@@ -20,10 +20,19 @@
 
         <!-- 📦 Cart Items Table Header -->
         <div v-if="!cartModule.isLoading && cartProducts.length > 0">
-          <div class="flex justify-between md:px-[29px] border-b border-b-[#AD7084] pb-[14px] mb-[14px]">
+          <div class="flex justify-between md:px-[29px] border-b border-b-[#AD7084] pb-[14px] mb-[14px]" v-if="cartModule.getServiceType == SERVICE_TYPES.RESERVATION">
             <p class="flex-1 text-[#EBE4DF] text-[14px] font-[350] leading-normal">{{ $t('cart_package') }}</p>
             <div class="flex flex-1 justify-end">
               <p class="flex-2 text-[#EBE4DF] text-[14px] font-[350] hidden md:block">{{ $t('cart_duration') }}</p>
+              <p class="flex-1 text-[#EBE4DF] text-[14px] font-[350] hidden md:block">{{ $t('cart_price') }}</p>
+              <p class="md:flex-1 text-[#EBE4DF] text-[14px] font-[350] justify-end">{{ $t('cart_action') }}</p>
+            </div>
+          </div>
+
+          <div class="flex justify-between md:px-[29px] border-b border-b-[#AD7084] pb-[14px] mb-[14px]" v-if="cartModule.getServiceType == SERVICE_TYPES.ONLINE">
+            <p class="flex-1 text-[#EBE4DF] text-[14px] font-[350] leading-normal">{{ $t('cart_item') }}</p>
+            <div class="flex flex-1 justify-end">
+              <p class="flex-2 text-[#EBE4DF] text-[14px] font-[350] hidden md:block">{{ $t('cart_quantity') }}</p>
               <p class="flex-1 text-[#EBE4DF] text-[14px] font-[350] hidden md:block">{{ $t('cart_price') }}</p>
               <p class="md:flex-1 text-[#EBE4DF] text-[14px] font-[350] justify-end">{{ $t('cart_action') }}</p>
             </div>
@@ -96,6 +105,7 @@ import { useCart } from '~/stores/cart'
 import { useApp } from '~/stores/app'
 import { useMenu } from '~/stores/menu'
 import { usePageTitle } from '~/composables/usePageTitle'
+import { SERVICE_TYPES } from '~/data/constants'
 usePageTitle("titles.cart")
 
 // 🗷 Constants
@@ -107,13 +117,17 @@ definePageMeta({ middleware: 'auth' })
 // 📆 Store Instances
 const cartModule = useCart()
 const menuModule = useMenu()
-const { setDialogComponent, setDialogShow  ,setDialogOptions } = useApp()
+const getCookie = useCookie('service_type')
+const { setDialogComponent, setDialogShow  ,setDialogOptions,setServiceType } = useApp()
 
 // 📌 Reactive State
 const expandedItems = ref<{ [key: string]: boolean }>({})
 
 // 📅 Fetch cart data
-onMounted(() => cartModule.fetchCart())
+onMounted(() => {
+  setServiceType(getCookie.value)
+  cartModule.fetchCart()
+})
 
 // 🛂 Cart Products
 const cartProducts = computed(() => cartModule.getProducts as any[])

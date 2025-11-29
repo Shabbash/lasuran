@@ -41,23 +41,42 @@ import { useProducts } from '@/stores/products'
 import { useMenu } from '~/stores/menu'
 import { useHome } from '~/stores/home'
 import { useBranches } from '~/stores/branches'
+import { useCart } from '~/stores/cart'
+import { SERVICE_TYPES, COMPONENTS, DELIVERY_METHOD } from '@/data/constants'
+const { setServiceType, setDeliveryMethod } = useApp()
 
 const route = useRoute()
 const productsStore = useProducts()
 const menuModule = useMenu()
 const homeStore = useHome()
 const branchesStore = useBranches()
+const cartStore = useCart()
 
 const toNum = (v: any) => (v != null ? Number(v) : null)
 const toStr = (v: any) => (typeof v === 'string' ? v : (v ?? null))
 
 onMounted(async () => {
-  if (!homeStore?.home?.sliders?.length || !homeStore?.home?.delivery_methods?.length) {
+  // ✅ Set service type to ONLINE for shop products
+  // @ts-ignore
+  const currentCartServiceType = cartStore.cartServiceType
+
+  // Only set service type if cart is empty or already has ONLINE products
+  if (!currentCartServiceType || currentCartServiceType === SERVICE_TYPES.ONLINE) {
+    // @ts-ignore
+    setServiceType(SERVICE_TYPES.ONLINE)
+    // @ts-ignore
+    setDeliveryMethod(DELIVERY_METHOD.PICKUP)
+    console.log('✅ Set service type to ONLINE for shop products')
+  } else {
+    console.log('⚠️ Cart has different service type, not overriding:', currentCartServiceType)
+  }
+
+  // Load home data if needed
+  // @ts-ignore
+  if (!homeStore?.homeData?.sliders?.length || !homeStore?.deliveryMethods?.length) {
+    // @ts-ignore
     await homeStore.initializeHome()
   }
-  // if (!branchesStore.getBranches.length && !branchesStore.isLoading) {
-  //   await branchesStore.fetchBranches()
-  // }
 })
 
 const refreshFromQuery = async () => {
@@ -66,15 +85,65 @@ const refreshFromQuery = async () => {
   const sub_category_id = toNum(route.query.sub_category_id)
   const order_method    = toStr(route.query.order_method)
 
-  menuModule.branch_id       = branch_id
-  menuModule.menu_id         = menu_id
-  menuModule.sub_category_id = sub_category_id
-
-  await productsStore.fetchProducts({
+  console.log('Query parameters received:', {
     branch_id,
     menu_id,
     sub_category_id,
-    order_method // ← غيّرها لـ service_type لو الباك إند يتوقع كده
+    order_method
+  })
+
+  // Set the values in menu store
+  if (branch_id) {
+    menuModule.branch_id = branch_id as any
+  }
+  if (menu_id) {
+    menuModule.menu_id = menu_id as any
+  }
+  if (sub_category_id) {
+    menuModule.sub_category_id = sub_category_id as any
+  }
+
+  // Fetch menus first if branch_id is provided
+  // @ts-ignore
+  if (branch_id && !menuModule.getMenus?.length) {
+    await menuModule.fetchMenus()
+  }
+
+  // Fetch products with the filter parameters
+  console.log('About to fetch products with params:', {
+    branch_id,
+    menu_id,
+    sub_category_id,
+    order_method
+  })
+
+  await (productsStore as any).fetchProducts({
+    branch_id,
+    menu_id,
+    sub_category_id,
+    order_method
+  })
+}
+const openProductModal = (product: any) => {
+  const appStore = useApp()
+  // @ts-ignore
+  appStore.setDialogComponent(COMPONENTS.SHOP_SHOW, { product })
+  // @ts-ignore
+  appStore.setDialogShow(true)
+}
+
+const handleFilterChange = async (payload: any) => {
+  console.log('Filter changed:', payload)
+
+  // Update the URL with new filter parameters
+  await navigateTo({
+    path: '/shop/products',
+    query: {
+      branch_id: payload.branch,
+      menu_id: payload.menu_id,
+      sub_category_id: payload.sub_category_id,
+      order_method: payload.order_method
+    }
   })
 }
 
