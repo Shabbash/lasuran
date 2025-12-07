@@ -105,7 +105,7 @@
       </div>
 
       <div class="flex flex-col gap-[15px]">
-        <div v-for="service in bk?.products ?? []">
+        <div v-for="service in bk?.products ?? []" >
           <div class="flex flex-col md:flex-row gap-[5px] mb-[10px] items-center">
             <div class="flex gap-[15px] items-center flex-4">
               <div class="flex-1">
@@ -119,6 +119,7 @@
             </div>
 
             <BaseButton @click="onSelectService(service)"
+            v-if="service.date == null"
               class="mt-[15px] md:mt-0 flex-1 w-full h-[30px] bg-transparent hover:bg-transparent text-[#6B8B9B] border border-[#6B8B9B] rounded-full text-[13px] font-medium">
               {{ t('select_data_time') }}
             </BaseButton>
@@ -184,6 +185,7 @@ import BaseButton from '@/components/base/Button.vue'
 import { useAuth } from '~/stores/auth'
 import { useApp } from '~/stores/app'
 import { useGiftedOrders } from '~/stores/gifted-orders'
+import { useBookings } from '~/stores/bookings'
 import { COMPONENTS } from '~/data/constants'
 import { useApi } from '~/composables/useApi'
 
@@ -245,43 +247,72 @@ const appModule = useApp();
 const { setDialogComponent, setDialogShow } = useApp()
 
 const onSelectService = function (item) {
+  console.log('📝 onSelectService called with item:', item)
+  console.log('📝 bk.value:', bk.value)
+
   const productData = item;
+
+  // ✅ Get order_product_id from item (this is what we need for the API)
+  const orderProductId = item.order_product_id ?? item.id
+
   const serviceData = {
     ...productData,
     id: productData.id,
     product_id: productData.id,
-    cart_product_id: item.cart_product_id,
-    order_product_id: item.order_product_id,
+    cart_product_id: item.cart_product_id ?? orderProductId, // ✅ Fallback to order_product_id
+    order_product_id: orderProductId, // ✅ This is used in the API
     image: item.image,
     branch_id: item.branch?.id || item.branch_id,
     date: item.date || '',
     serviceFee: 18,
     _isEditing: true
   }
-// Prepare product master id and service fee ids (VIP support)
-// NOTE: We pass these to the Appointment modal so it can fetch VIP-filtered time slots.
-const productMasterId = item.product_master_id ?? item.product_id ?? item.id
 
-// Extract fee ids from booking original data (VIP case)
-const fees = bk.value?._originalData?.service_fees ?? []
-const serviceFeeIds = fees
-  .filter((fee: any) => Array.isArray(fee.products))
-  .filter((fee: any) =>
-    fee.products?.some((p: any) =>
-      p?.product_master_id === productMasterId ||
-      p?.product_id === item.order_product_id ||
-      p?.product_id === item.id
+  console.log('✅ serviceData prepared:', serviceData)
+
+  // Prepare product master id and service fee ids (VIP support)
+  // NOTE: We pass these to the Appointment modal so it can fetch VIP-filtered time slots.
+  const productMasterId = item.product_master_id ?? item.product_id ?? item.id
+
+  // Extract fee ids from booking original data (VIP case)
+  const fees = bk.value?._originalData?.service_fees ?? []
+  const serviceFeeIds = fees
+    .filter((fee: any) => Array.isArray(fee.products))
+    .filter((fee: any) =>
+      fee.products?.some((p: any) =>
+        p?.product_master_id === productMasterId ||
+        p?.product_id === orderProductId ||
+        p?.product_id === item.id
+      )
     )
-  )
-  .map((fee: any) => Number(fee.id))
-  .filter(Boolean)
+    .map((fee: any) => Number(fee.id))
+    .filter(Boolean)
 
-// Save service payload into dialog data (so Appointment can read it)
-appModule.dialog.data.service = {
-  ...item,
-  product_master_id: productMasterId,
-  service_fee_ids: 10000
-}
+  console.log('✅ serviceFeeIds extracted:', serviceFeeIds)
+
+  // ✅ Save booking object into dialog data (so Appointment can read booking.id for URL)
+  // @ts-ignore
+  appModule.dialog.data.booking = {
+    ...bk.value,
+    id: bk.value?._originalData?.id ?? bk.value?.id,
+    gifted_info: gift.value
+  }
+
+  // Save service payload into dialog data (so Appointment can read it)
+  // @ts-ignore
+  appModule.dialog.data.service = {
+    ...item,
+    product_master_id: productMasterId,
+    order_product_id: orderProductId, // ✅ Pass order_product_id to Appointment
+    service_fee_ids: serviceFeeIds.length > 0 ? serviceFeeIds : undefined
+  }
+
+  // @ts-ignore
+  console.log('✅ appModule.dialog.data set:', {
+    booking: appModule.dialog.data.booking,
+    service: appModule.dialog.data.service
+  })
+
   setDialogComponent(COMPONENTS.SERVICE_APPOINTMENT_SKELETON);
   setDialogShow(true);
   menuModule.setService(serviceData, () => {
@@ -297,25 +328,53 @@ function handleInvoice() {
 }
 
 
-const confirmBooking = function () {
+const confirmBooking = async function () {
   actionLoading.value = true
 
-  const response = useApi(`gifted-orders/${appModule.dialog?.data?.booking?.id}/accept`, {
+  // ✅ Get order_id from booking data (prefer _originalData.id, fallback to id)
+  const orderId = bk.value?._originalData?.id ?? bk.value?.id ?? props.order_id
+
+  if (!orderId) {
+    console.error('❌ Order ID not found for accept')
+    actionLoading.value = false
+    return
+  }
+
+  console.log('✅ Accepting gifted order with order_id:', orderId)
+
+  // @ts-ignore
+  const response = useApi(`gifted-orders/${orderId}/accept`, {
     method: 'POST'
   }, {
-    onSuccess: (res) => {
-      actionLoading.value = false
-      setDialogComponent(COMPONENTS.SERVICE_APPOINTMENT);
-      let locale = appModule.locale;
-      appModule.locale = null;
-      appModule.locale = locale;
-      setDialogShow(false);
+    onSuccess: async (res) => {
+      console.log('✅ Gifted order accepted successfully')
 
+      // ✅ Reload gifted orders data
+      try {
+        const giftedOrderId = gift.value?.id
+        if (giftedOrderId) {
+          console.log('🔄 Reloading gifted order data...')
+          await giftedStore.fetchGiftedOrder(giftedOrderId)
+          console.log('✅ Gifted order data reloaded')
+        }
+
+        // ✅ Reload bookings/orders list
+        const bookingsStore = useBookings()
+        // @ts-ignore
+        await bookingsStore.fetchOrders()
+        console.log('✅ Bookings list reloaded')
+      } catch (err) {
+        console.error('⚠️ Error reloading data:', err)
+      }
+
+      actionLoading.value = false
+
+      // Close dialog
+      setDialogShow(false);
     },
     onError: (err) => {
       actionLoading.value = false
-
-
+      console.error('❌ Error accepting gifted order:', err)
     }
   })
 }
@@ -355,11 +414,13 @@ async function openScheduleDialog() {
     }
 
     // 4) Open scheduling dialog
+    // @ts-ignore
     appStore.setDialogComponent(COMPONENTS.SCHEDULE_GIFTED_ORDER, {
       gifted_order_id: gift.value.id,
       order_product_id: orderProductId,
       product_master_id: productMasterId
     })
+    // @ts-ignore
     appStore.setDialogShow(true)
   } catch (e) {
     console.error('❌ Failed to open gifted schedule dialog:', e)
@@ -372,6 +433,7 @@ async function openScheduleDialog() {
 function openDeclineGiftConfirm() {
   if (!showDecline.value) return;
 
+  // @ts-ignore
   appStore.setDialogComponent(COMPONENTS.CONFIRM_DIALOG, {
     // i18n text
     dialogTitle: t('gift_decline_title'),
@@ -388,6 +450,7 @@ function openDeclineGiftConfirm() {
     onConfirm: () => confirmDeclineGift()
   });
 
+  // @ts-ignore
   appStore.setDialogShow(true);
 }
 
@@ -405,10 +468,12 @@ async function confirmDeclineGift() {
     if (!orderId) throw new Error('Order ID not found');
 
     // Resolve current user id
+    // @ts-ignore
     const userId = authStore.getUser?.id || authStore.getUserId || authStore.user?.id;
     if (!userId) throw new Error('User ID not found');
 
     // Call cancel endpoint (GET) with user_id as query
+    // @ts-ignore
     const { data: response } = await useApi(`orders/${orderId}/cancel`, {
       method: 'GET',
       params: { user_id: userId }
@@ -419,6 +484,7 @@ async function confirmDeclineGift() {
 
     if (ok) {
       // Close confirm + details dialogs
+      // @ts-ignore
       appStore.setDialogShow(false);
 
       // (Optional) You can refresh bookings outside this dialog

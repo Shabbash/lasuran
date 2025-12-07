@@ -116,7 +116,7 @@
           v-if="booking.gifted_info && booking.gifted_info.is_sender === false && !booking.gifted_info.is_completed"
           class="w-full h-[50px] bg-[#A0576F] hover:bg-[#A0576F] text-[#EBE4DF] rounded-full text-[13px] font-medium"
           @click="openScheduleDialog(booking.id)">
-          {{ t('button_schedule_gift') }}
+          {{ t('button_schedule_gift') }}  
         </BaseButton>
 
         <!-- Cancel Button -->
