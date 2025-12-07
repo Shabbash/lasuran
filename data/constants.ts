@@ -45,9 +45,8 @@ export const COMPONENTS = {
     ADDRESSES_DIALOG: 'AdressesDialog', 
     ADD_ADDRESS: 'ADD_ADDRESS',
     PRIVACY: 'Privacy',
-    TERMS: 'Terms',    SERVICE_TYPES_CONFLICT:'ServiceTypeConflictDialog'
-
-
+    TERMS: 'Terms',
+    SERVICE_TYPES_CONFLICT:'ServiceTypeConflictDialog'
 }
 
 export default { 

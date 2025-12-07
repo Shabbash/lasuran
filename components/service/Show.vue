@@ -81,15 +81,12 @@ import ServiceDetailSkeleton from "~/components/skeletons/ServiceDetailSkeleton.
 import { COMPONENTS, SERVICE_TYPES } from "~/data/constants";
 import PriceIcon from '@/components/icons/PriceIcon.vue'
 import { formatSAR } from '~/utils/formatCurrency'
-const { setDialogComponent, setDialogShow,setServiceType,setDialogOptions } = useApp()
-import { useI18n } from 'vue-i18n'
 
+import { useI18n } from 'vue-i18n'
+const { setDialogComponent, setDialogShow,setServiceType,setDialogOptions } = useApp()
 // Access translation function
 const { t } = useI18n()
-
-// init cookie service type
 const  setCookie  = useCookie('service_type')
-
 const priceWithIcon = computed(() => {
   const price = selectedService.value.price ?? 0;
 
@@ -176,29 +173,29 @@ const defaultService = computed<Service>(() => selectedService.value?.products?.
 
 const addToCart = function () {
   const { requireAuth } = useAuthCheck();
-
+ 
   // Check authentication and proceed only if authenticated
   requireAuth(() => {
     // User is authenticated, proceed with cart operation
     console.log('User authenticated, proceeding with cart operation');
     const serviceType = cartModule.getServiceType
-
+ 
 if (serviceType==SERVICE_TYPES.ONLINE) {
   setServiceType(SERVICE_TYPES.ONLINE);
-
+ 
 setDialogComponent(COMPONENTS.SERVICE_TYPES_CONFLICT, {
   currentServiceType: SERVICE_TYPES.RESERVATION ,
-  newServiceType: SERVICE_TYPES.ONLINE, 
+  newServiceType: SERVICE_TYPES.ONLINE,
   onClearCart: handleClearCart,
-
-
+ 
+ 
 })
 return
 }
-
+ 
 setServiceType(SERVICE_TYPES.RESERVATION)
 setCookie.value = SERVICE_TYPES.RESERVATION
-
+ 
     // Create the payload with all necessary data
     const payload = {
       ...defaultService.value,
@@ -206,10 +203,10 @@ setCookie.value = SERVICE_TYPES.RESERVATION
       selectedTime: selectedTime.value,
       date: value.value.toString(),
     };
-
+ 
     // Use our helper function and computed properties to check if this is an edit operation
     const isEditingOperation = isEditing.value;
-
+ 
     // Get the cart_product_id from the service or our stored value
   
     // Check if this is an edit operation
@@ -217,19 +214,19 @@ setCookie.value = SERVICE_TYPES.RESERVATION
       // This is an edit operation - ensure we pass the cart_product_id
       payload.cart_product_id = cartProductId;
       console.log('Editing existing cart item with ID:', payload.cart_product_id);
-
+ 
       // Make sure we're using the correct product ID from the original item
       if (selectedService.value?.product_id) {
         payload.id = selectedService.value.product_id;
       } else if (defaultService.value?.id) {
         payload.id = defaultService.value.id;
       }
-
+ 
       // Include any other necessary fields from the original cart item
       if (selectedService.value?.branch_id) {
         payload.branch_id = selectedService.value.branch_id;
       }
-
+ 
       // Log the complete payload for debugging
       console.log('Edit cart payload:', payload);
     } else {
@@ -237,7 +234,7 @@ setCookie.value = SERVICE_TYPES.RESERVATION
       console.log('Add cart payload:', payload);
       // For new items, don't include cart_product_id
     }
-
+ 
     // Use the same method for both add and update operations
     // The API will detect if it's an update based on the presence of cart_product_id
     cartModule.addOrUpdateServiceInCart(payload).then(() => {
@@ -245,7 +242,7 @@ setCookie.value = SERVICE_TYPES.RESERVATION
       setDialogComponent(COMPONENTS.SERVICE_APPOINTMENT, {
         modalMaxWidth: 'max-w-[539px]'
       });
-
+ 
     }).catch((error) => {
       console.error('Error adding/updating cart:', error);
       // Loading state will be reset by the cart module's onError handler
@@ -256,7 +253,7 @@ setCookie.value = SERVICE_TYPES.RESERVATION
     // Don't proceed with cart operation - this prevents the loading state issue
   });
 };
-
+ 
 const handleClearCart = () => {
   setDialogComponent(COMPONENTS.CONFIRM_DIALOG, {
     dialogTitle: 'cart_remove_all_title',
@@ -274,7 +271,7 @@ const handleClearCart = () => {
   })
   setDialogShow(true)
 }
-
+ 
 
 // Function removed as it was unused
 // Store the original cart_product_id and editing state

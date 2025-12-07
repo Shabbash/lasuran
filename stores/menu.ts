@@ -70,20 +70,11 @@ export const useMenu = defineStore("menu", {
             return state.service;
         },
         getMenuParams(state) {
-            // ✅ Only include non-null parameters
-            const params: any = {};
-
-            if (state.category_id !== null && state.category_id !== undefined) {
-                params.category_id = state.category_id;
+            return {
+                category_id: state.category_id,
+                sub_category_id: state.sub_category_id,
+                branch_id: state.branch_id,
             }
-            if (state.sub_category_id !== null && state.sub_category_id !== undefined) {
-                params.sub_category_id = state.sub_category_id;
-            }
-            if (state.branch_id !== null && state.branch_id !== undefined) {
-                params.branch_id = state.branch_id;
-            }
-
-            return params;
         },
         isServicesLoading(state) {
             return state.services.loading;
@@ -92,9 +83,9 @@ export const useMenu = defineStore("menu", {
     },
     actions: {
         async initMenu() {
-            this.fetchBranches();
+          await  this.fetchBranches();
             await this.fetchMenus();
-            this.fetchServices();
+          await  this.fetchServices();
         },
         fetchBranches() {
             this.$state.branches.loading = true;
@@ -114,21 +105,12 @@ export const useMenu = defineStore("menu", {
                 });
         },
         fetchMenus() {
-            // ✅ Only include non-null parameters
-            const params: any = {};
+            const params: {} = {
+                category_id: this.$state.category_id,
+                sub_category_id: this.$state.sub_category_id,
+                branch_id: this.$state.branch_id
 
-            if (this.$state.category_id !== null && this.$state.category_id !== undefined) {
-                params.category_id = this.$state.category_id;
-            }
-            if (this.$state.sub_category_id !== null && this.$state.sub_category_id !== undefined) {
-                params.sub_category_id = this.$state.sub_category_id;
-            }
-            if (this.$state.branch_id !== null && this.$state.branch_id !== undefined) {
-                params.branch_id = this.$state.branch_id;
-            }
-
-            console.log('📡 fetchMenus with params:', params);
-
+            };
             this.$state.menus.loading = true;
             return useApi("menus", {
                 params
@@ -142,10 +124,9 @@ export const useMenu = defineStore("menu", {
                         this.$state.category_query_type = data.data.category_query_type;
                         if (!this.$state.category_id || !this.$state.sub_category_id)
                             this.setDefaultMenu();
-                        console.log('✅ fetchMenus success:', data.data.menus);
+                        console.log(data.data.menus);
                     },
                     onError: (err: any) => {
-                        console.error('❌ fetchMenus error:', err);
                         this.$state.menus.loading = false;
                     }
                 });

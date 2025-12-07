@@ -395,12 +395,10 @@
   "booking_method_label": "Order Method",
 
  "load_more": "Load more",
- "cart_item":"Item",
+
+"place_order_button_label": "Place Order",
+"cart_item":"Item",
   "cart_quantity":"Quantity"
+ 
 
-"place_order_button_label": "Place Order"
-
-
-
-  
 }

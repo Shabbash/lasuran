@@ -19,14 +19,6 @@
   dots-class="dots-style"
 >
 
-            <BaseSlider
-  :items="homeSliders?.length ? homeSliders : (slider?.items ?? homeStore?.homeData?.data?.sliders)"
-  dots
-  :slide-per-row="1"
-  :slide-per-row-mobile="1"
-  dots-class="dots-style"
->
-
               <template #default="{ item }">
                 <div class="w-full cursor-pointer">
                   <div class="w-full overflow-hidden relative rounded-[23px] md:mt-[31px] h-[272px] md:h-[390px]">
@@ -133,10 +125,11 @@ import { useHome } from '@/stores/home'
 import { useMenu } from '~/stores/menu'
 import { useApp } from '~/stores/app'
 import { useApi } from '~/composables/useApi'
-import { COMPONENTS } from '~/data/constants'
+import { COMPONENTS ,SERVICE_TYPES} from '~/data/constants'
 import { usePageTitle } from '~/composables/usePageTitle'
 import { useAuth } from '~/stores/auth'
 import { storeToRefs } from 'pinia'
+const { setServiceType, setDeliveryMethod } = useApp()
 
 usePageTitle('titles.home')
 const { t } = useI18n()
@@ -256,6 +249,7 @@ const getHomeSliders = () => {
 
 /* ===== Lifecycle ===== */
 onMounted(async () => {
+  setServiceType(SERVICE_TYPES.RESERVATION)
   // Unblock page just in case
   appModule.setPageBlocking(false)
 

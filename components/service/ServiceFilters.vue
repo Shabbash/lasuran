@@ -41,6 +41,8 @@ import { useRoute } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import SelectableSlider from '~/components/base/SelectableSlider.vue'
 import { useMenu } from '~/stores/menu'
+const { setServiceType, setDeliveryMethod } = useApp()
+import { SERVICE_TYPES, COMPONENTS, DELIVERY_METHOD } from '@/data/constants'
 
 // Stores
 const menuModule = useMenu()
@@ -124,6 +126,11 @@ const onChangeMenu = function (key: string, _: any) {
 
   menuModule.fetchServices()
 }
+
+onMounted(()=>{
+    setServiceType(SERVICE_TYPES.RESERVATION)
+
+})
 </script>
 
 <style scoped>

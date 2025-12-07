@@ -119,21 +119,28 @@ interface Service {
 }
 
 // State & Stores
-const homeStore = useHome() 
-const menuModule = useMenu()
+
 const { setDialogShow, setDialogComponent, setServiceType, setDeliveryMethod } = useApp()
 const filters = ref({})
 const sliders = ref([])
+  setServiceType(SERVICE_TYPES.RESERVATION)
+const homeStore = useHome() 
+const menuModule = useMenu()
+const menuStore = useMenu()
 
 // Init services on mount
 onMounted(async () => {
+ await setServiceType(SERVICE_TYPES.RESERVATION)
+   setDeliveryMethod(DELIVERY_METHOD.RESERVATION)
+    homeStore.initializeHome()
+          await  menuStore.initMenu()
 
-  homeStore.initializeHome()
-  setServiceType(SERVICE_TYPES.RESERVATION)
-  setDeliveryMethod(DELIVERY_METHOD.RESERVATION)
-  await menuModule.initMenu()
+
+
   getSliders( )
 })
+
+
 
 
 function handleBannerClick(item: any) {

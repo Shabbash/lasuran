@@ -16,7 +16,8 @@
     </div>
 
     <div class="grid grid-cols-1 gap-[20px] mt-[30px]">
-      <ShopFilter :showBranchSelect="true" />
+      <ShopFilter :showBranchSelect="true" @goProducts="handleFilterChange" />
+      
     </div>
 
     <div class="grid grid-cols-2 md:grid-cols-4 gap-[20px] mt-[30px]">
@@ -24,6 +25,7 @@
         v-for="p in productsStore.transformedProducts"
         :key="p.id"
         :item="p"
+        @select="openProductModal(p)"
       />
     </div>
   </Container>

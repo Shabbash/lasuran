@@ -103,6 +103,9 @@ import BaseCard from '@/components/base/Card.vue'
 import Dialog from '@/components/base/Dialog.vue'
 import { useContact } from '@/stores/contact'
 import { usePageTitle } from '~/composables/usePageTitle'
+const { setServiceType, setDeliveryMethod } = useApp()
+import { SERVICE_TYPES, COMPONENTS, DELIVERY_METHOD } from '@/data/constants'
+
 usePageTitle("titles.customerservice")
 
 // Store
@@ -182,6 +185,10 @@ const submitForm = async () => {
 
     // Redirect to dashboard tickets tab after successful submission
     navigateTo('/dashboard/tickets')
+  })
+
+  onMounted(()=>{
+    setServiceType(SERVICE_TYPES.RESERVATION)
   })
 }
 

@@ -34,7 +34,6 @@ import Terms from '~/components/legal/Terms.vue'
 import ServiceTypesConflictDIALOG from '@/components/cart/ServiceTypeConflictDialog.vue'
 
 
-
 const components: {} = {
     [COMPONENTS.AUTH_WIZARD]: Wizard,
     [COMPONENTS.INTRO_STEP]: IntroStep,
@@ -67,8 +66,8 @@ const components: {} = {
     [COMPONENTS.ADD_ADDRESS]: AddAddressDialog,
     [COMPONENTS.PRIVACY]: Privacy,
     [COMPONENTS.TERMS]: Terms,
+        [COMPONENTS.SERVICE_TYPES_CONFLICT]: ServiceTypesConflictDIALOG
 
-    [COMPONENTS.SERVICE_TYPES_CONFLICT]: ServiceTypesConflictDIALOG
 
 };
 export default components;
